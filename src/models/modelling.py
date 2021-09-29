@@ -12,6 +12,7 @@ df_vaccines = read_pickle('covid_vaccines.pkl')
 df_city = read_pickle('covid_city.pkl')
 df_cases = read_pickle('covid_cases.pkl')
 
+youtube_popular = read_pickle('youtube_popular.pkl')
 
 
 
