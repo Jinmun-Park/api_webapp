@@ -1,4 +1,8 @@
 # covid19_korea
+
+## CONTRIBUTIOR 
+Jinmun Park
+Eunjung Park
 ### API SETUP
 pip install --upgrade google-api-python-client
 
