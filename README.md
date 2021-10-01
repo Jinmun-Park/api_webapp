@@ -2,7 +2,7 @@
 
 ## CONTRIBUTIOR 
 Jinmun Park
-Eunjung Park
+Eunjeong Park
 ### API SETUP
 pip install --upgrade google-api-python-client
 
