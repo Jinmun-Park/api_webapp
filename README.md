@@ -1,8 +1,16 @@
-# covid19_korea
+# Web Application using Google API
 
-## CONTRIBUTIOR 
-Jinmun Park
-Eunjeong Park
+## Contributor
+* Jinmun Park : pjm9827@gmail.com <br/>
+* Eunjeong Park : pej111797@gmail.com
+
+## API Resources
+| Source | URL | Description |
+| --- | --- | --- |
+| GoogleAPI | https://developers.google.com/youtube/v3 | Pulling youtube Channel/Videos/Comments |
+| 공공데이터포탈 | https://www.data.go.kr/index.do | Pulling Covid 19/ Accident cases | 
+
+##
 ### API SETUP
 pip install --upgrade google-api-python-client
 
