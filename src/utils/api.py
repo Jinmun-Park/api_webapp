@@ -10,9 +10,10 @@ import xmltodict
 import yaml
 import os
 from datetime import datetime
+# ====================== PICKLE SETUP ====================== #
+import pickle
 # ====================== LOG SETUP ====================== #
 import pandas as pd
-import colored
 
 # ====================== RETRIEVING DATA FROM API ====================== #
 def api_encodetype(name, environment):
@@ -202,12 +203,23 @@ def api_youtube_populear(name, environment, max_result):
     df_popular = df_popular.merge(df_videocategory, how='inner', on='CategoryId')
 
     # ====================== Export to Pickle  ======================#
+    # Create directory
     try:
-        if not os.path.exists('Pickle/' + name + '.pkl'):
+        if not os.path.exists('Pickle/'):
             try:
                 os.makedirs('Pickle')
             except FileExistsError:
                 pass
+    except Exception as e:
+        print('Failed to create directory (Pickle/..) ' + name.upper() + e.__str__())
+    else:
+        print('Successfully created directory (Pickle/..) ' + name.upper())
+    # Create pickle file
+    try:
+        if os.path.exists('Pickle/' + name + '.pkl'):
+            with open('Pickle/' + name + '.pkl', 'wb') as f:
+                pickle.dump(df_popular, f)
+        else:
             df_popular.to_pickle('Pickle/' + name + '.pkl')
     except Exception as e:
         print('Failed to export(.pkl) ' + name.upper() + e.__str__())
@@ -228,4 +240,3 @@ def run_api():
     api_decodetype(name='covid_cases', environment='data_go_kr', startdate='20200210')
     # YOUTUBE_API
     api_youtube_populear(name='youtube_popular', environment='youtube', max_result=50)
-
