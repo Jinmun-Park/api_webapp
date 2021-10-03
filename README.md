@@ -10,6 +10,12 @@
 | GoogleAPI | https://developers.google.com/youtube/v3 | Pulling youtube Channel/Videos/Comments |
 | 공공데이터포탈 | https://www.data.go.kr/index.do | Pulling Covid 19/ Accident cases | 
 
+## FIRST STAGE (15'SEPT'2021 ~ 15'OCT'2021) :
+| PLAN | PERIOD | STATUS | DESCRIPTION |
+| --- | --- | --- | --- |
+| API SETUP | 01'OCT'2021 | COMPLETED | Setting Up API Connection |
+| DATA MAPPING | 10'OCT'2021 | IN PROGRESS | Mapping list of data into dataframe |
+
 ##
 ### API SETUP
 pip install --upgrade google-api-python-client
