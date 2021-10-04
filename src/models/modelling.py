@@ -1,8 +1,12 @@
-from src.utils.api import run_api
+from src.utils.api import run_covid_api
+from src.utils.api import run_youtube_api
+from src.utils.api import api_channel_search
 import pandas as pd
 
 # ====================== API RUNNING ====================== #
-run_api()
+run_covid_api()
+run_youtube_api()
+api_channel_search(cha_name='슈카월드')
 # ====================== DEFINE FUNCTION ====================== #
 def read_pickle(file_name: str) -> pd.DataFrame:
     return pd.read_pickle('Pickle/' + file_name)
