@@ -16,7 +16,13 @@
 | API SETUP | 01'OCT'2021 | COMPLETED | Setting Up API Connection |
 | DATA MAPPING | 10'OCT'2021 | IN PROGRESS | Mapping list of data into dataframe |
 
-##
+## SUPPORT
+| Source | URL | Description |
+| --- | --- | --- |
+| Google | https://developers.google.com/youtube/v3 | API Documentation |
+| Google | https://support.google.com/youtube/contact/yt_api_form | API Extension | 
+
+## PROJECT NOTE
 ### API SETUP
 pip install --upgrade google-api-python-client
 
