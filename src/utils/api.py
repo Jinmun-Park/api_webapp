@@ -52,7 +52,7 @@ def picke_replace(name, file):
     else:
         print('Successfully export(.pkl) ' + name.upper())
 
-# ====================== RETRIEVING DATA FROM API ====================== #
+# ====================== RETRIEVING DATA FROM KOREA GOVERNMENT API ====================== #
 def api_encodetype(name, environment):
     """
     :param name: main name of YAML configuration
@@ -74,9 +74,9 @@ def api_encodetype(name, environment):
         response = urlopen(url + unquote(queryparams))
         json_api = response.read().decode("utf-8")
         json_file = json.loads(json_api)
-        print(name.upper() + ' Successfully initiated API Connection')
+        print(name.upper() + ' API Connection has been successfully completed')
     except:
-        print(name.upper() + ' Failed to initiated API Connection')
+        print(name.upper() + ' has failed to open API Connection')
 
     df = json_normalize(json_file['data'])
 
@@ -110,9 +110,9 @@ def api_decodetype(name, environment, startdate):
         res = requests.get(url + queryparams)
         result = xmltodict.parse(res.text)
         json_file = json.loads(json.dumps(result))
-        print(name.upper() + ' Successfully initiated API Connection')
+        print(name.upper() + ' API Connection has been successfully completed')
     except:
-        print(name.upper() + ' Failed to initiated API Connection')
+        print(name.upper() + ' has failed to open API Connection')
 
     df = json_normalize(json_file['response']['body']['items']['item'])
     # ====================== Export to Pickle  ======================#
@@ -124,7 +124,8 @@ def api_decodetype(name, environment, startdate):
     timetaken = endtime - starttime
     print('Time taken : ' + timetaken.__str__())
 
-def api_youtube_populear(name, environment, max_result):
+# ====================== RETRIEVING DATA FROM YOUTUBE API ====================== #
+def api_youtube_popular(name, environment, max_result):
     # ====================== Setup ====================== #
     pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
     dictionary = {0: 'Wiki_Category_1', 1: 'Wiki_Category_2', 2: 'Wiki_Category_3', 3: 'Wiki_Category_4',
@@ -146,14 +147,14 @@ def api_youtube_populear(name, environment, max_result):
                                             chart='mostPopular',
                                             maxResults=int(max_result), regionCode='KR').execute()
         df_popular = json_normalize(res_popular['items'])
-        print('Videos API Connection is successfully initiated ')
+        print('Videos API Connection has been successfully completed')
         # YOUTUBE_VIDEO_CATEGORY
         res_videocategory = youtube.videoCategories().list(part='snippet', regionCode='KR').execute()
         df_videocategory = json_normalize(res_videocategory['items'])
         df_videocategory = df_videocategory[['id', 'snippet.title']]
-        print('VideoCategories Successfully initiated API Connection')
+        print('VideoCategories API Connection has been successfully completed')
     except:
-        print(name.upper() + ' Failed to initiated API Connection')
+        print(name.upper() + ' has failed to open API Connection')
 
     # ====================== YOUTUBE_VIDEO_LIST : Data Mapping  ======================#
     # Select Columns
@@ -196,13 +197,13 @@ def api_youtube_populear(name, environment, max_result):
     # Merge & Rename columns
     df_popular = df_popular.merge(catrgory_split, left_index=True, right_index=True)
     del df_popular['TopicCategories']
-    print('YOUTUBE_VIDEO_LIST Successfully Completed Data Mapping')
+    print('YOUTUBE_VIDEO_LIST : Data mapping has been successfully completed')
     # ====================== YOUTUBE_VIDEO_CATEGORY : Data Mapping  ======================#
     df_videocategory = df_videocategory[['id', 'snippet.title']]
     df_videocategory.rename(columns={'id': 'CategoryId',
                                      'snippet.title': 'Reg_Category'
                                      }, inplace=True)
-    print('YOUTUBE_VIDEO_CATEGORY Successfully Completed Data Mapping')
+    print('YOUTUBE_VIDEO_CATEGORY : Data mapping has been successfully completed')
     # ====================== MERGE : df_popular & df_videocategory ====================== #
     df_popular = df_popular.merge(df_videocategory, how='inner', on='CategoryId')
 
@@ -214,65 +215,120 @@ def api_youtube_populear(name, environment, max_result):
     timetaken = endtime - starttime
     print('Time taken : ' + timetaken.__str__())
 
-def api_channel_search(cha_name):
-    pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
-    starttime = datetime.now()
-    print(starttime)
-    # ====================== CONFIGURATION.YAML Reading ====================== #
-    credential = credential_yaml()
-    name='youtube_popular'
-    environment='youtube'
-    # ====================== Retrieving API and store in DF  ======================#
-    env_cred = credential[name][environment]
-    service_key = env_cred['api_key']
-    youtube = build('youtube', 'v3', developerKey=service_key)
-    try:
-        # YOUTUBE_CHANNEL_SEARCH
-        res_channel_search = youtube.search().list(part='snippet', type='channel', regionCode='KR', q=cha_name, order='videoCount').execute()
-        df_channel_search = json_normalize(res_channel_search['items'])
-        print('Channel Search API Connection : ' + cha_name + '  is successfully initiated')
-    except:
-        print('Channel Search API Connection : ' + cha_name + ' is failed to initiate')
-    # ====================== YOUTUBE_CHANNEL_SEARCH : Data Mapping  ======================#
-    # Select Columns
-    df_channel_search = df_channel_search[['id.kind', 'id.channelId', 'snippet.publishedAt', 'snippet.title']]
-    # Rename Columns
-    df_channel_search.rename(columns={'id.kind': 'Type',
-                               'id.channelId': 'ChannelId',
-                               'snippet.publishedAt': 'PublishedAt',
-                               'snippet.title': 'ChannelTitle',
-                               'snippet.categoryId': 'CategoryId'
-                               }, inplace=True)
-    # ======================  Retrieving API : YOUTUBE_CHANNEL_INFO  ======================#
-    df_channel_info = pd.DataFrame()
-    # Running loop to get Channel_ID from 'df_channel_search'
-    for id in df_channel_search['ChannelId']:
+class channel:
+    def __init__(self, cha_name):
+        self.cha_name = cha_name
+
+    def search(self):
+        pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
+        starttime = datetime.now()
+        print(starttime)
+        # ====================== CONFIGURATION.YAML Reading ====================== #
+        credential = credential_yaml()
+        name = 'youtube_popular'
+        environment = 'youtube'
+        # ====================== Retrieving API and store in DF  ======================#
+        env_cred = credential[name][environment]
+        service_key = env_cred['api_key']
+        youtube = build('youtube', 'v3', developerKey=service_key)
         try:
-            # YOUTUBE_CHANNEL_INFORMATION
-            res_channel = youtube.channels().list(part=['snippet', 'statistics', 'contentDetails'],
-                                                  id=id).execute()
-            df = json_normalize(res_channel['items'][0])
-            df_channel_info = df_channel_info.append(df)
-            print('Channel ID API Connection : ' + id + ' is successfully initiated')
+            # YOUTUBE_CHANNEL_SEARCH
+            res_channel_search = youtube.search().list(part='snippet', type='channel', regionCode='KR', q=self.cha_name,
+                                                       order='videoCount', maxResults=20).execute()
+            df_channel_search = json_normalize(res_channel_search['items'])
+            print('Channel Search API Connection : ' + self.cha_name + '  has been successfully completed')
         except:
-            print('Channel ID API Connection : ' + id + ' is failed to initiate')
-    # ====================== YOUTUBE_CHANNEL_INFO : Data Mapping  ======================#
-    # Select Columns
-    df_channel_info = df_channel_info[['id',
-                                       'snippet.customUrl',
-                                       'statistics.viewCount', 'statistics.subscriberCount', 'statistics.videoCount']]
-    # Rename Columns
-    df_channel_info.rename(columns={'id': 'ChannelId',
-                                      'snippet.customUrl': 'CustomUrl',
-                                      'statistics.viewCount': 'ViewCount',
-                                      'statistics.subscriberCount': 'SubscriberCount',
-                                      'statistics.videoCount': 'VideoCount'
-                                      }, inplace=True)
-    # ====================== MERGE : df_channel_search & df_channel_info ====================== #
-    # Merge & Rename columns
-    df_chanel = df_channel_search.merge(df_channel_info, how='inner', on='ChannelId')
-    # ========================================================================================= #
-    print(df_chanel.to_markdown(index=False))
+            print('Channel Search : ' + self.cha_name + ' has failed to open API connection')
+        # ====================== YOUTUBE_CHANNEL_SEARCH : Data Mapping  ======================#
+        # Select Columns
+        df_channel_search = df_channel_search[['id.kind', 'id.channelId', 'snippet.publishedAt', 'snippet.title']]
+        # Rename Columns
+        df_channel_search.rename(columns={'id.kind': 'Type',
+                                          'id.channelId': 'ChannelId',
+                                          'snippet.publishedAt': 'PublishedAt',
+                                          'snippet.title': 'ChannelTitle',
+                                          'snippet.categoryId': 'CategoryId'
+                                          }, inplace=True)
+        # ======================  Retrieving API : YOUTUBE_CHANNEL_INFO  ======================#
+        df_channel_info = pd.DataFrame()
+        # Running loop to get Channel_ID from 'df_channel_search'
+        for id in df_channel_search['ChannelId']:
+            try:
+                # YOUTUBE_CHANNEL_INFORMATION
+                res_channel = youtube.channels().list(part=['snippet', 'statistics', 'contentDetails'],
+                                                      id=id).execute()
+                df = json_normalize(res_channel['items'][0])
+                df_channel_info = df_channel_info.append(df)
+                print('Channel ID API Connection : ' + id + '  has been successfully completed')
+            except:
+                print('Channel ID : ' + id + ' has failed to open API connection')
+        # ====================== YOUTUBE_CHANNEL_INFO : Data Mapping  ======================#
+        # Select Columns
+        df_channel_info = df_channel_info[['id',
+                                           'snippet.customUrl',
+                                           'statistics.viewCount', 'statistics.subscriberCount',
+                                           'statistics.videoCount']]
+        # Rename Columns
+        df_channel_info.rename(columns={'id': 'ChannelId',
+                                        'snippet.customUrl': 'CustomUrl',
+                                        'statistics.viewCount': 'ViewCount',
+                                        'statistics.subscriberCount': 'SubscriberCount',
+                                        'statistics.videoCount': 'VideoCount'
+                                        }, inplace=True)
+        # ====================== MERGE : df_channel_search & df_channel_info ====================== #
+        # Merge & Rename columns
+        df_chanel = df_channel_search.merge(df_channel_info, how='inner', on='ChannelId')
+        # ========================================================================================= #
+        print(df_chanel.to_markdown())  # Choose index=TRUE / index=FALSE
+
+    def video(self, channel_id, max_result,):
+        pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
+        starttime = datetime.now()
+        print(starttime)
+        # ====================== CONFIGURATION.YAML Reading ====================== #
+        credential = credential_yaml()
+        name = 'youtube_popular'
+        environment = 'youtube'
+        # ====================== Retrieving API and store in DF  ======================#
+        env_cred = credential[name][environment]
+        service_key = env_cred['api_key']
+        youtube = build('youtube', 'v3', developerKey=service_key)
+        try:
+            # PLAYLIST_ID
+            channel_id = 'UCsJ6RuBiTVWRX156FVbeaGg' #슈카월드
+            res_playlist = youtube.channels().list(part='contentDetails', id=channel_id).execute()
+            playlist_id = res_playlist['items'][0]['contentDetails']['relatedPlaylists']['uploads']
+            print('Channel PlaylistID API Connection : ' + self.cha_name + ' has been successfully completed')
+        except:
+            print('Channel PlaylistID API Connection : ' + self.cha_name + ' has failed to initiate')
+
+        try:
+            # Get VIDEO_ID from PLAYLIST_ID
+            videos = []
+            next_page_token = None
+
+            while 1:
+                res_video_id = youtube.playlistItems().list(part='snippet', playlistId=playlist_id, maxResults=50,
+                                                   pageToken=next_page_token).execute()
+                videos += res_video_id['items']
+                next_page_token = res_video_id.get('nextPageToken')
+                if next_page_token is None:
+                    break
+
+            # VIDEO_IDs only
+            video_ids = list(map(lambda x: x['snippet']['resourceId']['videoId'], videos))
+            print('Playlist Item : video IDs has been successfully completed')
+        except:
+            print('Playlist Item : video IDs has failed to pull video IDs')
+
+            #res_video_search = youtube.videos().list(part=['snippet', 'statistics', 'status', 'topicDetails'],
+                                                #chart='mostPopular',
+                                                #maxResults=int(max_result), regionCode='KR').execute()
+
+            #df_popular = json_normalize(res_channel_video['items'])
+            #print('Channel Search API Connection : ' + self.cha_name + '  is successfully initiated')
+        #except:
+            #print('Channel Search API Connection : ' + self.cha_name + ' is failed to initiate')
 
 # ====================== API RUNNING ====================== #
 def run_covid_api():
@@ -282,8 +338,8 @@ def run_covid_api():
     api_decodetype(name='covid_city', environment='data_go_kr', startdate='20200210')
     api_decodetype(name='covid_cases', environment='data_go_kr', startdate='20200210')
 
-def run_youtube_api():
+def run_youtube_chart():
     # YOUTUBE_POPULAR_CHART
-    api_youtube_populear(name='youtube_popular', environment='youtube', max_result=20)
+    api_youtube_popular(name='youtube_popular', environment='youtube', max_result=20)
 
 
