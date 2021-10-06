@@ -38,4 +38,5 @@ set FLASK_DEBUG=1 <br/>
 flask run <br/>
 
 ### NOTE
-데이터 시각화, title word cloud 시각화, 댓글 감성분석, 코로나19 예측 <br/>
+유튜브 API -> 데이터 시각화(title word cloud 시각화...), 댓글 감성분석 <br/>
+코로나19 데이터 -> 코로나19 예측 모델링 <br/>
