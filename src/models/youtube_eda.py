@@ -15,6 +15,7 @@ channel = channel(cha_name='슈카월드')
 channel.search()
 video_info = channel.video(channel_id='UCsJ6RuBiTVWRX156FVbeaGg')
 video_info_sub = channel.title_find(find='코로나')
+video_comment = channel.comment()
 # ================================================================= #
 
 # ====================== MODELLING ====================== #
