@@ -480,7 +480,7 @@ class channel:
         video_info = read_pickle('video_info.pkl')
 
         # ====================== FIND SUBSTRINGS ====================== #
-        video_info_sub = video_info.loc[video_info['VideoTitle'].str.contains(find, case=False)]
+        video_info_sub = video_info.loc[video_info['VideoTitle'].str.contains(find, case=False)].reset_index(drop=True)
 
         # ====================== Export to Pickle & Read ======================#
         picke_replace(name='video_info_subs', file=video_info_sub)
@@ -489,8 +489,12 @@ class channel:
 
         return video_info_sub
 
-######################################################################################################################################
-
+    def comment(self):
+        """
+        NAME : channel.comment()
+        DESCRIPTION : Extract comments from video_info_subs
+        USAGE : The comment will be used to have sentiment analysis
+        """
         # ====================== Setup ====================== #
         pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
         starttime = datetime.now()
@@ -503,7 +507,7 @@ class channel:
         # ======================================================================== #
 
         # ====================== Read Pickels (VideoIDs) ======================#
-        video_information_sub = read_pickle('video_information_subs.pkl')
+        video_info_sub = read_pickle('video_info_subs.pkl')
         # =====================================================================#
 
         # ====================== Retrieving API and store in DF  ======================#
@@ -511,8 +515,57 @@ class channel:
         service_key = env_cred['api_key']
         youtube = build('youtube', 'v3', developerKey=service_key)
 
-        #for i in video_info_sub:
+        # ====================== Retrieving API and store in DF  ======================#
 
+        df_comment = pd.DataFrame()
+        try:
+            for id in video_info_sub.VideoId:
+                # CommentThread based on relevance filter
+                res_rel_comments = youtube.commentThreads().list(part='snippet', videoId=id, order='relevance', maxResults=25).execute()
+                df = json_normalize(res_rel_comments['items'])
+                df_comment = df_comment.append(df)
+                # CommentThread based on order filter
+                res_ord_comments = youtube.commentThreads().list(part='snippet', videoId=id, order='time', maxResults=25).execute()
+                df = json_normalize(res_ord_comments['items'])
+                df_comment = df_comment.append(df, ignore_index=True)
+            # Reset_index()
+            df_comment = df_comment.reset_index(drop=True)
+            print(str(len(df_comment)) + ' Comments has been successfully loaded')
+        except:
+            print('Comments has failed to load')
+
+        # ====================== YOUTUBE_COMMENT : Data Mapping  ======================#
+
+        # Select Columns
+        df_comment = df_comment[[
+            'id',
+            'snippet.topLevelComment.snippet.textOriginal',
+            'snippet.topLevelComment.snippet.authorDisplayName',
+            'snippet.topLevelComment.snippet.likeCount',
+            'snippet.topLevelComment.snippet.publishedAt',
+            'snippet.totalReplyCount'
+        ]]
+
+        # Rename Columns
+        df_comment.rename(columns={'id': 'CommentId',
+                                   'snippet.topLevelComment.snippet.textOriginal': 'Comment',
+                                   'snippet.topLevelComment.snippet.authorDisplayName': 'Author',
+                                   'snippet.topLevelComment.snippet.likeCount': 'LikeCount',
+                                   'snippet.topLevelComment.snippet.publishedAt': 'PublishedAt',
+                                   'snippet.totalReplyCount': 'ReplyCount',
+                                   }, inplace=True)
+
+        # ====================== Export to Pickle & Read ======================#
+        picke_replace(name='video_comment', file=df_comment)
+        video_comment = read_pickle('video_comment.pkl')
+        # =====================================================================#
+
+        endtime = datetime.now()
+        print(endtime)
+        timetaken = endtime - starttime
+        print('Time taken : ' + timetaken.__str__())
+
+        return video_comment
 
 # ====================== API RUNNING ====================== #
 def run_covid_api():
