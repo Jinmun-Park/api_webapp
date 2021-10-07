@@ -449,8 +449,8 @@ class channel:
         print('Youtube Video Information : Data mapping has been successfully completed')
 
         # ====================== Export to Pickle & Read  ======================#
-        picke_replace(name='video_information', file=df_video_info)
-        video_information = read_pickle('video_information.pkl')
+        picke_replace(name='video_info', file=df_video_info)
+        video_info = read_pickle('video_info.pkl')
         # ======================================================================#
 
         endtime = datetime.now()
@@ -458,10 +458,15 @@ class channel:
         timetaken = endtime - starttime
         print('Time taken : ' + timetaken.__str__())
 
-        return video_information
+        return video_info
 
     def title_find(self, find):
-
+        """
+        :param find: Find substrings from the channel title.
+        NAME : channel.title_find()
+        DESCRIPTION : Find substrings from the channel title to narrow down the search results.
+        USAGE : Extraction of the comments takes less number of videos after the tile search.
+        """
         # ====================== Setup ====================== #
         pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
 
@@ -472,17 +477,42 @@ class channel:
         # ======================================================================== #
 
         # ====================== LOAD PICKLES ====================== #
-        video_information = read_pickle('video_information.pkl')
+        video_info = read_pickle('video_info.pkl')
 
         # ====================== FIND SUBSTRINGS ====================== #
-        video_information_sub = video_information.loc[video_information['VideoTitle'].str.contains(find, case=False)]
+        video_info_sub = video_info.loc[video_info['VideoTitle'].str.contains(find, case=False)]
 
         # ====================== Export to Pickle & Read ======================#
-        picke_replace(name='video_information_subs', file=video_information_sub)
+        picke_replace(name='video_info_subs', file=video_info_sub)
+        video_info_sub = read_pickle('video_info_subs.pkl')
+        # =====================================================================#
+
+        return video_info_sub
+
+######################################################################################################################################
+
+        # ====================== Setup ====================== #
+        pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
+        starttime = datetime.now()
+        print(starttime)
+
+        # ====================== CONFIGURATION.YAML Reading ====================== #
+        credential = credential_yaml()
+        name = 'youtube_popular'
+        environment = 'youtube'
+        # ======================================================================== #
+
+        # ====================== Read Pickels (VideoIDs) ======================#
         video_information_sub = read_pickle('video_information_subs.pkl')
         # =====================================================================#
 
-        return video_information_sub
+        # ====================== Retrieving API and store in DF  ======================#
+        env_cred = credential[name][environment]
+        service_key = env_cred['api_key']
+        youtube = build('youtube', 'v3', developerKey=service_key)
+
+        #for i in video_info_sub:
+
 
 # ====================== API RUNNING ====================== #
 def run_covid_api():
