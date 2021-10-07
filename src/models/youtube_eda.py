@@ -13,8 +13,8 @@ youtube_popular = api_youtube_popular(name='youtube_popular', environment='youtu
 # Youtuve API 2 : Channel Search
 channel = channel(cha_name='슈카월드')
 channel.search()
-video_information = channel.video(channel_id='UCsJ6RuBiTVWRX156FVbeaGg')
-video_information_sub = channel.title_find(find='코로나')
+video_info = channel.video(channel_id='UCsJ6RuBiTVWRX156FVbeaGg')
+video_info_sub = channel.title_find(find='코로나')
 # ================================================================= #
 
 # ====================== MODELLING ====================== #
