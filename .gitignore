@@ -1,3 +1,4 @@
+config/database.ini
 config/credentials.yaml
 *.pkl
 

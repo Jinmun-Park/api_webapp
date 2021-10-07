@@ -11,10 +11,12 @@ This project is licensed under the terms of the GNU General Public License v3.0
 | 공공데이터포탈 | https://www.data.go.kr/index.do | Pulling Covid 19/ Accident cases | 
 
 ## FIRST STAGE (15'SEPT'2021 ~ 15'OCT'2021) :
-| PLAN | PERIOD | STATUS | DESCRIPTION |
+| PLAN | DATE | STATUS | DESCRIPTION |
 | --- | --- | --- | --- |
 | API SETUP | 01'OCT'2021 | COMPLETED | Setting Up API Connection |
-| DATA MAPPING | 10'OCT'2021 | IN PROGRESS | Mapping list of data into dataframe |
+| DATA MAPPING | 6'OCT'2021 | COMPLETED | Mapping listS of data |
+| POSTGRESSQL | 8'OCT'2021 | COMPLETED | Connecting popular chart to Postgresql |
+| JENKINS   | - | IN PROGRESS | Setup auto delivery function to push popular chart into Postgresql |
 
 ## SUPPORT
 | Source | URL | Description |

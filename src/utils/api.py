@@ -200,7 +200,7 @@ def api_youtube_popular(name, environment, max_result):
                                }, inplace=True)
 
     # Reset Index
-    df_popular = df_popular.reset_index()
+    df_popular = df_popular.reset_index(drop=True)
 
     # Split TopicCategories URL
     catrgory_split = df_popular['TopicCategories']
@@ -223,7 +223,6 @@ def api_youtube_popular(name, environment, max_result):
     # Merge & Rename columns
     df_popular = df_popular.merge(catrgory_split, left_index=True, right_index=True)
     del df_popular['TopicCategories']
-    del df_popular['index']
     print('Youtube Video List : Data mapping has been successfully completed')
 
     # ====================== YOUTUBE_VIDEO_CATEGORY : Data Mapping  ======================#
