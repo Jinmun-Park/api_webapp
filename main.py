@@ -2,7 +2,6 @@ from src.db.chart import chart_export
 
 #log = log_helper.get_logger(__name__)
 
-
 def main():
    # Use a breakpoint in the code line below to debug your script.
    print("Popular Chart Export to postgresSQL")
