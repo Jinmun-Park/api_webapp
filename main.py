@@ -5,7 +5,7 @@ from src.db.chart import chart_export
 
 def main():
    # Use a breakpoint in the code line below to debug your script.
-   print("Popular Chart Export")
+   print("Popular Chart Export to postgresSQL")
    #log.info('Loading Database details')
    chart_export(key='update')
 
