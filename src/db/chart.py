@@ -2,7 +2,7 @@ from src.utils.api import api_youtube_popular
 from configparser import ConfigParser
 from sqlalchemy import create_engine
 import psycopg2
-import datetime
+from datetime import datetime, date
 import calendar
 
 def config_list(filename='config/database.ini', section='postgresql_list'):
@@ -70,22 +70,33 @@ def connect():
             conn.close()
             print('Database connection closed.')
 
-youtube_popular = api_youtube_popular(name='youtube_popular', environment='youtube', max_result=20)
+def chart_export(key):
 
-# Move last column(run_date) to first sequence
-youtube_popular['run_date'] = datetime.date.today()
-youtube_popular['day'] = calendar.day_name[datetime.date.today().weekday()]
-cols = youtube_popular.columns.tolist()
-cols = cols[-2:] + cols[:-2]
-youtube_popular = youtube_popular[cols]
+    starttime = datetime.now()
+    print(starttime)
+    youtube_popular = api_youtube_popular(name='youtube_popular', environment='youtube', max_result=20)
 
-# CASE 1 : Push DF to Table
-params = config_url()
-engine = create_engine(params)
-youtube_popular.to_sql('popular_chart', engine, index=False)
+    # Move last column(run_date) to first sequence
+    youtube_popular['run_date'] = date.today()
+    youtube_popular['day'] = calendar.day_name[date.today().weekday()]
+    cols = youtube_popular.columns.tolist()
+    cols = cols[-2:] + cols[:-2]
+    youtube_popular = youtube_popular[cols]
 
-# CASE 2 : Append DF to Table
-youtube_popular['run_date'] = '2021-10-06'
-params = config_url()
-engine = create_engine(params)
-youtube_popular.to_sql('popular_chart', engine, if_exists='append', index=False)
+    if key == 'new':
+        # CASE 1 : Push DF to Table
+        params = config_url()
+        engine = create_engine(params)
+        youtube_popular.to_sql('popular_chart', engine, index=False)
+
+    elif key == 'update':
+        # CASE 2 : Append DF to Table
+        params = config_url()
+        engine = create_engine(params)
+        youtube_popular.to_sql('popular_chart', engine, if_exists='append', index=False)
+
+    endtime = datetime.now()
+    print(endtime)
+    timetaken = endtime - starttime
+    print('Time taken : ' + timetaken.__str__())
+
