@@ -1,5 +1,6 @@
 # Web Application using Google API
 This project is licensed under the terms of the GNU General Public License v3.0
+
 ### Contributor
 * Jinmun Park : pjm9827@gmail.com <br/>
 * Eunjeong Park : pej111797@gmail.com
@@ -50,6 +51,5 @@ set FLASK_DEBUG=1 <br/>
 flask run <br/>
 
 ### NOTE
-시각화 ( 지금 한국에서 가장 유명한 유튜브 영상 top 50 리스트 , 어떤 카테고리 , 채널명 유명한지 .. ) <br/>
-title word cloud 시각화 -> '오징어게임 ... ' <br/>
-댓글 감성분석 <br/>
+유튜브 API -> 데이터 시각화(title word cloud 시각화...), 댓글 감성분석 <br/>
+코로나19 데이터 -> 코로나19 예측 모델링 <br/>
