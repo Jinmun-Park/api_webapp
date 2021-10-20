@@ -6,7 +6,7 @@ from src.utils.api import channel
 import pandas as pd
 
 # Tokenization
-from PyKomoran import *
+#from PyKomoran import *
 
 
 youtube_popular = api_youtube_popular(name='youtube_popular', environment='youtube', max_result=20)
@@ -22,8 +22,8 @@ video_comment = channel.comment()
 sample_comment = video_comment.Comment[1]
 
 # Tokenization
-komoran = Komoran("EXP")
-sample_comment = komoran.get_morphes_by_tags(sample_comment, tag_list=['NNP', 'NNG', 'SF'])
+#komoran = Komoran("EXP")
+#sample_comment = komoran.get_morphes_by_tags(sample_comment, tag_list=['NNP', 'NNG', 'SF'])
 
 ###########################################
 
