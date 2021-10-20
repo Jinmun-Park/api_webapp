@@ -1,28 +1,38 @@
 # Web Application using Google API
 This project is licensed under the terms of the GNU General Public License v3.0
-## Contributor
+### Contributor
 * Jinmun Park : pjm9827@gmail.com <br/>
 * Eunjeong Park : pej111797@gmail.com
 
-## API Resources
+### API Resources
 | Source | URL | Description |
 | --- | --- | --- |
-| GoogleAPI | https://developers.google.com/youtube/v3 | Pulling youtube Channel/Videos/Comments |
-| 공공데이터포탈 | https://www.data.go.kr/index.do | Pulling Covid 19/ Accident cases | 
+| GoogleAPI | https://developers.google.com/youtube/v3 | Youtube Comments |
+| 공공데이터 | https://www.data.go.kr/index.do | Covid 19/ Accident cases | 
 
-## FIRST STAGE (15'SEPT'2021 ~ 15'OCT'2021) :
-| PLAN | DATE | STATUS | DESCRIPTION |
+### FIRST STAGE (15'SEPT'2021 ~ 20'OCT'2021) :
+
+| PLAN &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| DATE &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| STATUS &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| DESCRIPTION &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; |
 | --- | --- | --- | --- |
-| API SETUP | 01'OCT'2021 | COMPLETED | Setting Up API Connection |
-| DATA MAPPING | 6'OCT'2021 | COMPLETED | Mapping listS of data |
-| POSTGRESSQL | 8'OCT'2021 | COMPLETED | Connecting popular chart to Postgresql |
-| JENKINS   | - | IN PROGRESS | Setup auto delivery function to push popular chart into Postgresql |
+| API SETUP | 01'OCT'2021 | COMPLETED | API Connection |
+| DATA MAPPING | 6'OCT'2021 | COMPLETED | Mapping API |
+| POSTGRESSQL | 8'OCT'2021 | COMPLETED | Postgresql DB|
+| HEROKU   | OCT | COMPLETED | Autopush |
 
-## SUPPORT
+### SECOND STAGE (20'OCT'2021 ~ ) :
+
+| PLAN &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| DATE &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| STATUS &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| DESCRIPTION &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; |
+| --- | --- | --- | --- |
+| KOBERT | 25'OCT'2021 | COMPLETED | Sentiment Analysis |
+| Google Cloud | - | IN PROGRESS | Replace Heroku |
+
+
+### SUPPORT
 | Source | URL | Description |
 | --- | --- | --- |
 | Google | https://developers.google.com/youtube/v3 | API Documentation |
-| Google | https://support.google.com/youtube/contact/yt_api_form | API Extension | 
+| Google | https://support.google.com/youtube/contact/yt_api_form | API Extension |
+| Kobert | https://github.com/SKTBrain/KoBERT | Korean Bert |
 
 ## PROJECT NOTE
 ### API SETUP
