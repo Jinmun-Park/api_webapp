@@ -195,7 +195,6 @@ def api_youtube_popular(name, environment, max_result):
                                'statistics.likeCount': 'LikeCount',
                                'statistics.dislikeCount': 'DislikeCount',
                                'statistics.favoriteCount': 'FavoriteCount',
-                               'statistics.commentCount': 'CommentCount',
                                'topicDetails.topicCategories': 'TopicCategories',
                                'status.madeForKids': 'ForKids',
                                }, inplace=True)
@@ -566,28 +565,6 @@ class channel:
         print('Time taken : ' + timetaken.__str__())
 
         return video_comment
-
-####################################################################################################
-# ====================== Setup ====================== #
-        pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
-        starttime = datetime.now()
-        print(starttime)
-
-        # ====================== CONFIGURATION.YAML Reading ====================== #
-        credential = credential_yaml()
-        name = 'youtube_popular'
-        environment = 'youtube'
-        # ======================================================================== #
-
-        # ====================== Retrieving API and store in DF  ======================#
-        env_cred = credential[name][environment]
-        service_key = env_cred['api_key']
-        youtube = build('youtube', 'v3', developerKey=service_key)
-
-        #
-        res_activities = youtube.channelSections().list(part=['snippet','contentDetails','id'], channelId='UCsJ6RuBiTVWRX156FVbeaGg').execute()
-        df = json_normalize(res_rel_comments['items'])
-
 
 # ====================== API RUNNING ====================== #
 def run_covid_api():

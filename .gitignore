@@ -1,8 +1,7 @@
 config/database.ini
 config/credentials.yaml
-data/한국어_단발성_대화_데이터셋.csv
 *.pkl
-.idea/
+.idea
 
 # C extensions
 *.so
