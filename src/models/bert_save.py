@@ -1,85 +1,93 @@
-from src.utils.api import channel
-
+# ====================== LIBRARY SETUP ====================== #
 import pandas as pd
 import re
 from sklearn.model_selection import train_test_split
-
-import tensorflow as tf
-import torch, gc
-
-from transformers import BertTokenizer
-from transformers import BertForSequenceClassification, AdamW, BertConfig
-from transformers import get_linear_schedule_with_warmup
-from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
-from keras.preprocessing.sequence import pad_sequences
-import urllib.request
-
 import numpy as np
 import random
 import time
 import datetime
 
-gc.collect()
-torch.cuda.empty_cache()
+# Torch (Tesnorflow - needed?)
+import tensorflow as tf
+import torch, gc
+from transformers import BertTokenizer
+from transformers import BertForSequenceClassification, AdamW, BertConfig
+from transformers import get_linear_schedule_with_warmup
+from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
+from keras.preprocessing.sequence import pad_sequences
 
-torch.cuda.is_available()
-torch.cuda.device_count()
+# ====================== FUNCTION SETUP ====================== #
+def clean_cache():
+    gc.collect()
+    torch.cuda.empty_cache()
 
-# TORCH GPU
-if torch.cuda.is_available():
-    device = torch.device("cuda")
-    print('There are %d GPU(s) available.' % torch.cuda.device_count())
-    print('We will use the GPU:', torch.cuda.get_device_name(0))
-else:
-    device = torch.device("cpu")
-    print('No GPU available, using the CPU instead.')
+def device_setup():
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+        print('There are %d GPU(s) available.' % torch.cuda.device_count())
+        print('We will use the GPU:', torch.cuda.get_device_name(0))
+    else:
+        device = torch.device("cpu")
+        print('No GPU available, using the CPU instead.')
+
+def max_setence(data, tokenizer):
+
+    # Sentence
+    sentences = data.sentence.values
+
+    # Check Max Sentence
+    max_len = 0
+    for sent in sentences:
+        # Tokenize the text and add `[CLS]` and `[SEP]` tokens.
+        input_ids = tokenizer.encode(sent, add_special_tokens=True)
+        # Update the maximum sentence length.
+        max_len = max(max_len, len(input_ids))
+
+    print('Max sentence length: ', max_len)
+
+def fine_tunning(emo_colname, sen_colname):
+    """
+    emo_colname : sentiment(emotion) column name in fine-tuning dataframe
+    sen_colname : sentence column name in fine-tuning dataframe
+    """
+
+    # Load Fine-Tuning Data
+    tuning_data = pd.read_csv('data/한국어_단발성_대화_데이터셋.csv')
+
+    # Change Column Name
+    tuning_data.rename(columns={emo_colname: 'emotion', sen_colname: 'sentence'}, inplace=False)
+
+    # Converting emotion to numeric figure
+    tuning_data.loc[(tuning_data['emotion'] == "공포"), 'emotion'] = 0  #공포 => 0
+    tuning_data.loc[(tuning_data['emotion'] == "놀람"), 'emotion'] = 1  #놀람 => 1
+    tuning_data.loc[(tuning_data['emotion'] == "분노"), 'emotion'] = 2  #분노 => 2
+    tuning_data.loc[(tuning_data['emotion'] == "슬픔"), 'emotion'] = 3  #슬픔 => 3
+    tuning_data.loc[(tuning_data['emotion'] == "중립"), 'emotion'] = 4  #중립 => 4
+    tuning_data.loc[(tuning_data['emotion'] == "행복"), 'emotion'] = 5  #행복 => 5
+    tuning_data.loc[(tuning_data['emotion'] == "혐오"), 'emotion'] = 6  #혐오 => 6
+
+    # Setup Tokenizer
+    tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=True)
+
+    # Print Max Sentence
+    max_setence(data=tuning_data, tokenizer=tokenizer)
+
+    # Train & Test
+    tuning_data['emotion'] = pd.to_numeric(tuning_data['emotion'])
+    dataset_train, dataset_test = train_test_split(tuning_data, test_size=0.2, random_state=0)
+
+    # Sentence & Label
+    sentences = dataset_train['sentence']
+    sentences = ["[CLS] " + str(sentence) + " [SEP]" for sentence in sentences]
+
+    labels = dataset_train['Emotion'].values
+
+    # Tokenization
+    tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
+    tokenized_texts = [tokenizer.tokenize(sent) for sent in sentences]
 
 
-# Sample
-tuning_data = pd.read_csv('data/한국어_단발성_대화_데이터셋.csv')
-
-# Converting emotion to numeric figure
-tuning_data.loc[(tuning_data['Emotion'] == "공포"), 'Emotion'] = 0  #공포 => 0
-tuning_data.loc[(tuning_data['Emotion'] == "놀람"), 'Emotion'] = 1  #놀람 => 1
-tuning_data.loc[(tuning_data['Emotion'] == "분노"), 'Emotion'] = 2  #분노 => 2
-tuning_data.loc[(tuning_data['Emotion'] == "슬픔"), 'Emotion'] = 3  #슬픔 => 3
-tuning_data.loc[(tuning_data['Emotion'] == "중립"), 'Emotion'] = 4  #중립 => 4
-tuning_data.loc[(tuning_data['Emotion'] == "행복"), 'Emotion'] = 5  #행복 => 5
-tuning_data.loc[(tuning_data['Emotion'] == "혐오"), 'Emotion'] = 6  #혐오 => 6
-
-sentences = tuning_data.Sentence.values
-labels = tuning_data.Emotion.values
-
-tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=True)
-
-# CHECK Max Sentence
-max_len = 0
-
-for sent in sentences:
-    # Tokenize the text and add `[CLS]` and `[SEP]` tokens.
-    input_ids = tokenizer.encode(sent, add_special_tokens=True)
-    # Update the maximum sentence length.
-    max_len = max(max_len, len(input_ids))
-
-print('Max sentence length: ', max_len)
-
-# Train & Test
-tuning_data['Emotion'] = pd.to_numeric(tuning_data['Emotion'])
-dataset_train, dataset_test = train_test_split(tuning_data, test_size=0.25, random_state=0)
-
-# Sentence & Label
-sentences = dataset_train['Sentence']
-sentences = ["[CLS] " + str(sentence) + " [SEP]" for sentence in sentences]
-
-labels = dataset_train['Emotion'].values
-
-# Tokenization
-tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
-tokenized_texts = [tokenizer.tokenize(sent) for sent in sentences]
-print(sentences[0])
-print(tokenized_texts[0])
-
-
+"""
 # 입력 토큰의 최대 시퀀스 길이
 MAX_LEN = 128
 # 토큰을 숫자 인덱스로 변환
@@ -184,6 +192,7 @@ torch.cuda.manual_seed_all(seed_val)
 
 # 그래디언트 초기화
 model.zero_grad()
+
 
 # 에폭만큼 반복
 for epoch_i in range(0, epochs):
@@ -388,4 +397,4 @@ print("Hi")
 ################
 torch.save(model.state_dict(), 'bert_model.pth')
 ###############
-
+"""
