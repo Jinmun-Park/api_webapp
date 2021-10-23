@@ -22,13 +22,17 @@ def clean_cache():
     torch.cuda.empty_cache()
 
 def device_setup():
+
     if torch.cuda.is_available():
         device = torch.device("cuda")
         print('There are %d GPU(s) available.' % torch.cuda.device_count())
         print('We will use the GPU:', torch.cuda.get_device_name(0))
+
     else:
         device = torch.device("cpu")
         print('No GPU available, using the CPU instead.')
+
+    return device
 
 def max_setence(data, tokenizer):
 
@@ -45,17 +49,21 @@ def max_setence(data, tokenizer):
 
     print('Max sentence length: ', max_len)
 
-def fine_tunning(emo_colname, sen_colname):
+tuning_data = pd.read_csv('data/한국어_단발성_대화_데이터셋.csv')
+sen_colname = 'Sentence'
+emo_colname = 'Emotion'
+bsize = 8
+nlabel = 7
+def fine_tunning(emo_colname, sen_colname, bsize, nlabel):
     """
     emo_colname : sentiment(emotion) column name in fine-tuning dataframe
     sen_colname : sentence column name in fine-tuning dataframe
     """
-
     # Load Fine-Tuning Data
     tuning_data = pd.read_csv('data/한국어_단발성_대화_데이터셋.csv')
 
     # Change Column Name
-    tuning_data.rename(columns={emo_colname: 'emotion', sen_colname: 'sentence'}, inplace=False)
+    tuning_data = tuning_data.rename(columns={emo_colname: 'emotion', sen_colname: 'sentence'}, inplace=False)
 
     # Converting emotion to numeric figure
     tuning_data.loc[(tuning_data['emotion'] == "공포"), 'emotion'] = 0  #공포 => 0
@@ -80,77 +88,65 @@ def fine_tunning(emo_colname, sen_colname):
     sentences = dataset_train['sentence']
     sentences = ["[CLS] " + str(sentence) + " [SEP]" for sentence in sentences]
 
-    labels = dataset_train['Emotion'].values
+    labels = dataset_train['emotion'].values
 
     # Tokenization
-    tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
     tokenized_texts = [tokenizer.tokenize(sent) for sent in sentences]
 
+    # Set the max length of sentence
+    MAX_LEN = 128
+    # Convert Tokens into index(array)
+    input_ids = [tokenizer.convert_tokens_to_ids(x) for x in tokenized_texts]
+    # 문장을 MAX_LEN 길이에 맞게 자르고, 모자란 부분을 패딩 0으로 채움
+    input_ids = pad_sequences(input_ids, maxlen=MAX_LEN, dtype="long", truncating="post", padding="post")
+
+    # 어텐션 마스크 초기화
+    attention_masks = []
+    # 어텐션 마스크를 패딩이 아니면 1, 패딩이면 0으로 설정
+    # 패딩 부분은 BERT 모델에서 어텐션을 수행하지 않아 속도 향상
+    for seq in input_ids:
+        seq_mask = [float(i>0) for i in seq]
+        attention_masks.append(seq_mask)
+
+    # Trainin Validation Set
+    train_inputs, validation_inputs, train_labels, validation_labels = train_test_split(input_ids,
+                                                                                        labels,
+                                                                                        random_state=2018,
+                                                                                        test_size=0.1)
+    # Training Validation set in attention masks
+    train_masks, validation_masks, _, _ = train_test_split(attention_masks,
+                                                           input_ids,
+                                                           random_state=2018,
+                                                           test_size=0.1)
+
+    # Converting data into pytorch tensor
+    train_inputs = torch.tensor(train_inputs)
+    train_labels = torch.tensor(train_labels)
+    train_masks = torch.tensor(train_masks)
+    validation_inputs = torch.tensor(validation_inputs)
+    validation_labels = torch.tensor(validation_labels)
+    validation_masks = torch.tensor(validation_masks)
+
+    # Batch Size
+    batch_size = bsize
+
+    # Pytorch Dataloader with data, masks and labels
+    train_data = TensorDataset(train_inputs, train_masks, train_labels)
+    train_sampler = RandomSampler(train_data)
+    train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=batch_size)
+
+    validation_data = TensorDataset(validation_inputs, validation_masks, validation_labels)
+    validation_sampler = SequentialSampler(validation_data)
+    validation_dataloader = DataLoader(validation_data, sampler=validation_sampler, batch_size=batch_size)
+
+    # Device (GPU or CPU)
+    device = device_setup()
+    # Model
+    model = BertForSequenceClassification.from_pretrained("bert-base-multilingual-cased", num_labels = nlabel)
+    #model.cuda()
+    model.to(device)
 
 """
-# 입력 토큰의 최대 시퀀스 길이
-MAX_LEN = 128
-# 토큰을 숫자 인덱스로 변환
-input_ids = [tokenizer.convert_tokens_to_ids(x) for x in tokenized_texts]
-# 문장을 MAX_LEN 길이에 맞게 자르고, 모자란 부분을 패딩 0으로 채움
-input_ids = pad_sequences(input_ids, maxlen=MAX_LEN, dtype="long", truncating="post", padding="post")
-print(input_ids[0])
-
-
-# 어텐션 마스크 초기화
-attention_masks = []
-# 어텐션 마스크를 패딩이 아니면 1, 패딩이면 0으로 설정
-# 패딩 부분은 BERT 모델에서 어텐션을 수행하지 않아 속도 향상
-for seq in input_ids:
-    seq_mask = [float(i>0) for i in seq]
-    attention_masks.append(seq_mask)
-print(attention_masks[0])
-
-
-# 훈련셋과 검증셋으로 분리
-train_inputs, validation_inputs, train_labels, validation_labels = train_test_split(input_ids,
-                                                                                    labels,
-                                                                                    random_state=2018,
-                                                                                    test_size=0.1)
-# 어텐션 마스크를 훈련셋과 검증셋으로 분리
-train_masks, validation_masks, _, _ = train_test_split(attention_masks,
-                                                       input_ids,
-                                                       random_state=2018,
-                                                       test_size=0.1)
-
-# 데이터를 파이토치의 텐서로 변환
-train_inputs = torch.tensor(train_inputs)
-train_labels = torch.tensor(train_labels)
-train_masks = torch.tensor(train_masks)
-validation_inputs = torch.tensor(validation_inputs)
-validation_labels = torch.tensor(validation_labels)
-validation_masks = torch.tensor(validation_masks)
-
-print(train_inputs[0])
-print(train_labels[0])
-print(train_masks[0])
-print(validation_inputs[0])
-print(validation_labels[0])
-print(validation_masks[0])
-
-# 배치 사이즈
-batch_size = 8
-
-# 파이토치의 DataLoader로 입력, 마스크, 라벨을 묶어 데이터 설정
-# 학습시 배치 사이즈 만큼 데이터를 가져옴
-train_data = TensorDataset(train_inputs, train_masks, train_labels)
-train_sampler = RandomSampler(train_data)
-train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=batch_size)
-
-validation_data = TensorDataset(validation_inputs, validation_masks, validation_labels)
-validation_sampler = SequentialSampler(validation_data)
-validation_dataloader = DataLoader(validation_data, sampler=validation_sampler, batch_size=batch_size)
-
-
-# Model
-model = BertForSequenceClassification.from_pretrained("bert-base-multilingual-cased", num_labels=7)
-model.cuda()
-
 # 옵티마이저 설정
 optimizer = AdamW(model.parameters(),
                   lr = 2e-5, # 학습률
