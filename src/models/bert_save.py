@@ -17,28 +17,27 @@ from torch.utils.data import TensorDataset, DataLoader, RandomSampler, Sequentia
 from keras.preprocessing.sequence import pad_sequences
 
 # ====================== FUNCTION SETUP ====================== #
-def clean_cache():
-    gc.collect()
-    torch.cuda.empty_cache()
-
 def device_setup():
 
     if torch.cuda.is_available():
+        # Empty cache in GPU
+        gc.collect()
+        torch.cuda.empty_cache()
+        # Set device
         device = torch.device("cuda")
         print('There are %d GPU(s) available.' % torch.cuda.device_count())
         print('We will use the GPU:', torch.cuda.get_device_name(0))
 
     else:
+        # Set device
         device = torch.device("cpu")
         print('No GPU available, using the CPU instead.')
 
     return device
 
 def max_setence(data, tokenizer):
-
     # Sentence
     sentences = data.sentence.values
-
     # Check Max Sentence
     max_len = 0
     for sent in sentences:
@@ -49,12 +48,27 @@ def max_setence(data, tokenizer):
 
     print('Max sentence length: ', max_len)
 
+def flat_accuracy(preds, labels):
+
+    pred_flat = np.argmax(preds, axis=1).flatten()
+    labels_flat = labels.flatten()
+
+    return np.sum(pred_flat == labels_flat) / len(labels_flat)
+
+def format_time(elapsed):
+    # Round Up
+    elapsed_rounded = int(round((elapsed)))
+    # Time format hh:mm:ss
+    return str(datetime.timedelta(seconds=elapsed_rounded))
+
 tuning_data = pd.read_csv('data/한국어_단발성_대화_데이터셋.csv')
 sen_colname = 'Sentence'
 emo_colname = 'Emotion'
 bsize = 8
 nlabel = 7
-def fine_tunning(emo_colname, sen_colname, bsize, nlabel):
+nepochs = 3
+
+def fine_tunning(emo_colname, sen_colname, bsize, nlabel, nepochs):
     """
     emo_colname : sentiment(emotion) column name in fine-tuning dataframe
     sen_colname : sentence column name in fine-tuning dataframe
@@ -141,173 +155,40 @@ def fine_tunning(emo_colname, sen_colname, bsize, nlabel):
 
     # Device (GPU or CPU)
     device = device_setup()
+
     # Model
-    model = BertForSequenceClassification.from_pretrained("bert-base-multilingual-cased", num_labels = nlabel)
+    model = BertForSequenceClassification.from_pretrained("bert-base-multilingual-cased", num_labels=nlabel)
     #model.cuda()
     model.to(device)
 
+    # Optimizer
+    optimizer = AdamW(model.parameters(),
+                      lr=2e-5, # Learning late
+                      eps=1e-8 # 0으로 나누는 것을 방지하기 위한 epsilon 값
+                      )
+    # Number of epoch
+    epochs = nepochs
+    # Total Steps : number of batch in dataset * epoch
+    total_steps = len(train_dataloader) * epochs
+    # 처음에 학습률을 조금씩 변화시키는 스케줄러 생성
+    scheduler = get_linear_schedule_with_warmup(optimizer,
+                                                num_warmup_steps = 0,
+                                                num_training_steps = total_steps)
+
+    # 재현을 위해 랜덤시드 고정
+    seed_val = 42
+    random.seed(seed_val)
+    np.random.seed(seed_val)
+    torch.manual_seed(seed_val)
+    torch.cuda.manual_seed_all(seed_val)
+
+    # Reset gradient
+    model.zero_grad()
+
+    # 에폭만큼 반복
+
+
 """
-# 옵티마이저 설정
-optimizer = AdamW(model.parameters(),
-                  lr = 2e-5, # 학습률
-                  eps = 1e-8 # 0으로 나누는 것을 방지하기 위한 epsilon 값
-                )
-# 에폭수
-epochs = 3
-# 총 훈련 스텝 : 배치반복 횟수 * 에폭
-total_steps = len(train_dataloader) * epochs
-# 처음에 학습률을 조금씩 변화시키는 스케줄러 생성
-scheduler = get_linear_schedule_with_warmup(optimizer,
-                                            num_warmup_steps = 0,
-                                            num_training_steps = total_steps)
-
-
-# 정확도 계산 함수
-def flat_accuracy(preds, labels):
-    pred_flat = np.argmax(preds, axis=1).flatten()
-    labels_flat = labels.flatten()
-
-    return np.sum(pred_flat == labels_flat) / len(labels_flat)
-
-
-# 시간 표시 함수
-def format_time(elapsed):
-    # 반올림
-    elapsed_rounded = int(round((elapsed)))
-
-    # hh:mm:ss으로 형태 변경
-    return str(datetime.timedelta(seconds=elapsed_rounded))
-
-
-# 재현을 위해 랜덤시드 고정
-seed_val = 42
-random.seed(seed_val)
-np.random.seed(seed_val)
-torch.manual_seed(seed_val)
-torch.cuda.manual_seed_all(seed_val)
-
-# 그래디언트 초기화
-model.zero_grad()
-
-
-# 에폭만큼 반복
-for epoch_i in range(0, epochs):
-
-    # ========================================
-    #               Training
-    # ========================================
-
-    print("")
-    print('======== Epoch {:} / {:} ========'.format(epoch_i + 1, epochs))
-    print('Training...')
-
-    # 시작 시간 설정
-    t0 = time.time()
-
-    # 로스 초기화
-    total_loss = 0
-
-    # 훈련모드로 변경
-    model.train()
-
-    # 데이터로더에서 배치만큼 반복하여 가져옴
-    for step, batch in enumerate(train_dataloader):
-        # 경과 정보 표시
-        if step % 500 == 0 and not step == 0:
-            elapsed = format_time(time.time() - t0)
-            print('  Batch {:>5,}  of  {:>5,}.    Elapsed: {:}.'.format(step, len(train_dataloader), elapsed))
-
-        # 배치를 GPU에 넣음
-        batch = tuple(t.to(device) for t in batch)
-
-        # 배치에서 데이터 추출
-        b_input_ids, b_input_mask, b_labels = batch
-
-        # Forward 수행
-        outputs = model(b_input_ids,
-                        token_type_ids=None,
-                        attention_mask=b_input_mask,
-                        labels=b_labels)
-
-        # 로스 구함
-        loss = outputs[0]
-
-        # 총 로스 계산
-        total_loss += loss.item()
-
-        # Backward 수행으로 그래디언트 계산
-        loss.backward()
-
-        # 그래디언트 클리핑
-        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
-
-        # 그래디언트를 통해 가중치 파라미터 업데이트
-        optimizer.step()
-
-        # 스케줄러로 학습률 감소
-        scheduler.step()
-
-        # 그래디언트 초기화
-        model.zero_grad()
-
-    # 평균 로스 계산
-    avg_train_loss = total_loss / len(train_dataloader)
-
-    print("")
-    print("  Average training loss: {0:.2f}".format(avg_train_loss))
-    print("  Training epcoh took: {:}".format(format_time(time.time() - t0)))
-
-    # ========================================
-    #               Validation
-    # ========================================
-
-    print("")
-    print("Running Validation...")
-
-    # 시작 시간 설정
-    t0 = time.time()
-
-    # 평가모드로 변경
-    model.eval()
-
-    # 변수 초기화
-    eval_loss, eval_accuracy = 0, 0
-    nb_eval_steps, nb_eval_examples = 0, 0
-
-    # 데이터로더에서 배치만큼 반복하여 가져옴
-    for batch in validation_dataloader:
-        # 배치를 GPU에 넣음
-        batch = tuple(t.to(device) for t in batch)
-
-        # 배치에서 데이터 추출
-        b_input_ids, b_input_mask, b_labels = batch
-
-        # 그래디언트 계산 안함
-        with torch.no_grad():
-            # Forward 수행
-            outputs = model(b_input_ids,
-                            token_type_ids=None,
-                            attention_mask=b_input_mask)
-
-        # 로스 구함
-        logits = outputs[0]
-
-        # CPU로 데이터 이동
-        logits = logits.detach().cpu().numpy()
-        label_ids = b_labels.to('cpu').numpy()
-
-        # 출력 로짓과 라벨을 비교하여 정확도 계산
-        tmp_eval_accuracy = flat_accuracy(logits, label_ids)
-        eval_accuracy += tmp_eval_accuracy
-        nb_eval_steps += 1
-
-    print("  Accuracy: {0:.2f}".format(eval_accuracy / nb_eval_steps))
-    print("  Validation took: {:}".format(format_time(time.time() - t0)))
-
-print("")
-print("Training complete!")
-
-
 # Sentence & Label
 sentences = dataset_test['Sentence']
 sentences = ["[CLS] " + str(sentence) + " [SEP]" for sentence in sentences]
@@ -392,5 +273,5 @@ print("Hi")
 
 ################
 torch.save(model.state_dict(), 'bert_model.pth')
-###############
+################
 """
