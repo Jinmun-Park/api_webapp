@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}
+인기 동영상 랭킹
+{% endblock %}
+
+{% block content %}
+  {% for table in tables %}
+            {{titles[loop.index]}}
+            {{ table|safe }}
+    {% endfor %}
+{% endblock %}
