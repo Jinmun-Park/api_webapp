@@ -20,9 +20,6 @@ from keras.preprocessing.sequence import pad_sequences
 def device_setup():
 
     if torch.cuda.is_available():
-        # Empty cache in GPU
-        gc.collect()
-        torch.cuda.empty_cache()
         # Set device
         device = torch.device("cuda")
         print('There are %d GPU(s) available.' % torch.cuda.device_count())
@@ -61,18 +58,17 @@ def format_time(elapsed):
     # Time format hh:mm:ss
     return str(datetime.timedelta(seconds=elapsed_rounded))
 
-tuning_data = pd.read_csv('data/한국어_단발성_대화_데이터셋.csv')
-sen_colname = 'Sentence'
-emo_colname = 'Emotion'
-bsize = 8
-nlabel = 7
-nepochs = 3
+# ====================== Model Training ====================== #
 
-def fine_tunning(emo_colname, sen_colname, bsize, nlabel, nepochs):
+def model_training(emo_colname, sen_colname, bsize, nlabel, nepochs):
     """
     emo_colname : sentiment(emotion) column name in fine-tuning dataframe
     sen_colname : sentence column name in fine-tuning dataframe
+    bsize : number of batch size (8 or 16 or 32 or 64)
+    nlabel = number of emotions (7 emotions)
+    nepochs = number of epochs (3 ~ 6)
     """
+
     # Load Fine-Tuning Data
     tuning_data = pd.read_csv('data/한국어_단발성_대화_데이터셋.csv')
 
@@ -88,15 +84,9 @@ def fine_tunning(emo_colname, sen_colname, bsize, nlabel, nepochs):
     tuning_data.loc[(tuning_data['emotion'] == "행복"), 'emotion'] = 5  #행복 => 5
     tuning_data.loc[(tuning_data['emotion'] == "혐오"), 'emotion'] = 6  #혐오 => 6
 
-    # Setup Tokenizer
-    tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=True)
-
-    # Print Max Sentence
-    max_setence(data=tuning_data, tokenizer=tokenizer)
-
     # Train & Test
     tuning_data['emotion'] = pd.to_numeric(tuning_data['emotion'])
-    dataset_train, dataset_test = train_test_split(tuning_data, test_size=0.2, random_state=0)
+    dataset_train, dataset_test = train_test_split(tuning_data, test_size=0.25, random_state=0)
 
     # Sentence & Label
     sentences = dataset_train['sentence']
@@ -105,14 +95,15 @@ def fine_tunning(emo_colname, sen_colname, bsize, nlabel, nepochs):
     labels = dataset_train['emotion'].values
 
     # Tokenization
+    tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=True)
     tokenized_texts = [tokenizer.tokenize(sent) for sent in sentences]
 
     # Set the max length of sentence
-    MAX_LEN = 128
+    max_len = 128
     # Convert Tokens into index(array)
     input_ids = [tokenizer.convert_tokens_to_ids(x) for x in tokenized_texts]
     # 문장을 MAX_LEN 길이에 맞게 자르고, 모자란 부분을 패딩 0으로 채움
-    input_ids = pad_sequences(input_ids, maxlen=MAX_LEN, dtype="long", truncating="post", padding="post")
+    input_ids = pad_sequences(input_ids, maxlen=max_len, dtype="long", truncating="post", padding="post")
 
     # 어텐션 마스크 초기화
     attention_masks = []
@@ -127,7 +118,7 @@ def fine_tunning(emo_colname, sen_colname, bsize, nlabel, nepochs):
                                                                                         labels,
                                                                                         random_state=2018,
                                                                                         test_size=0.1)
-    # Training Validation set in attention masks
+    # Training validation set in attention masks
     train_masks, validation_masks, _, _ = train_test_split(attention_masks,
                                                            input_ids,
                                                            random_state=2018,
@@ -141,10 +132,10 @@ def fine_tunning(emo_colname, sen_colname, bsize, nlabel, nepochs):
     validation_labels = torch.tensor(validation_labels)
     validation_masks = torch.tensor(validation_masks)
 
-    # Batch Size
+    # Batch size
     batch_size = bsize
 
-    # Pytorch Dataloader with data, masks and labels
+    # Pytorch dataloader with data, masks and labels
     train_data = TensorDataset(train_inputs, train_masks, train_labels)
     train_sampler = RandomSampler(train_data)
     train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=batch_size)
@@ -154,11 +145,16 @@ def fine_tunning(emo_colname, sen_colname, bsize, nlabel, nepochs):
     validation_dataloader = DataLoader(validation_data, sampler=validation_sampler, batch_size=batch_size)
 
     # Device (GPU or CPU)
-    device = device_setup()
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+        print('There are %d GPU(s) available.' % torch.cuda.device_count())
+        print('We will use the GPU:', torch.cuda.get_device_name(0))
+    else:
+        device = torch.device("cpu")
+        print('No GPU available, using the CPU instead.')
 
     # Model
     model = BertForSequenceClassification.from_pretrained("bert-base-multilingual-cased", num_labels=nlabel)
-    #model.cuda()
     model.to(device)
 
     # Optimizer
@@ -185,92 +181,180 @@ def fine_tunning(emo_colname, sen_colname, bsize, nlabel, nepochs):
     # Reset gradient
     model.zero_grad()
 
-    # 에폭만큼 반복
+    # Run model in epochs
+    for epoch_i in range(0, epochs):
+        # ======================================== #
+        #               Training                   #
+        # ======================================== #
+        print("")
+        print('======== Epoch {:} / {:} ========'.format(epoch_i + 1, epochs))
+        print('Training...')
+        # Start time
+        t0 = time.time()
+        # Total loss reset
+        total_loss = 0
+        # Pytorch training model
+        model.train()
+        # Loading dataloader in batch size repeatedly
+        for step, batch in enumerate(train_dataloader):
+            # 경과 정보 표시
+            if step % 500 == 0 and not step == 0:
+                elapsed = format_time(time.time() - t0)
+                print('  Batch {:>5,}  of  {:>5,}.    Elapsed: {:}.'.format(step, len(train_dataloader), elapsed))
+            # Inserting batch into GPU
+            batch = tuple(t.to(device) for t in batch)
+            # Extracting data from batch
+            b_input_ids, b_input_mask, b_labels = batch
+            # Running Forward
+            outputs = model(b_input_ids,
+                            token_type_ids=None,
+                            attention_mask=b_input_mask,
+                            labels=b_labels)
+            # Calculating loss
+            loss = outputs[0]
+            # Calculating total loss
+            total_loss += loss.item()
+            # Running Backward to calculate gradient
+            loss.backward()
+            # Clipping gradient
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+            # 그래디언트를 통해 가중치 파라미터 업데이트
+            optimizer.step()
+            # 스케줄러로 학습률 감소
+            scheduler.step()
+            # Reset gradient
+            model.zero_grad()
+        # Calculating average loss
+        avg_train_loss = total_loss / len(train_dataloader)
+        print("")
+        print("  Average training loss: {0:.2f}".format(avg_train_loss))
+        print("  Training epcoh took: {:}".format(format_time(time.time() - t0)))
+        # ======================================== #
+        #               Validation                 #
+        # ======================================== #
+        print("")
+        print("Running Validation...")
+        # Start time
+        t0 = time.time()
+        # Pytorch evaluating model
+        model.eval()
+        # Reset inputs
+        eval_loss, eval_accuracy = 0, 0
+        nb_eval_steps, nb_eval_examples = 0, 0
+        # Loading dataloader in batch size repeatedly
+        for batch in validation_dataloader:
+            # Inserting batch into GPU
+            batch = tuple(t.to(device) for t in batch)
+            # Extracting data from batch
+            b_input_ids, b_input_mask, b_labels = batch
+            # Excluding gradient calculation
+            with torch.no_grad():
+                # Running Forward
+                outputs = model(b_input_ids,
+                                token_type_ids=None,
+                                attention_mask=b_input_mask)
+            # Calculating loss
+            logits = outputs[0]
+            # Transferring data into CPU
+            logits = logits.detach().cpu().numpy()
+            label_ids = b_labels.to('cpu').numpy()
+            # Calculating accuracy using output logits and labels
+            tmp_eval_accuracy = flat_accuracy(logits, label_ids)
+            eval_accuracy += tmp_eval_accuracy
+            nb_eval_steps += 1
+        print("  Accuracy: {0:.2f}".format(eval_accuracy / nb_eval_steps))
+        print("  Validation took: {:}".format(format_time(time.time() - t0)))
+    print("")
+    print("Training complete!")
 
+################################################
+model_training(emo_colname='Emotion', sen_colname='Sentence', bsize=8, nlabel=7, nepochs=3)
+################################################
 
 """
-# Sentence & Label
-sentences = dataset_test['Sentence']
-sentences = ["[CLS] " + str(sentence) + " [SEP]" for sentence in sentences]
+def model_testing():
+    # ====================== Model Testing ====================== #
 
-labels = dataset_test['Emotion'].values
+    # Sentence & Label
+    sentences = dataset_test['sentence']
+    sentences = ["[CLS] " + str(sentence) + " [SEP]" for sentence in sentences]
 
-# Tokenization
-tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
-tokenized_texts = [tokenizer.tokenize(sent) for sent in sentences]
-print(sentences[0])
-print(tokenized_texts[0])
+    labels = dataset_test['emotion'].values
 
-# 입력 토큰의 최대 시퀀스 길이
-MAX_LEN = 128
-input_ids = [tokenizer.convert_tokens_to_ids(x) for x in tokenized_texts]
-input_ids = pad_sequences(input_ids, maxlen=MAX_LEN, dtype="long", truncating="post", padding="post")
-input_ids[0]
+    # Tokenization
+    tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=False)
+    tokenized_texts = [tokenizer.tokenize(sent) for sent in sentences]
 
-attention_masks = []
-# 어텐션 마스크를 패딩이 아니면 1, 패딩이면 0으로 설정
-# 패딩 부분은 BERT 모델에서 어텐션을 수행하지 않아 속도 향상
-for seq in input_ids:
-    seq_mask = [float(i>0) for i in seq]
-    attention_masks.append(seq_mask)
-print(attention_masks[0])
+    # 입력 토큰의 최대 시퀀스 길이
+    max_len = 128
+    input_ids = [tokenizer.convert_tokens_to_ids(x) for x in tokenized_texts]
+    input_ids = pad_sequences(input_ids, maxlen=max_len, dtype="long", truncating="post", padding="post")
 
-# 데이터를 파이토치의 텐서로 변환
-test_inputs = torch.tensor(input_ids)
-test_labels = torch.tensor(labels)
-test_masks = torch.tensor(attention_masks)
+    attention_masks = []
+    # 어텐션 마스크를 패딩이 아니면 1, 패딩이면 0으로 설정
+    # 패딩 부분은 BERT 모델에서 어텐션을 수행하지 않아 속도 향상
+    for seq in input_ids:
+        seq_mask = [float(i>0) for i in seq]
+        attention_masks.append(seq_mask)
 
-# 파이토치의 DataLoader로 입력, 마스크, 라벨을 묶어 데이터 설정
-# 학습시 배치 사이즈 만큼 데이터를 가져옴
-test_data = TensorDataset(test_inputs, test_masks, test_labels)
-test_sampler = RandomSampler(test_data)
-test_dataloader = DataLoader(test_data, sampler=test_sampler, batch_size=batch_size)
+    # 데이터를 파이토치의 텐서로 변환
+    test_inputs = torch.tensor(input_ids)
+    test_labels = torch.tensor(labels)
+    test_masks = torch.tensor(attention_masks)
 
-# 시작 시간 설정
-t0 = time.time()
-# 평가모드로 변경
-model.eval()
-# 변수 초기화
-eval_loss, eval_accuracy = 0, 0
-nb_eval_steps, nb_eval_examples = 0, 0
-# 데이터로더에서 배치만큼 반복하여 가져옴
-for step, batch in enumerate(test_dataloader):
-    # 경과 정보 표시
-    if step % 100 == 0 and not step == 0:
-        elapsed = format_time(time.time() - t0)
-        print('  Batch {:>5,}  of  {:>5,}.    Elapsed: {:}.'.format(step, len(test_dataloader), elapsed))
+    # 파이토치의 DataLoader로 입력, 마스크, 라벨을 묶어 데이터 설정
+    # 학습시 배치 사이즈 만큼 데이터를 가져옴
+    test_data = TensorDataset(test_inputs, test_masks, test_labels)
+    test_sampler = RandomSampler(test_data)
+    test_dataloader = DataLoader(test_data, sampler=test_sampler, batch_size=batch_size)
 
-    # 배치를 GPU에 넣음
-    batch = tuple(t.to(device) for t in batch)
+    # 시작 시간 설정
+    t0 = time.time()
+    # 평가모드로 변경
+    model.eval()
+    # 변수 초기화
+    eval_loss, eval_accuracy = 0, 0
+    nb_eval_steps, nb_eval_examples = 0, 0
+    # 데이터로더에서 배치만큼 반복하여 가져옴
+    for step, batch in enumerate(test_dataloader):
+        # 경과 정보 표시
+        if step % 100 == 0 and not step == 0:
+            elapsed = format_time(time.time() - t0)
+            print('  Batch {:>5,}  of  {:>5,}.    Elapsed: {:}.'.format(step, len(test_dataloader), elapsed))
 
-    # 배치에서 데이터 추출
-    b_input_ids, b_input_mask, b_labels = batch
+        # 배치를 GPU에 넣음
+        batch = tuple(t.to(device) for t in batch)
 
-    # 그래디언트 계산 안함
-    with torch.no_grad():
-        # Forward 수행
-        outputs = model(b_input_ids,
-                        token_type_ids=None,
-                        attention_mask=b_input_mask)
+        # 배치에서 데이터 추출
+        b_input_ids, b_input_mask, b_labels = batch
 
-    # 로스 구함
-    logits = outputs[0]
+        # 그래디언트 계산 안함
+        with torch.no_grad():
+            # Forward 수행
+            outputs = model(b_input_ids,
+                            token_type_ids=None,
+                            attention_mask=b_input_mask)
 
-    # CPU로 데이터 이동
-    logits = logits.detach().cpu().numpy()
-    label_ids = b_labels.to('cpu').numpy()
+        # 로스 구함
+        logits = outputs[0]
 
-    # 출력 로짓과 라벨을 비교하여 정확도 계산
-    tmp_eval_accuracy = flat_accuracy(logits, label_ids)
-    eval_accuracy += tmp_eval_accuracy
-    nb_eval_steps += 1
+        # CPU로 데이터 이동
+        logits = logits.detach().cpu().numpy()
+        label_ids = b_labels.to('cpu').numpy()
 
-print("")
-print("Accuracy: {0:.2f}".format(eval_accuracy / nb_eval_steps))
-print("Test took: {:}".format(format_time(time.time() - t0)))
+        # 출력 로짓과 라벨을 비교하여 정확도 계산
+        tmp_eval_accuracy = flat_accuracy(logits, label_ids)
+        eval_accuracy += tmp_eval_accuracy
+        nb_eval_steps += 1
 
-print("Hi")
+    print("")
+    print("Accuracy: {0:.2f}".format(eval_accuracy / nb_eval_steps))
+    print("Test took: {:}".format(format_time(time.time() - t0)))
 
+    print("Hi")
+"""
+
+"""
 ################
 torch.save(model.state_dict(), 'bert_model.pth')
 ################
