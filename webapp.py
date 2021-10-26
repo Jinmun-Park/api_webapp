@@ -8,9 +8,18 @@ flask run
 
 from flask import Flask, render_template
 
-app = Flask(__name__, template_folder='templates')
-#app.run(debug=True, use_debugger=False)
+def create_app():
+    app = Flask(__name__)
 
-@app.route('/')
-def home_page():
-    return render_template('index.html')
+    from routes.ranking_route import bp as ranking_bp
+    app.register_blueprint(ranking_bp)
+
+    @app.route('/')
+    def home_page():
+        return render_template('index.html')
+
+    return app
+
+if __name__ == '__main__':
+    app = create_app()
+    app.run(debug=True)
