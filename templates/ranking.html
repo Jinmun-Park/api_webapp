@@ -5,8 +5,50 @@
 {% endblock %}
 
 {% block content %}
-  {% for table in tables %}
-            {{titles[loop.index]}}
-            {{ table|safe }}
-    {% endfor %}
+<div class="ranking_table">
+<table class="table">
+  <thead>
+    <tr>
+        <th scope="col"></th>
+        {% for title in titles %}
+            <th scope="col">{{title}}</th>
+        {% endfor %}
+    </tr>
+  </thead>
+
+  <tbody>
+        {% for i in data.index %}        <! -- for tag start -->
+        <tr>
+            <th>{{ i }}</th>
+            <td>{{ data['동영상'][i] }}</td>
+            <td>{{ data['채널명'][i] }}</td>
+            <td>{{ data['날짜'][i] }}</td>
+            <td>{{ data['조회수'][i] }}</td>
+            <td>{{ data['좋아요수'][i] }}</td>
+            <td>{{ data['싫어요수'][i] }}</td>
+            <td>{{ data['댓글수'][i] }}</td>
+            <td>{{ data['카테고리'][i] }}</td>
+        </tr>
+        {% endfor %}                          <! -- for tag end -->
+  </tbody>
+</table>
+</div>
+
+
+<canvas id="myChart" width="900" height="400"></canvas>
+    <script>
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var mychart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {{ labels | safe }},
+                datasets: [{
+                    label: '카테고리',
+                    data: {{ values | safe }},
+                    borderColor: "rgb(75, 192, 192)"}]
+            }
+        });
+    </script>
+
+
 {% endblock %}

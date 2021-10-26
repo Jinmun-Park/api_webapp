@@ -69,7 +69,4 @@ def wordcloud(x):
 
 print(wordcloud(youtube_popular['VideoTitle']))
 
-
-
-
 # 2 Channel Analysis
