@@ -1,0 +1,20 @@
+.ranking_table {
+    text-align: center;
+    margin-top: 30px;
+    margin-left: 40px;
+    margin-right: 40px;
+
+}
+
+.table thead tr th {
+    font-size: 13px;
+    color: BurlyWood;
+    background-color: AntiqueWhite;
+    word-break: keep-all;
+    }
+
+
+.table tbody {
+    font-size: 12px;
+    word-break: keep-all;
+    }
