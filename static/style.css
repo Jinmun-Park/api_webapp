@@ -2,6 +2,8 @@
 
 @import "screen/index.css";
 @import "screen/ranking.css";
+@import "screen/category.css";
+@import "screen/channel.css";
 
 /* font-family: 'Times New Roman', sans-serif; */
 body {

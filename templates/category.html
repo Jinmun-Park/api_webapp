@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}
+인기 동영상 랭킹
+{% endblock %}
+
+{% block content %}
+<div class="ranking_title">
+    <h3> 오늘의 인기 동영상 랭킹 TOP 50 </h3>
+</div>
+
+<div class="button_group">
+    <button type="button" class="btn btn-light" href="/category">카테고리</button>
+    <button type="button" class="btn btn-light" href="/channel">채널</button>
+    <button type="button" class="btn btn-light">조회수</button>
+    <button type="button" class="btn btn-light">좋아요수</button>
+    <button type="button" class="btn btn-light">싫어요수</button>
+    <button type="button" class="btn btn-light">댓글수</button>
+</div>
+
+<div id="chart">
+<canvas id="myChart1"></canvas>
+    <script>
+        var ctx = document.getElementById('myChart1').getContext('2d');
+        var mychart1 = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {{ category | safe }},
+                datasets: [{
+                    label: '카테고리',
+                    data: {{ category_rate | safe }},
+                    borderColor: "rgb(75, 192, 192)"}]
+            }
+        });
+    </script>
+</div>
+
+{% endblock %}
