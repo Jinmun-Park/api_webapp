@@ -142,8 +142,8 @@ def api_youtube_popular(name, environment, max_result):
     pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
     starttime = datetime.now()
     print(starttime)
-    dictionary = {0: 'Wiki_Category_1', 1: 'Wiki_Category_2', 2: 'Wiki_Category_3', 3: 'Wiki_Category_4',
-                  4: 'Wiki_Category_5', 5: 'Wiki_Category_6'}
+    dictionary = {0: 'wiki_category_1', 1: 'wiki_category_2', 2: 'wiki_category_3', 3: 'wiki_category_4',
+                  4: 'wiki_category_5', 5: 'wiki_category_6'}
     dictionary_list = list(dictionary.values())
     pickle_name = name
 
@@ -184,29 +184,29 @@ def api_youtube_popular(name, environment, max_result):
          'status.madeForKids']]
 
     # Rename Columns
-    df_popular.rename(columns={'snippet.title': 'VideoTitle',
-                               'id': 'VideoId',
-                               'snippet.channelTitle': 'ChannelTitle',
-                               'snippet.channelId': 'ChannelId',
-                               'snippet.publishedAt': 'PublishedAt',
-                               'snippet.tags': 'Tags',
-                               'snippet.categoryId': 'CategoryId',
-                               'statistics.viewCount': 'ViewCount',
-                               'statistics.likeCount': 'LikeCount',
-                               'statistics.dislikeCount': 'DislikeCount',
-                               'statistics.favoriteCount': 'FavoriteCount',
-                               'statistics.commentCount': 'CommentCount',
-                               'topicDetails.topicCategories': 'TopicCategories',
-                               'status.madeForKids': 'ForKids',
+    df_popular.rename(columns={'snippet.title': 'video_title',
+                               'id': 'video_id',
+                               'snippet.channelTitle': 'channel_title',
+                               'snippet.channelId': 'channel_id',
+                               'snippet.publishedAt': 'published_at',
+                               'snippet.tags': 'tags',
+                               'snippet.categoryId': 'category_id',
+                               'statistics.viewCount': 'view_count',
+                               'statistics.likeCount': 'like_count',
+                               'statistics.dislikeCount': 'dislike_count',
+                               'statistics.favoriteCount': 'favorite_count',
+                               'statistics.commentCount': 'comment_count',
+                               'topicDetails.topicCategories': 'topic_categories',
+                               'status.madeForKids': 'for_kids',
                                }, inplace=True)
 
     # Reset Index
     df_popular = df_popular.reset_index(drop=True)
 
     # Split TopicCategories URL
-    catrgory_split = df_popular['TopicCategories']
+    catrgory_split = df_popular['topic_categories']
     catrgory_split = pd.DataFrame(catrgory_split)
-    catrgory_split = catrgory_split['TopicCategories'].apply(pd.Series).rename(columns=dictionary)
+    catrgory_split = catrgory_split['topic_categories'].apply(pd.Series).rename(columns=dictionary)
 
     # Filter columns based on the length
     dictionary_list = dictionary_list[0:len(catrgory_split.columns)]
@@ -223,18 +223,18 @@ def api_youtube_popular(name, environment, max_result):
 
     # Merge & Rename columns
     df_popular = df_popular.merge(catrgory_split, left_index=True, right_index=True)
-    del df_popular['TopicCategories']
+    del df_popular['topic_categories']
     print('Youtube Video List : Data mapping has been successfully completed')
 
     # ====================== YOUTUBE_VIDEO_CATEGORY : Data Mapping  ======================#
     df_videocategory = df_videocategory[['id', 'snippet.title']]
-    df_videocategory.rename(columns={'id': 'CategoryId',
-                                     'snippet.title': 'Reg_Category'
+    df_videocategory.rename(columns={'id': 'category_id',
+                                     'snippet.title': 'reg_category'
                                      }, inplace=True)
     print('Youtube Video Category : Data mapping has been successfully completed')
 
     # ====================== MERGE : df_popular & df_videocategory ====================== #
-    df_popular = df_popular.merge(df_videocategory, how='inner', on='CategoryId')
+    df_popular = df_popular.merge(df_videocategory, how='inner', on='category_id')
 
     # ====================== Export to Pickle & Read  ======================#
     picke_replace(name=pickle_name, file=df_popular)
@@ -288,11 +288,11 @@ class channel:
         df_channel_search = df_channel_search[['id.kind', 'id.channelId', 'snippet.publishedAt', 'snippet.title']]
 
         # Rename Columns
-        df_channel_search.rename(columns={'id.kind': 'Type',
-                                          'id.channelId': 'ChannelId',
-                                          'snippet.publishedAt': 'PublishedAt',
-                                          'snippet.title': 'ChannelTitle',
-                                          'snippet.categoryId': 'CategoryId'
+        df_channel_search.rename(columns={'id.kind': 'type',
+                                          'id.channelId': 'channel_id',
+                                          'snippet.publishedAt': 'published_at',
+                                          'snippet.title': 'channel_title',
+                                          'snippet.categoryId': 'category_id'
                                           }, inplace=True)
 
         # ======================  Retrieving API : YOUTUBE_CHANNEL_INFO  ======================#
@@ -300,7 +300,7 @@ class channel:
         df_channel_info = pd.DataFrame()
 
         # Running loop to get Channel_ID from 'df_channel_search'
-        for id in df_channel_search['ChannelId']:
+        for id in df_channel_search['channel_id']:
             try:
                 # YOUTUBE_CHANNEL_INFORMATION
                 res_channel = youtube.channels().list(part=['snippet', 'statistics', 'contentDetails'],
@@ -319,16 +319,16 @@ class channel:
                                            'statistics.videoCount']]
 
         # Rename Columns
-        df_channel_info.rename(columns={'id': 'ChannelId',
-                                        'snippet.customUrl': 'CustomUrl',
-                                        'statistics.viewCount': 'ViewCount',
-                                        'statistics.subscriberCount': 'SubscriberCount',
-                                        'statistics.videoCount': 'VideoCount'
+        df_channel_info.rename(columns={'id': 'channel_id',
+                                        'snippet.customUrl': 'custom_url',
+                                        'statistics.viewCount': 'view_count',
+                                        'statistics.subscriberCount': 'subscriber_count',
+                                        'statistics.videoCount': 'video_count'
                                         }, inplace=True)
 
         # ====================== MERGE : df_channel_search & df_channel_info ====================== #
         # Merge & Rename columns
-        df_chanel = df_channel_search.merge(df_channel_info, how='inner', on='ChannelId')
+        df_chanel = df_channel_search.merge(df_channel_info, how='inner', on='channel_id')
         # ========================================================================================= #
 
         print(df_chanel.to_markdown())  # Choose index=TRUE / index=FALSE
@@ -347,8 +347,8 @@ class channel:
         pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
         starttime = datetime.now()
         print(starttime)
-        dictionary = {0: 'Wiki_Category_1', 1: 'Wiki_Category_2', 2: 'Wiki_Category_3', 3: 'Wiki_Category_4',
-                      4: 'Wiki_Category_5', 5: 'Wiki_Category_6'}
+        dictionary = {0: 'wiki_category_1', 1: 'wiki_category_2', 2: 'wiki_category_3', 3: 'wiki_category_4',
+                      4: 'wiki_category_5', 5: 'wiki_category_6'}
         dictionary_list = list(dictionary.values())
 
         # ====================== CONFIGURATION.YAML Reading ====================== #
@@ -362,7 +362,125 @@ class channel:
         service_key = env_cred['api_key']
         youtube = build('youtube', 'v3', developerKey=service_key)
 
-        # STEP1 : PLAYLIST_ID
+        # STEP1 : Search VIDEO_ID using Search()
+        try:
+            videos = []
+            next_page_token = None
+            while 1:
+                res_video_id = youtube.search().list(part='id', type='video', channelId=channel_id, maxResults=50,
+                                                     pageToken=next_page_token).execute()
+                videos += res_video_id['items']
+                next_page_token = res_video_id.get('nextPageToken')
+                if next_page_token is None:
+                    break
+            # Extract VIDEO_IDs only
+            video_ids = list(map(lambda x: x['id']['videoId'], videos))
+            print('Video Item : video IDs has been successfully completed')
+        except:
+            print('Video Item : video IDs has failed to pull video IDs')
+
+        # STEP2 : Use VIDEO_ID to extract VIDEO_INFORMATION
+        try:
+            df_video_info = pd.DataFrame()
+            for id in video_ids:
+                res_video_info = youtube.videos().list(part=['snippet', 'statistics', 'status', 'topicDetails'],
+                                                       id=id,
+                                                       regionCode='KR').execute()
+                df = json_normalize(res_video_info['items'])
+                df_video_info = df_video_info.append(df)
+            print('Collecting Video Information has been successfully completed')
+        except:
+            print('Collecting Video Information has failed to extract')
+
+        # ====================== YOUTUBE_CHANNEL_INFO : Data Mapping  ======================#
+        # Select Columns
+        df_video_info = df_video_info[[
+            'id',
+            'snippet.title', 'snippet.publishedAt',
+            'statistics.viewCount', 'statistics.likeCount', 'statistics.dislikeCount', 'statistics.favoriteCount',
+            'statistics.commentCount',  # video().list(part='statistics')
+            'topicDetails.topicCategories',  # video().list(part='topicDetails')
+            'status.madeForKids']]
+
+        # Rename Columns
+        df_video_info.rename(columns={'id': 'video_id',
+                                      'snippet.title': 'video_title',
+                                      'snippet.publishedAt': 'published_at',
+                                      'statistics.viewCount': 'view_count',
+                                      'statistics.likeCount': 'like_count',
+                                      'statistics.dislikeCount': 'dislike_count',
+                                      'statistics.favoriteCount': 'favorite_count',
+                                      'statistics.commentCount': 'comment_count',
+                                      'topicDetails.topicCategories': 'topic_categories',
+                                      'status.madeForKids': 'for_kids'
+                                      }, inplace=True)
+
+        # Reset Index
+        df_video_info = df_video_info.reset_index()
+
+        # Split TopicCategories URL
+        catrgory_split = df_video_info['topic_categories']
+        catrgory_split = pd.DataFrame(catrgory_split)
+        catrgory_split = catrgory_split['topic_categories'].apply(pd.Series).rename(columns=dictionary)
+
+        # Filter columns based on the length
+        dictionary_list = dictionary_list[0:len(catrgory_split.columns)]
+
+        # Split WIKI_URL and pick up the last word (Filtering category)
+        for i in range(len(catrgory_split.columns)):
+            df = catrgory_split.iloc[:, i].str.split('/').apply(pd.Series).iloc[:, -1]
+            df.columns = [i]
+            catrgory_split[i] = df
+
+        # Remove & Rename columns
+        catrgory_split.drop(dictionary_list, axis=1, inplace=True)
+        catrgory_split = catrgory_split.rename(columns=dictionary)
+
+        # Merge & Rename columns
+        df_video_info = df_video_info.merge(catrgory_split, left_index=True, right_index=True)
+        del df_video_info['topic_categories']
+        del df_video_info['index']
+        print('Youtube Video Information : Data mapping has been successfully completed')
+
+        # ====================== Export to Pickle & Read  ======================#
+        picke_replace(name='video_info', file=df_video_info)
+        video_info = read_pickle('video_info.pkl')
+        # ======================================================================#
+
+        endtime = datetime.now()
+        print(endtime)
+        timetaken = endtime - starttime
+        print('Time taken : ' + timetaken.__str__())
+
+        return video_info
+
+    def playlist(self, channel_id):
+        """
+        ** WARNING : Heavy channel id may runs over your given resources in youtube API
+        NAME : channel.playlist()
+        DESCRIPTION : Create pickle files for all video information from the playlist ID key in by users.
+        USAGE : User can have a list of video IDs from the channel with some basic statistic figures.
+        """
+        # ====================== Setup ====================== #
+        pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
+        starttime = datetime.now()
+        print(starttime)
+        dictionary = {0: 'wiki_category_1', 1: 'wiki_category_2', 2: 'wiki_category_3', 3: 'wiki_category_4',
+                      4: 'wiki_category_5', 5: 'wiki_category_6'}
+        dictionary_list = list(dictionary.values())
+
+        # ====================== CONFIGURATION.YAML Reading ====================== #
+        credential = credential_yaml()
+        name = 'youtube_popular'
+        environment = 'youtube'
+        # ======================================================================== #
+
+        # ====================== Retrieving API and store in DF  ======================#
+        env_cred = credential[name][environment]
+        service_key = env_cred['api_key']
+        youtube = build('youtube', 'v3', developerKey=service_key)
+
+        # STEP1 : Collect PLAYLIST_ID using CHANNELS()
         try:
             res_playlist = youtube.channels().list(part='contentDetails', id=channel_id).execute()
             playlist_id = res_playlist['items'][0]['contentDetails']['relatedPlaylists']['uploads']
@@ -410,24 +528,24 @@ class channel:
             'status.madeForKids']]
 
         # Rename Columns
-        df_video_info.rename(columns={'id': 'VideoId',
-                                   'snippet.title': 'VideoTitle',
-                                   'snippet.publishedAt': 'PublishedAt',
-                                   'statistics.viewCount': 'ViewCount',
-                                   'statistics.likeCount': 'LikeCount',
-                                   'statistics.dislikeCount': 'DislikeCount',
-                                   'statistics.favoriteCount': 'FavoriteCount',
-                                   'topicDetails.topicCategories': 'TopicCategories',
-                                   'status.madeForKids': 'ForKids',
+        df_video_info.rename(columns={'id': 'video_id',
+                                   'snippet.title': 'video_title',
+                                   'snippet.publishedAt': 'published_at',
+                                   'statistics.viewCount': 'view_count',
+                                   'statistics.likeCount': 'like_count',
+                                   'statistics.dislikeCount': 'dislike_count',
+                                   'statistics.favoriteCount': 'favorite_count',
+                                   'topicDetails.topicCategories': 'topic_categories',
+                                   'status.madeForKids': 'for_kids'
                                    }, inplace=True)
 
         # Reset Index
         df_video_info = df_video_info.reset_index()
 
         # Split TopicCategories URL
-        catrgory_split = df_video_info['TopicCategories']
+        catrgory_split = df_video_info['topic_categories']
         catrgory_split = pd.DataFrame(catrgory_split)
-        catrgory_split = catrgory_split['TopicCategories'].apply(pd.Series).rename(columns=dictionary)
+        catrgory_split = catrgory_split['topic_categories'].apply(pd.Series).rename(columns=dictionary)
 
         # Filter columns based on the length
         dictionary_list = dictionary_list[0:len(catrgory_split.columns)]
@@ -444,13 +562,13 @@ class channel:
 
         # Merge & Rename columns
         df_video_info = df_video_info.merge(catrgory_split, left_index=True, right_index=True)
-        del df_video_info['TopicCategories']
+        del df_video_info['topic_categories']
         del df_video_info['index']
         print('Youtube Video Information : Data mapping has been successfully completed')
 
         # ====================== Export to Pickle & Read  ======================#
-        picke_replace(name='video_info', file=df_video_info)
-        video_info = read_pickle('video_info.pkl')
+        picke_replace(name='playlist_info', file=df_video_info)
+        playlist_info = read_pickle('playlist_info.pkl')
         # ======================================================================#
 
         endtime = datetime.now()
@@ -458,40 +576,67 @@ class channel:
         timetaken = endtime - starttime
         print('Time taken : ' + timetaken.__str__())
 
-        return video_info
+        return playlist_info
 
-    def title_find(self, find):
+    def video_filter(self, find):
         """
-        :param find: Find substrings from the channel title.
-        NAME : channel.title_find()
+        :param find: Find substrings from the video title.
+        NAME : channel.video_filter()
         DESCRIPTION : Find substrings from the channel title to narrow down the search results.
         USAGE : Extraction of the comments takes less number of videos after the tile search.
         """
         # ====================== Setup ====================== #
         pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
+        # =================================================== #
 
-        # ====================== CONFIGURATION.YAML Reading ====================== #
-        credential = credential_yaml()
-        name = 'youtube_popular'
-        environment = 'youtube'
-        # ======================================================================== #
+        # ====================== LOAD & FILTER PICKLES ====================== #
+        print('Starting to filter video titles in the list of videos from' + self.cha_name)
 
-        # ====================== LOAD PICKLES ====================== #
-        video_info = read_pickle('video_info.pkl')
+        # Load video_info
+        if os.path.exists('Pickle/video_info.pkl'):
+            video_info = read_pickle('video_info.pkl')
+            # Find substrings
+            video_info_filter = video_info.loc[video_info['video_title'].str.contains(find, case=False)].reset_index(drop=True)
+            # Export to Pickle & Read
+            picke_replace(name='video_info_filter', file=video_info_filter)
+            video_info_filter = read_pickle('video_info_filter.pkl')
+            print('Title Searching : filtering titles from video_info has been successfully completed')
+        else:
+            print('playlist_info.pkl is not exist in the path')
 
-        # ====================== FIND SUBSTRINGS ====================== #
-        video_info_sub = video_info.loc[video_info['VideoTitle'].str.contains(find, case=False)].reset_index(drop=True)
+        return video_info_filter
 
-        # ====================== Export to Pickle & Read ======================#
-        picke_replace(name='video_info_subs', file=video_info_sub)
-        video_info_sub = read_pickle('video_info_subs.pkl')
-        # =====================================================================#
-
-        return video_info_sub
-
-    def comment(self):
+    def playlist_filter(self, find):
         """
-        NAME : channel.comment()
+        :param find: Find substrings from the playlist title.
+        NAME : channel.playlist_filter()
+        DESCRIPTION : Find substrings from the channel title to narrow down the search results.
+        USAGE : Extraction of the comments takes less number of videos after the tile search.
+        """
+        # ====================== Setup ====================== #
+        pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
+        # =================================================== #
+
+        # ====================== LOAD & FILTER PICKLES ====================== #
+        print('Starting to filter video titles in the list of playlist from' + self.cha_name)
+
+        # Load playlist_info
+        if os.path.exists('Pickle/playlist_info.pkl'):
+            playlist_info = read_pickle('playlist_info.pkl')
+            # Find substrings
+            playlist_info_filter = playlist_info.loc[playlist_info['VideoTitle'].str.contains(find, case=False)].reset_index(drop=True)
+            # Export to Pickle & Read
+            picke_replace(name='playlist_info_filter', file=playlist_info_filter)
+            playlist_info_filter = read_pickle('playlist_info_filter.pkl')
+            print('Title Searching : filtering titles from playlist_info has been successfully completed')
+        else:
+            print('playlist_info.pkl is not exist in the path')
+
+        return playlist_info_filter
+
+    def video_comment(self):
+        """
+        NAME : channel.video_comment()
         DESCRIPTION : Extract comments from video_info_subs
         USAGE : The comment will be used to have sentiment analysis
         """
@@ -506,8 +651,8 @@ class channel:
         environment = 'youtube'
         # ======================================================================== #
 
-        # ====================== Read Pickels (VideoIDs) ======================#
-        video_info_sub = read_pickle('video_info_subs.pkl')
+        # ====================== Read Pickles (VideoIDs) ======================#
+        video_info_filter = read_pickle('video_info_filter.pkl')
         # =====================================================================#
 
         # ====================== Retrieving API and store in DF  ======================#
@@ -516,10 +661,10 @@ class channel:
         youtube = build('youtube', 'v3', developerKey=service_key)
 
         # ====================== Retrieving API and store in DF  ======================#
-
+        print('Starting to extract comments in the list of filtered videos from' + self.cha_name)
         df_comment = pd.DataFrame()
         try:
-            for id in video_info_sub.VideoId:
+            for id in video_info_filter.video_id:
                 # CommentThread based on relevance filter
                 res_rel_comments = youtube.commentThreads().list(part='snippet', videoId=id, order='relevance', maxResults=25).execute()
                 df = json_normalize(res_rel_comments['items'])
@@ -547,12 +692,12 @@ class channel:
         ]]
 
         # Rename Columns
-        df_comment.rename(columns={'id': 'CommentId',
-                                   'snippet.topLevelComment.snippet.textOriginal': 'Comment',
-                                   'snippet.topLevelComment.snippet.authorDisplayName': 'Author',
-                                   'snippet.topLevelComment.snippet.likeCount': 'LikeCount',
-                                   'snippet.topLevelComment.snippet.publishedAt': 'PublishedAt',
-                                   'snippet.totalReplyCount': 'ReplyCount',
+        df_comment.rename(columns={'id': 'comment_id',
+                                   'snippet.topLevelComment.snippet.textOriginal': 'comment',
+                                   'snippet.topLevelComment.snippet.authorDisplayName': 'author',
+                                   'snippet.topLevelComment.snippet.likeCount': 'like_count',
+                                   'snippet.topLevelComment.snippet.publishedAt': 'published_at',
+                                   'snippet.totalReplyCount': 'reply_count',
                                    }, inplace=True)
 
         # ====================== Export to Pickle & Read ======================#
@@ -567,8 +712,13 @@ class channel:
 
         return video_comment
 
-####################################################################################################
-# ====================== Setup ====================== #
+    def playlist_comment(self):
+        """
+        NAME : channel.playlist_comment()
+        DESCRIPTION : Extract comments from playlist_info_sub
+        USAGE : The comment will be used to have sentiment analysis
+        """
+        # ====================== Setup ====================== #
         pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
         starttime = datetime.now()
         print(starttime)
@@ -579,15 +729,66 @@ class channel:
         environment = 'youtube'
         # ======================================================================== #
 
+        # ====================== Read Pickles (VideoIDs) ======================#
+        playlist_info_filter = read_pickle('playlist_info_filter.pkl')
+        # =====================================================================#
+
         # ====================== Retrieving API and store in DF  ======================#
         env_cred = credential[name][environment]
         service_key = env_cred['api_key']
         youtube = build('youtube', 'v3', developerKey=service_key)
 
-        #
-        res_activities = youtube.channelSections().list(part=['snippet','contentDetails','id'], channelId='UCsJ6RuBiTVWRX156FVbeaGg').execute()
-        df = json_normalize(res_rel_comments['items'])
+        # ====================== Retrieving API and store in DF  ======================#
+        print('Starting to extract comments in the list of filtered playlist from' + self.cha_name)
+        df_comment = pd.DataFrame()
+        try:
+            for id in playlist_info_filter.video_id:
+                # CommentThread based on relevance filter
+                res_rel_comments = youtube.commentThreads().list(part='snippet', videoId=id, order='relevance', maxResults=25).execute()
+                df = json_normalize(res_rel_comments['items'])
+                df_comment = df_comment.append(df)
+                # CommentThread based on order filter
+                res_ord_comments = youtube.commentThreads().list(part='snippet', videoId=id, order='time', maxResults=25).execute()
+                df = json_normalize(res_ord_comments['items'])
+                df_comment = df_comment.append(df, ignore_index=True)
+            # Reset_index()
+            df_comment = df_comment.reset_index(drop=True)
+            print(str(len(df_comment)) + ' Comments has been successfully loaded')
+        except:
+            print('Comments has failed to load')
 
+        # ====================== YOUTUBE_COMMENT : Data Mapping  ======================#
+
+        # Select Columns
+        df_comment = df_comment[[
+            'id',
+            'snippet.topLevelComment.snippet.textOriginal',
+            'snippet.topLevelComment.snippet.authorDisplayName',
+            'snippet.topLevelComment.snippet.likeCount',
+            'snippet.topLevelComment.snippet.publishedAt',
+            'snippet.totalReplyCount'
+        ]]
+
+        # Rename Columns
+        df_comment.rename(columns={'id': 'comment_id',
+                                   'snippet.topLevelComment.snippet.textOriginal': 'comment',
+                                   'snippet.topLevelComment.snippet.authorDisplayName': 'author',
+                                   'snippet.topLevelComment.snippet.likeCount': 'like_count',
+                                   'snippet.topLevelComment.snippet.publishedAt': 'published_at',
+                                   'snippet.totalReplyCount': 'reply_count',
+                                   }, inplace=True)
+
+        # ====================== Export to Pickle & Read ======================#
+        picke_replace(name='playlist_comment', file=df_comment)
+        playlist_comment = read_pickle('playlist_comment.pkl')
+        # =====================================================================#
+
+        endtime = datetime.now()
+        print(endtime)
+        timetaken = endtime - starttime
+        print('Time taken : ' + timetaken.__str__())
+
+        return playlist_comment
 
 # ====================== API RUNNING ====================== #
 def run_covid_api():
