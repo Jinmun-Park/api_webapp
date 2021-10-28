@@ -410,8 +410,9 @@ class channel:
                                       'statistics.likeCount': 'like_count',
                                       'statistics.dislikeCount': 'dislike_count',
                                       'statistics.favoriteCount': 'favorite_count',
+                                      'statistics.commentCount': 'comment_count',
                                       'topicDetails.topicCategories': 'topic_categories',
-                                      'status.madeForKids': 'for_kids',
+                                      'status.madeForKids': 'for_kids'
                                       }, inplace=True)
 
         # Reset Index
@@ -535,7 +536,7 @@ class channel:
                                    'statistics.dislikeCount': 'dislike_count',
                                    'statistics.favoriteCount': 'favorite_count',
                                    'topicDetails.topicCategories': 'topic_categories',
-                                   'status.madeForKids': 'for_kids',
+                                   'status.madeForKids': 'for_kids'
                                    }, inplace=True)
 
         # Reset Index
@@ -577,34 +578,61 @@ class channel:
 
         return playlist_info
 
-    def title_find(self, find):
+    def video_filter(self, find):
         """
-        :param find: Find substrings from the channel title.
-        NAME : channel.title_find()
+        :param find: Find substrings from the video title.
+        NAME : channel.video_filter()
         DESCRIPTION : Find substrings from the channel title to narrow down the search results.
         USAGE : Extraction of the comments takes less number of videos after the tile search.
         """
         # ====================== Setup ====================== #
         pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
-        # ======================================================================== #
+        # =================================================== #
 
-        # ====================== LOAD PICKLES ====================== #
-        video_info = read_pickle('video_info.pkl')
-        playlist_info = read_pickle('playlist_info.pkl')
+        # ====================== LOAD & FILTER PICKLES ====================== #
+        print('Starting to filter video titles in the list of videos from' + self.cha_name)
 
-        # ====================== FIND SUBSTRINGS ====================== #
-        video_info_sub = video_info.loc[video_info['VideoTitle'].str.contains(find, case=False)].reset_index(drop=True)
-        playlist_info_sub = playlist_info.loc[playlist_info['VideoTitle'].str.contains(find, case=False)].reset_index(drop=True)
+        # Load video_info
+        if os.path.exists('Pickle/video_info.pkl'):
+            video_info = read_pickle('video_info.pkl')
+            # Find substrings
+            video_info_filter = video_info.loc[video_info['video_title'].str.contains(find, case=False)].reset_index(drop=True)
+            # Export to Pickle & Read
+            picke_replace(name='video_info_filter', file=video_info_filter)
+            video_info_filter = read_pickle('video_info_filter.pkl')
+            print('Title Searching : filtering titles from video_info has been successfully completed')
+        else:
+            print('playlist_info.pkl is not exist in the path')
 
-        # ====================== Export to Pickle & Read ======================#
-        picke_replace(name='video_info_subs', file=video_info_sub)
-        picke_replace(name='playlist_info_sub', file=playlist_info_sub)
-        video_info_sub = read_pickle('video_info_subs.pkl')
-        playlist_info_sub = read_pickle('playlist_info_sub.pkl')
+        return video_info_filter
 
-        # =====================================================================#
+    def playlist_filter(self, find):
+        """
+        :param find: Find substrings from the playlist title.
+        NAME : channel.playlist_filter()
+        DESCRIPTION : Find substrings from the channel title to narrow down the search results.
+        USAGE : Extraction of the comments takes less number of videos after the tile search.
+        """
+        # ====================== Setup ====================== #
+        pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
+        # =================================================== #
 
-        return video_info_sub, playlist_info_sub
+        # ====================== LOAD & FILTER PICKLES ====================== #
+        print('Starting to filter video titles in the list of playlist from' + self.cha_name)
+
+        # Load playlist_info
+        if os.path.exists('Pickle/playlist_info.pkl'):
+            playlist_info = read_pickle('playlist_info.pkl')
+            # Find substrings
+            playlist_info_filter = playlist_info.loc[playlist_info['VideoTitle'].str.contains(find, case=False)].reset_index(drop=True)
+            # Export to Pickle & Read
+            picke_replace(name='playlist_info_filter', file=playlist_info_filter)
+            playlist_info_filter = read_pickle('playlist_info_filter.pkl')
+            print('Title Searching : filtering titles from playlist_info has been successfully completed')
+        else:
+            print('playlist_info.pkl is not exist in the path')
+
+        return playlist_info_filter
 
     def video_comment(self):
         """
@@ -624,7 +652,7 @@ class channel:
         # ======================================================================== #
 
         # ====================== Read Pickles (VideoIDs) ======================#
-        video_info_sub = read_pickle('video_info_subs.pkl')
+        video_info_filter = read_pickle('video_info_filter.pkl')
         # =====================================================================#
 
         # ====================== Retrieving API and store in DF  ======================#
@@ -633,10 +661,10 @@ class channel:
         youtube = build('youtube', 'v3', developerKey=service_key)
 
         # ====================== Retrieving API and store in DF  ======================#
-
+        print('Starting to extract comments in the list of filtered videos from' + self.cha_name)
         df_comment = pd.DataFrame()
         try:
-            for id in video_info_sub.video_id:
+            for id in video_info_filter.video_id:
                 # CommentThread based on relevance filter
                 res_rel_comments = youtube.commentThreads().list(part='snippet', videoId=id, order='relevance', maxResults=25).execute()
                 df = json_normalize(res_rel_comments['items'])
@@ -664,12 +692,12 @@ class channel:
         ]]
 
         # Rename Columns
-        df_comment.rename(columns={'id': 'CommentId',
-                                   'snippet.topLevelComment.snippet.textOriginal': 'Comment',
-                                   'snippet.topLevelComment.snippet.authorDisplayName': 'Author',
-                                   'snippet.topLevelComment.snippet.likeCount': 'LikeCount',
-                                   'snippet.topLevelComment.snippet.publishedAt': 'PublishedAt',
-                                   'snippet.totalReplyCount': 'ReplyCount',
+        df_comment.rename(columns={'id': 'comment_id',
+                                   'snippet.topLevelComment.snippet.textOriginal': 'comment',
+                                   'snippet.topLevelComment.snippet.authorDisplayName': 'author',
+                                   'snippet.topLevelComment.snippet.likeCount': 'like_count',
+                                   'snippet.topLevelComment.snippet.publishedAt': 'published_at',
+                                   'snippet.totalReplyCount': 'reply_count',
                                    }, inplace=True)
 
         # ====================== Export to Pickle & Read ======================#
@@ -702,7 +730,7 @@ class channel:
         # ======================================================================== #
 
         # ====================== Read Pickles (VideoIDs) ======================#
-        playlist_info_sub = read_pickle('playlist_info_sub.pkl')
+        playlist_info_filter = read_pickle('playlist_info_filter.pkl')
         # =====================================================================#
 
         # ====================== Retrieving API and store in DF  ======================#
@@ -711,10 +739,10 @@ class channel:
         youtube = build('youtube', 'v3', developerKey=service_key)
 
         # ====================== Retrieving API and store in DF  ======================#
-
+        print('Starting to extract comments in the list of filtered playlist from' + self.cha_name)
         df_comment = pd.DataFrame()
         try:
-            for id in playlist_info_sub.video_id:
+            for id in playlist_info_filter.video_id:
                 # CommentThread based on relevance filter
                 res_rel_comments = youtube.commentThreads().list(part='snippet', videoId=id, order='relevance', maxResults=25).execute()
                 df = json_normalize(res_rel_comments['items'])
@@ -742,12 +770,12 @@ class channel:
         ]]
 
         # Rename Columns
-        df_comment.rename(columns={'id': 'CommentId',
-                                   'snippet.topLevelComment.snippet.textOriginal': 'Comment',
-                                   'snippet.topLevelComment.snippet.authorDisplayName': 'Author',
-                                   'snippet.topLevelComment.snippet.likeCount': 'LikeCount',
-                                   'snippet.topLevelComment.snippet.publishedAt': 'PublishedAt',
-                                   'snippet.totalReplyCount': 'ReplyCount',
+        df_comment.rename(columns={'id': 'comment_id',
+                                   'snippet.topLevelComment.snippet.textOriginal': 'comment',
+                                   'snippet.topLevelComment.snippet.authorDisplayName': 'author',
+                                   'snippet.topLevelComment.snippet.likeCount': 'like_count',
+                                   'snippet.topLevelComment.snippet.publishedAt': 'published_at',
+                                   'snippet.totalReplyCount': 'reply_count',
                                    }, inplace=True)
 
         # ====================== Export to Pickle & Read ======================#

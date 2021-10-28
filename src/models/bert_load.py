@@ -110,17 +110,17 @@ def run_sentiment():
     print("Successfully loaded video comments")
 
     # Cleaning comment after the extraction
-    df_comment = df[['Comment']]
-    df_comment['Comment'] = [re.sub('[^가-힣 ]', '', s) for s in df_comment['Comment']]
-    df_comment['Comment'] = df_comment.Comment.str.strip()
-    idx = df_comment[df_comment['Comment'] == ''].index
+    df_comment = df[['comment']]
+    df_comment['comment'] = [re.sub('[^가-힣 ]', '', s) for s in df_comment['comment']]
+    df_comment['comment'] = df_comment.comment.str.strip()
+    idx = df_comment[df_comment['comment'] == ''].index
     df_comment = df_comment.drop(idx).reset_index(drop=True)
 
     # Perform sentiment analysis using model
     print("Started running sentiment analysis")
     predict = []
     for i in range(len(df_comment)):
-        score = run_model(sentences=[df_comment['Comment'][i]], tokenizer=tokenizer, device=device)
+        score = run_model(sentences=[df_comment['comment'][i]], tokenizer=tokenizer, device=device)
         predict.append(score)
 
     # Converting sentiment scores to language
@@ -129,7 +129,7 @@ def run_sentiment():
     result = pd.DataFrame(predict)
     result = result[0].apply(pd.Series)
     result = result.merge(df_comment, left_index=True, right_index=True)
-    result = result.rename(columns={0: 'emotion', 'Comment': 'comment'}, inplace=False)
+    result = result.rename(columns={0: 'emotion'}, inplace=False)
     result['emotion'] = result['emotion'].apply(sentiment_score)
 
     return result
