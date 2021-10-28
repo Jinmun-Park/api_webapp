@@ -2,13 +2,13 @@ from src.utils.api import api_youtube_popular
 from src.utils.api import channel
 import pandas as pd
 import re
-import matplotlib.pyplot as plt
-from matplotlib import font_manager, rc
-font_path = "C:/Windows/Fonts/NGULIM.TTF"
-font = font_manager.FontProperties(fname=font_path).get_name()
-rc('font', family=font)
-from wordcloud import WordCloud
-from PyKomoran import *
+#import matplotlib.pyplot as plt
+#from matplotlib import font_manager, rc
+#font_path = "C:/Windows/Fonts/NGULIM.TTF"
+#font = font_manager.FontProperties(fname=font_path).get_name()
+#rc('font', family=font)
+#from wordcloud import WordCloud
+#from PyKomoran import *
 from collections import Counter
 
 # ====================== DEFINE FUNCTION ====================== #
@@ -23,13 +23,13 @@ youtube_popular = api_youtube_popular(name='youtube_popular', environment='youtu
 channel = channel(cha_name='슈카월드')
 channel.search()
 video_info = channel.video(channel_id='UCsJ6RuBiTVWRX156FVbeaGg')
-video_info_sub, playlist_info_sub = channel.title_find(find='코로나')
-video_comment = channel.comment()
+video_info_filter = channel.video_filter(find='코로나')
+video_comment = channel.video_comment()
 # ================================================================= #
 
 # ====================== MODELLING ====================== #
 # 1 Youtube_popular Analysis
-
+"""
 # sort by ViewCount
 youtube_popular[['ViewCount', 'LikeCount', 'DislikeCount', 'FavoriteCount', 'CommentCount']] = youtube_popular[['ViewCount', 'LikeCount', 'DislikeCount', 'FavoriteCount', 'CommentCount']].apply(pd.to_numeric)
 youtube_popular=youtube_popular.sort_values('ViewCount', ascending=False)
@@ -68,5 +68,5 @@ def wordcloud(x):
     plt.show()
 
 print(wordcloud(youtube_popular['VideoTitle']))
+"""
 
-# 2 Channel Analysis
