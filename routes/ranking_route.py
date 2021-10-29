@@ -8,7 +8,7 @@ df = read_pickle('youtube_popular.pkl')
 
 # ====================== EDA ====================== #
 # rename cols
-df = df[['VideoTitle', 'VideoId', 'ChannelTitle', 'PublishedAt', 'ViewCount', 'LikeCount', 'DislikeCount', 'CommentCount', 'Wiki_Category_1']]
+df = df[['video_title', 'video_id', 'channel_title', 'published_at', 'view_count', 'like_count', 'dislike_count', 'comment_count', 'wiki_category_1']]
 df.columns = ['동영상', '동영상아이디', '채널명', '날짜', '조회수', '좋아요수', '싫어요수', '댓글수', '카테고리']
 # date
 df['날짜'] = pd.to_datetime(df['날짜'], infer_datetime_format=True)
@@ -41,7 +41,7 @@ bp = Blueprint('ranking', __name__, url_prefix='/ranking')
 @bp.route('/', methods=["GET"])
 def list():
     video_ids = df.동영상아이디
-    return render_template('ranking.html', data=df, video_ids=video_ids, titles=df.columns.values)
+    return render_template('ranking.html', data=df, video_ids=video_ids, titles=['동영상', '채널명', '날짜', '조회수', '좋아요수', '싫어요수', '댓글수', '카테고리'])
 
 @bp.route('/category', methods=["GET"])
 def category():

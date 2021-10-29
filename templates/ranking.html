@@ -11,15 +11,11 @@
 
 <div class="button_group">
     <a  href="/ranking/category"><button type="button" class="btn btn-light">카테고리</button></a>
-    <a  href="/ranking/channel"><button type="button" class="btn btn-light">채널</button></a>
-    <button type="button" class="btn btn-light">조회수</button>
-    <button type="button" class="btn btn-light">좋아요수</button>
-    <button type="button" class="btn btn-light">싫어요수</button>
-    <button type="button" class="btn btn-light">댓글수</button>
+    <a  href="/ranking/channel"><button type="button" class="btn btn-light">채널명</button></a>
 </div>
 
 <div class="ranking_table">
-<table class="table">
+<table id="table" class="table table-hover">
   <thead>
     <tr>
         <th scope="col"></th>
@@ -33,8 +29,8 @@
         {% for i in data.index %}        <! -- for tag start -->
         <tr>
             <th>{{ i }}</th>
-            <td>{{ data['동영상'][i] }}
-            <iframe width="330" height="150" src="https://www.youtube.com/embed/{{ video_ids[i] }}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></td>
+            <td class="video_title"><div class="video"><iframe width="330" height="150" src="https://www.youtube.com/embed/{{ video_ids[i] }}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+                {{ data['동영상'][i] }}</td>
             <td>{{ data['채널명'][i] }}</td>
             <td>{{ data['날짜'][i] }}</td>
             <td>{{ data['조회수'][i] }}</td>
@@ -49,3 +45,23 @@
 </div>
 
 {% endblock %}
+
+{% block scripts %}
+  <script>
+    $(document).ready(function () {
+      $('#table').DataTable({
+        columns: [
+          {orderable: false, searchable: false},
+          {orderable: false},
+          {orderable: false},
+          {searchable: false},
+          {searchable: false},
+          {searchable: false},
+          {searchable: false},
+          {searchable: false},
+          null],
+      });
+    });
+  </script>
+{% endblock %}
+
