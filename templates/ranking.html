@@ -12,6 +12,7 @@
 <div class="button_group">
     <a  href="/ranking/category"><button type="button" class="btn btn-light">카테고리</button></a>
     <a  href="/ranking/channel"><button type="button" class="btn btn-light">채널명</button></a>
+
 </div>
 
 <div class="ranking_table">
@@ -29,8 +30,10 @@
         {% for i in data.index %}        <! -- for tag start -->
         <tr>
             <th>{{ i }}</th>
+
             <td class="video_title"><div class="video"><iframe width="330" height="150" src="https://www.youtube.com/embed/{{ video_ids[i] }}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
                 {{ data['동영상'][i] }}</td>
+
             <td>{{ data['채널명'][i] }}</td>
             <td>{{ data['날짜'][i] }}</td>
             <td>{{ data['조회수'][i] }}</td>

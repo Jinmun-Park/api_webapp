@@ -16,15 +16,17 @@ from torch.utils.data import TensorDataset, DataLoader, RandomSampler, Sequentia
 from keras.preprocessing.sequence import pad_sequences
 
 # ====================== LOADING FINE-TUNING DATA ====================== #
-
-# Load Fine-Tuning Data
-tuning_data = pd.read_csv('data/한국어_단발성_대화_데이터셋.csv')
-
-emo_colname = 'Emotion'
-sen_colname = 'Sentence'
+# Fine-tuning-1
+df_a = pd.read_csv('data/한국어_단발성_대화_데이터셋.csv')
+# Fine-tuning-2
+df_b = pd.read_csv('data/한국어_연속적_대화_데이터셋.csv')
+df_b = df_b.iloc[:,1:3]
+df_b = df_b.rename(columns={'Unnamed: 1': 'Sentence', 'Unnamed: 2': 'Emotion'}, inplace=False)
+# Merge
+tuning_data = df_a.append(df_b, ignore_index=True)
 
 # Change Column Name
-tuning_data = tuning_data.rename(columns={emo_colname: 'emotion', sen_colname: 'sentence'}, inplace=False)
+tuning_data = tuning_data.rename(columns={'Emotion': 'emotion', 'Sentence': 'sentence'}, inplace=False)
 
 # Converting emotion to numeric figure
 tuning_data.loc[(tuning_data['emotion'] == "공포"), 'emotion'] = 0  #공포 => 0
@@ -35,9 +37,13 @@ tuning_data.loc[(tuning_data['emotion'] == "중립"), 'emotion'] = 4  #중립 =>
 tuning_data.loc[(tuning_data['emotion'] == "행복"), 'emotion'] = 5  #행복 => 5
 tuning_data.loc[(tuning_data['emotion'] == "혐오"), 'emotion'] = 6  #혐오 => 6
 
+# Filtering unlabelled emotions in dataframe
+filter = tuning_data['emotion'].isin([0, 1, 2, 3, 4, 5, 6])
+tuning_data = tuning_data[filter]
+
 # Train & Test
 tuning_data['emotion'] = pd.to_numeric(tuning_data['emotion'])
-dataset_train, dataset_test = train_test_split(tuning_data, test_size=0.1, random_state=0)
+dataset_train, dataset_test = train_test_split(tuning_data, test_size=0.2, random_state=0)
 
 # ====================== BERT SETUP ====================== #
 # Sentence & Label
@@ -106,7 +112,6 @@ else:
 
 # Model Setup
 model = BertForSequenceClassification.from_pretrained("bert-base-multilingual-cased", num_labels=7)
-#model.cuda()
 model.to(device)
 
 # Optimizer
@@ -140,7 +145,10 @@ seed_val = 42
 random.seed(seed_val)
 np.random.seed(seed_val)
 torch.manual_seed(seed_val)
-torch.cuda.manual_seed_all(seed_val)
+if device == 'gpu':
+    torch.cuda.manual_seed_all(seed_val)
+else:
+    print("Your device is running CPU, manual seed will be used instead")
 
 # Reset gradient
 model.zero_grad()
