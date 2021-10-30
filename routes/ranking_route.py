@@ -17,12 +17,12 @@ df['날짜'] = df['날짜'].dt.strftime("%Y-%m-%d")
 df[['조회수', '좋아요수', '싫어요수', '댓글수']] = df[['조회수', '좋아요수', '싫어요수', '댓글수']].apply(pd.to_numeric)
 # change category names
 df['카테고리'].replace('Entertainment', '엔터테인먼트', inplace=True)
-df['카테고리'].replace('Music', '뮤직', inplace=True)
-df['카테고리'].replace('Hip_hop_music', '뮤직', inplace=True)
+df['카테고리'].replace(['Music','Hip_hop_music','Electronic_music'], '뮤직', inplace=True)
 df['카테고리'].replace('Food', '푸드', inplace=True)
 df['카테고리'].replace('Video_game_culture', '게임', inplace=True)
 df['카테고리'].replace('Lifestyle_(sociology)', '라이프스타일', inplace=True)
-df['카테고리'].replace('Association_football', '스포츠', inplace=True)
+df['카테고리'].replace(['Sport', 'Association_football'], '스포츠', inplace=True)
+df['카테고리'].replace('Society', '사회', inplace=True)
 
 df.index = df.index+1
 
@@ -47,10 +47,12 @@ def list():
 def category():
     category = [i for i in df_category.index]
     category_rate = [i for i in df_category.카테고리]
-    return render_template('category.html', data=df, category=category, category_rate=category_rate)
+    category_channel = df.groupby(['카테고리', '채널명']).sum().sort_values('조회수', ascending=False).reset_index()
+    return render_template('category.html', data=df, category=category, category_rate=category_rate, category_channel=category_channel)
 
 @bp.route('/channel', methods=["GET"])
 def channel():
     channeltitle = [i for i in df_channeltitle.index]
     channeltitle_rate = [i for i in df_channeltitle.채널명]
-    return render_template('channel.html', data=df, channeltitle=channeltitle, channeltitle_rate=channeltitle_rate)
+    channeltitle = df.groupby('채널명').sum().sort_values('조회수', ascending=False).reset_index()
+    return render_template('channel.html', data=df, channeltitle=channeltitle)
