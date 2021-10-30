@@ -5,13 +5,12 @@
     margin-top: 30px;
 }
 
-.button_group{
-    margin-left: 180px;
-    margin-right: 180px;
-    display: flex;
-    justify-content: space-evenly;
+.ranking_analysis {
+    display:flex;
+    justify-content: flex-end;
+    margin-left: 40px;
+    margin-right: 40px;
 }
-
 
 .ranking_table {
     text-align: center;
