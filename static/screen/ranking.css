@@ -20,6 +20,16 @@
     margin-right: 40px;
 }
 
+.video_title {
+    text-align: center;
+    }
+
+.video{
+    display: flex;
+    justify-content: center;
+    }
+
+
 .table thead tr th {
     font-size: 13px;
     color: BurlyWood;
