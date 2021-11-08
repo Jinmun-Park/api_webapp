@@ -17,7 +17,7 @@ def read_pickle(file_name: str) -> pd.DataFrame:
 
 # ====================== YOUTUBE API RUNNING ====================== #
 # Youtuve API 1 : Popular Chart
-youtube_popular = api_youtube_popular(name='youtube_popular', environment='youtube', max_result=20)
+youtube_popular = api_youtube_popular(name='youtube_popular', max_result=20)
 
 # Youtuve API 2 : Channel Search
 channel = channel(cha_name='슈카월드')

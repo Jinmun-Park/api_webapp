@@ -1,35 +1,54 @@
 # ====================== LIBRARY SETUP ====================== #
 # API READER SETUP
 from googleapiclient.discovery import build #GOOGLE API
-from urllib.request import Request, urlopen
-from urllib.parse import urlencode, quote_plus, unquote
+from urllib.request import Request, urlopen #공공데이터 API
+from urllib.parse import urlencode, quote_plus, unquote #공공데이터 API
 from pandas import json_normalize
-import json
-import requests #XML DECODING
-import xmltodict
+import json #공공데이터 API
+import requests #XML DECODING & 공공데이터 API
+import xmltodict ##공공데이터 API
 # YAML READER SETUP
 import yaml
 import os
-from datetime import datetime
 # PICKLE SETUP
 import pickle
-# LOG SETUP
+# LOG/COLUMN SETUP
 import pandas as pd
+from datetime import datetime, date
+import calendar
 from tabulate import tabulate #Future Markdown
+# GOOGLE SECRET MANAGER
+import google.cloud.secretmanager as secretmanager #pip install google-cloud-secret-manager
 
 # ====================== FUNCTION SETUP ====================== #
-def credential_yaml():
-    try:
-        with open('config/credentials.yaml') as stream:
-            credential = yaml.safe_load(stream)
-            print('Sucessfully imported credential.yaml file')
-    except yaml.YAMLError as e:
-        print("Failed to parse credentials " + e.__str__())
-    except Exception as e:
-        print("Failed to parse credentials " + e.__str__())
-    return credential
+def secret_manager_setup():
+    # GOOGLE SECRET MANAGER
+    project_id = os.environ["PROJECT_ID"]
+    client = secretmanager.SecretManagerServiceClient()
+    return project_id, client
 
+def get_secrets(secret_request, project_id, client):
+    name = f"projects/{project_id}/secrets/{secret_request}/versions/latest"
+    response = client.access_secret_version(name=name)
+    return response.payload.data.decode("UTF-8")
+
+def keys():
+    # GOOGLE SECRET MANAGER
+    project_id, client = secret_manager_setup()
+    # GCP CLOUD ENGINE
+    connection_name = get_secrets("connection_name", project_id, client)
+    query_string = dict({"unix_socket": "/cloudsql/{}".format(connection_name)})
+    db_name = get_secrets("db_name", project_id, client)
+    db_user = get_secrets("db_user", project_id, client)
+    db_password = get_secrets("db_password", project_id, client)
+    driver_name = 'mysql+pymysql'
+    # YOUTUBE API SERVICE KEY
+    service_key = get_secrets("service_key", project_id, client)
+    return query_string, db_name, db_user, db_password, driver_name, service_key
+
+# PICKLE SETUP
 def picke_replace(name, file):
+    # Create pickle directory path if it does not exist
     try:
         if not os.path.exists('Pickle/'):
             try:
@@ -40,7 +59,7 @@ def picke_replace(name, file):
         print('Failed to create directory (Pickle/..) ' + name.upper() + e.__str__())
     else:
         print('Successfully created directory (Pickle/..) ' + name.upper())
-    # Create pickle file
+    # Create pickle file if the file is not existing (If the file exist, then write it again)
     try:
         if os.path.exists('Pickle/' + name + '.pkl'):
             with open('Pickle/' + name + '.pkl', 'wb') as f:
@@ -55,107 +74,25 @@ def picke_replace(name, file):
 def read_pickle(file_name: str) -> pd.DataFrame:
     return pd.read_pickle('Pickle/' + file_name)
 
-# ====================== RETRIEVING DATA FROM KOREA GOVERNMENT API ====================== #
-def api_encodetype(name, environment):
-    """
-    :param name: main name of YAML configuration
-    :param environment: api
-    :return:
-    """
-    pickle_name = name
-    starttime = datetime.now()
-    print(starttime)
-
-    # ====================== CONFIGURATION.YAML READING ====================== #
-    credential = credential_yaml()
-    # ======================================================================== #
-
-    # ====================== Retrieving API and store in DF  ======================#
-    env_cred = credential[name][environment]
-    url = env_cred['api_url']
-    service_key = env_cred['api_key']
-    queryparams = '?' + urlencode({quote_plus('serviceKey'): service_key
-                                   })
-    try:
-        response = urlopen(url + unquote(queryparams))
-        json_api = response.read().decode("utf-8")
-        json_file = json.loads(json_api)
-        print(name.upper() + ' API Connection has been successfully completed')
-    except:
-        print(name.upper() + ' has failed to open API Connection')
-
-    df = json_normalize(json_file['data'])
-
-    # ====================== Export to Pickle  ======================#
-    picke_replace(name=pickle_name, file=df)
-    # ===============================================================#
-
-    endtime = datetime.now()
-    print(endtime)
-    timetaken = endtime - starttime
-    print('Time taken : ' + timetaken.__str__())
-
-def api_decodetype(name, environment, startdate):
-    """
-    :param name: main name of YAML configuration
-    :param environment: api
-    :return:
-    """
-    pickle_name = name
-    starttime = datetime.now()
-    print(starttime)
-
-    # ====================== CONFIGURATION.YAML READING ====================== #
-    credential = credential_yaml()
-    # ======================================================================== #
-
-    # ====================== Retrieving API and store in DF  ======================#
-    env_cred = credential[name][environment]
-    url = env_cred['api_url']
-    service_key = env_cred['api_key']
-    queryparams = '?' + urlencode({quote_plus('serviceKey'): service_key,
-                                   quote_plus('startCreateDt'): startdate})
-    try:
-        res = requests.get(url + queryparams)
-        result = xmltodict.parse(res.text)
-        json_file = json.loads(json.dumps(result))
-        print(name.upper() + ' API Connection has been successfully completed')
-    except:
-        print(name.upper() + ' has failed to open API Connection')
-
-    df = json_normalize(json_file['response']['body']['items']['item'])
-
-    # ====================== Export to Pickle  ======================#
-    picke_replace(name=pickle_name, file=df)
-    # ===============================================================#
-
-    endtime = datetime.now()
-    print(endtime)
-    timetaken = endtime - starttime
-    print('Time taken : ' + timetaken.__str__())
-
 # ====================== RETRIEVING DATA FROM YOUTUBE API ====================== #
 
-def api_youtube_popular(name, environment, max_result):
+def api_youtube_popular(name, max_result):
 
     # ====================== Setup ====================== #
     pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
     starttime = datetime.now()
     print(starttime)
-    dictionary = {0: 'wiki_category_1', 1: 'wiki_category_2', 2: 'wiki_category_3', 3: 'wiki_category_4',
-                  4: 'wiki_category_5', 5: 'wiki_category_6'}
+    dictionary = {0: 'wiki_category'}
     dictionary_list = list(dictionary.values())
     pickle_name = name
 
-    # ====================== CONFIGURATION.YAML Reading ====================== #
-    credential = credential_yaml()
+
+    # ======================== GOOGLE SECRET Reading ========================= #
+    query_string, db_name, db_user, db_password, driver_name, service_key = keys()
+    youtube = build('youtube', 'v3', developerKey=service_key)
     # ======================================================================== #
 
-    # ====================== Retrieving API and store in DF  ======================#
-    env_cred = credential[name][environment]
-    service_key = env_cred['api_key']
-    youtube = build('youtube', 'v3', developerKey=service_key)
-
+    # ====================== Retrieving API and store in DF  ====================== #
     try:
         # YOUTUBE_VIDEO_LIST
         res_popular = youtube.videos().list(part=['snippet', 'statistics', 'status', 'topicDetails'],
@@ -172,11 +109,10 @@ def api_youtube_popular(name, environment, max_result):
     except:
         print(name.upper() + ' has failed to open API Connection')
 
-    # ====================== YOUTUBE_VIDEO_LIST : Data Mapping  ======================#
-
+    # ====================== YOUTUBE_VIDEO_LIST : Data Mapping  ====================== #
     # Select Columns
     df_popular = df_popular[
-        ['snippet.title', 'id', 'snippet.channelTitle', 'snippet.channelId', 'snippet.publishedAt', 'snippet.tags',
+        ['snippet.title', 'id', 'snippet.channelTitle', 'snippet.channelId', 'snippet.publishedAt',
          'snippet.categoryId',  # video().list(part='snippet')
          'statistics.viewCount', 'statistics.likeCount', 'statistics.dislikeCount', 'statistics.favoriteCount',
          'statistics.commentCount',  # video().list(part='statistics')
@@ -189,7 +125,6 @@ def api_youtube_popular(name, environment, max_result):
                                'snippet.channelTitle': 'channel_title',
                                'snippet.channelId': 'channel_id',
                                'snippet.publishedAt': 'published_at',
-                               'snippet.tags': 'tags',
                                'snippet.categoryId': 'category_id',
                                'statistics.viewCount': 'view_count',
                                'statistics.likeCount': 'like_count',
@@ -220,13 +155,14 @@ def api_youtube_popular(name, environment, max_result):
     # Remove & Rename columns
     catrgory_split.drop(dictionary_list, axis=1, inplace=True)
     catrgory_split = catrgory_split.rename(columns=dictionary)
+    catrgory_split = catrgory_split['wiki_category']
 
     # Merge & Rename columns
     df_popular = df_popular.merge(catrgory_split, left_index=True, right_index=True)
     del df_popular['topic_categories']
     print('Youtube Video List : Data mapping has been successfully completed')
 
-    # ====================== YOUTUBE_VIDEO_CATEGORY : Data Mapping  ======================#
+    # ====================== YOUTUBE_VIDEO_CATEGORY : Data Mapping  ====================== #
     df_videocategory = df_videocategory[['id', 'snippet.title']]
     df_videocategory.rename(columns={'id': 'category_id',
                                      'snippet.title': 'reg_category'
@@ -234,12 +170,21 @@ def api_youtube_popular(name, environment, max_result):
     print('Youtube Video Category : Data mapping has been successfully completed')
 
     # ====================== MERGE : df_popular & df_videocategory ====================== #
-    df_popular = df_popular.merge(df_videocategory, how='inner', on='category_id')
+    youtube_popular = df_popular.merge(df_videocategory, how='inner', on='category_id')
 
-    # ====================== Export to Pickle & Read  ======================#
-    picke_replace(name=pickle_name, file=df_popular)
+    # MYSQL insert 'run_date' and 'day'
+    youtube_popular['run_date'] = date.today()
+    youtube_popular['run_time'] = datetime.now().time().strftime('%H:%M:%S')
+    youtube_popular['day'] = calendar.day_name[date.today().weekday()]
+    # Move last column(run_date) to first sequence
+    cols = youtube_popular.columns.tolist()
+    cols = cols[-3:] + cols[:-3]
+    youtube_popular = youtube_popular[cols]
+
+    # ====================== Export to Pickle & Read  ====================== #
+    picke_replace(name=pickle_name, file=youtube_popular)
     youtube_popular = read_pickle('youtube_popular.pkl')
-    # ======================================================================#
+    # ====================================================================== #
 
     endtime = datetime.now()
     print(endtime)
@@ -262,16 +207,10 @@ class channel:
         starttime = datetime.now()
         print(starttime)
 
-        # ====================== CONFIGURATION.YAML Reading ====================== #
-        credential = credential_yaml()
-        name = 'youtube_popular'
-        environment = 'youtube'
-        # ======================================================================== #
-
-        # ====================== Retrieving API and store in DF  ======================#
-        env_cred = credential[name][environment]
-        service_key = env_cred['api_key']
+        # ======================== GOOGLE SECRET Reading ========================= #
+        query_string, db_name, db_user, db_password, driver_name, service_key = keys()
         youtube = build('youtube', 'v3', developerKey=service_key)
+        # ======================================================================== #
 
         try:
             # YOUTUBE_CHANNEL_SEARCH
@@ -282,7 +221,7 @@ class channel:
         except:
             print('Channel Search : ' + self.cha_name + ' has failed to open API connection')
 
-        # ====================== YOUTUBE_CHANNEL_SEARCH : Data Mapping  ======================#
+        # ====================== YOUTUBE_CHANNEL_SEARCH : Data Mapping  ====================== #
 
         # Select Columns
         df_channel_search = df_channel_search[['id.kind', 'id.channelId', 'snippet.publishedAt', 'snippet.title']]
@@ -295,7 +234,7 @@ class channel:
                                           'snippet.categoryId': 'category_id'
                                           }, inplace=True)
 
-        # ======================  Retrieving API : YOUTUBE_CHANNEL_INFO  ======================#
+        # ======================  Retrieving API : YOUTUBE_CHANNEL_INFO  ====================== #
 
         df_channel_info = pd.DataFrame()
 
@@ -311,7 +250,7 @@ class channel:
             except:
                 print('Channel ID : ' + id + ' has failed to open API connection')
 
-        # ====================== YOUTUBE_CHANNEL_INFO : Data Mapping  ======================#
+        # ====================== YOUTUBE_CHANNEL_INFO : Data Mapping  ====================== #
         # Select Columns
         df_channel_info = df_channel_info[['id',
                                            'snippet.customUrl',
@@ -347,20 +286,13 @@ class channel:
         pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
         starttime = datetime.now()
         print(starttime)
-        dictionary = {0: 'wiki_category_1', 1: 'wiki_category_2', 2: 'wiki_category_3', 3: 'wiki_category_4',
-                      4: 'wiki_category_5', 5: 'wiki_category_6'}
+        dictionary = {0: 'wiki_category'}
         dictionary_list = list(dictionary.values())
 
-        # ====================== CONFIGURATION.YAML Reading ====================== #
-        credential = credential_yaml()
-        name = 'youtube_popular'
-        environment = 'youtube'
-        # ======================================================================== #
-
-        # ====================== Retrieving API and store in DF  ======================#
-        env_cred = credential[name][environment]
-        service_key = env_cred['api_key']
+        # ======================== GOOGLE SECRET Reading ========================= #
+        query_string, db_name, db_user, db_password, driver_name, service_key = keys()
         youtube = build('youtube', 'v3', developerKey=service_key)
+        # ======================================================================== #
 
         # STEP1 : Search VIDEO_ID using Search()
         try:
@@ -435,6 +367,7 @@ class channel:
         # Remove & Rename columns
         catrgory_split.drop(dictionary_list, axis=1, inplace=True)
         catrgory_split = catrgory_split.rename(columns=dictionary)
+        catrgory_split = catrgory_split['wiki_category']
 
         # Merge & Rename columns
         df_video_info = df_video_info.merge(catrgory_split, left_index=True, right_index=True)
@@ -442,10 +375,10 @@ class channel:
         del df_video_info['index']
         print('Youtube Video Information : Data mapping has been successfully completed')
 
-        # ====================== Export to Pickle & Read  ======================#
+        # ====================== Export to Pickle & Read  ====================== #
         picke_replace(name='video_info', file=df_video_info)
         video_info = read_pickle('video_info.pkl')
-        # ======================================================================#
+        # ====================================================================== #
 
         endtime = datetime.now()
         print(endtime)
@@ -469,16 +402,10 @@ class channel:
                       4: 'wiki_category_5', 5: 'wiki_category_6'}
         dictionary_list = list(dictionary.values())
 
-        # ====================== CONFIGURATION.YAML Reading ====================== #
-        credential = credential_yaml()
-        name = 'youtube_popular'
-        environment = 'youtube'
-        # ======================================================================== #
-
-        # ====================== Retrieving API and store in DF  ======================#
-        env_cred = credential[name][environment]
-        service_key = env_cred['api_key']
+        # ======================== GOOGLE SECRET Reading ========================= #
+        query_string, db_name, db_user, db_password, driver_name, service_key = keys()
         youtube = build('youtube', 'v3', developerKey=service_key)
+        # ======================================================================== #
 
         # STEP1 : Collect PLAYLIST_ID using CHANNELS()
         try:
@@ -518,7 +445,7 @@ class channel:
         except:
             print('Collecting Video Information has failed to extract')
 
-        # ====================== YOUTUBE_CHANNEL_INFO : Data Mapping  ======================#
+        # ====================== YOUTUBE_CHANNEL_INFO : Data Mapping  ====================== #
         # Select Columns
         df_video_info = df_video_info[[
             'id',
@@ -566,10 +493,10 @@ class channel:
         del df_video_info['index']
         print('Youtube Video Information : Data mapping has been successfully completed')
 
-        # ====================== Export to Pickle & Read  ======================#
+        # ====================== Export to Pickle & Read  ====================== #
         picke_replace(name='playlist_info', file=df_video_info)
         playlist_info = read_pickle('playlist_info.pkl')
-        # ======================================================================#
+        # ====================================================================== #
 
         endtime = datetime.now()
         print(endtime)
@@ -645,22 +572,15 @@ class channel:
         starttime = datetime.now()
         print(starttime)
 
-        # ====================== CONFIGURATION.YAML Reading ====================== #
-        credential = credential_yaml()
-        name = 'youtube_popular'
-        environment = 'youtube'
+        # ====================== Read Pickles (VideoIDs) ====================== #
+        video_info_filter = read_pickle('video_info_filter.pkl')
+
+        # ======================== GOOGLE SECRET Reading ========================= #
+        query_string, db_name, db_user, db_password, driver_name, service_key = keys()
+        youtube = build('youtube', 'v3', developerKey=service_key)
         # ======================================================================== #
 
-        # ====================== Read Pickles (VideoIDs) ======================#
-        video_info_filter = read_pickle('video_info_filter.pkl')
-        # =====================================================================#
-
-        # ====================== Retrieving API and store in DF  ======================#
-        env_cred = credential[name][environment]
-        service_key = env_cred['api_key']
-        youtube = build('youtube', 'v3', developerKey=service_key)
-
-        # ====================== Retrieving API and store in DF  ======================#
+        # ====================== Retrieving API and store in DF  ====================== #
         print('Starting to extract comments in the list of filtered videos from' + self.cha_name)
         df_comment = pd.DataFrame()
         try:
@@ -679,7 +599,7 @@ class channel:
         except:
             print('Comments has failed to load')
 
-        # ====================== YOUTUBE_COMMENT : Data Mapping  ======================#
+        # ====================== YOUTUBE_COMMENT : Data Mapping  ====================== #
 
         # Select Columns
         df_comment = df_comment[[
@@ -700,10 +620,10 @@ class channel:
                                    'snippet.totalReplyCount': 'reply_count',
                                    }, inplace=True)
 
-        # ====================== Export to Pickle & Read ======================#
+        # ====================== Export to Pickle & Read ====================== #
         picke_replace(name='video_comment', file=df_comment)
         video_comment = read_pickle('video_comment.pkl')
-        # =====================================================================#
+        # ===================================================================== #
 
         endtime = datetime.now()
         print(endtime)
@@ -723,22 +643,16 @@ class channel:
         starttime = datetime.now()
         print(starttime)
 
-        # ====================== CONFIGURATION.YAML Reading ====================== #
-        credential = credential_yaml()
-        name = 'youtube_popular'
-        environment = 'youtube'
+        # ====================== Read Pickles (VideoIDs) ====================== #
+        playlist_info_filter = read_pickle('playlist_info_filter.pkl')
+        # ===================================================================== #
+
+        # ======================== GOOGLE SECRET Reading ========================= #
+        query_string, db_name, db_user, db_password, driver_name, service_key = keys()
+        youtube = build('youtube', 'v3', developerKey=service_key)
         # ======================================================================== #
 
-        # ====================== Read Pickles (VideoIDs) ======================#
-        playlist_info_filter = read_pickle('playlist_info_filter.pkl')
-        # =====================================================================#
-
-        # ====================== Retrieving API and store in DF  ======================#
-        env_cred = credential[name][environment]
-        service_key = env_cred['api_key']
-        youtube = build('youtube', 'v3', developerKey=service_key)
-
-        # ====================== Retrieving API and store in DF  ======================#
+        # ====================== Retrieving API and store in DF  ====================== #
         print('Starting to extract comments in the list of filtered playlist from' + self.cha_name)
         df_comment = pd.DataFrame()
         try:
@@ -757,7 +671,7 @@ class channel:
         except:
             print('Comments has failed to load')
 
-        # ====================== YOUTUBE_COMMENT : Data Mapping  ======================#
+        # ====================== YOUTUBE_COMMENT : Data Mapping  ====================== #
 
         # Select Columns
         df_comment = df_comment[[
@@ -778,10 +692,10 @@ class channel:
                                    'snippet.totalReplyCount': 'reply_count',
                                    }, inplace=True)
 
-        # ====================== Export to Pickle & Read ======================#
+        # ====================== Export to Pickle & Read ====================== #
         picke_replace(name='playlist_comment', file=df_comment)
         playlist_comment = read_pickle('playlist_comment.pkl')
-        # =====================================================================#
+        # ===================================================================== #
 
         endtime = datetime.now()
         print(endtime)
@@ -789,17 +703,3 @@ class channel:
         print('Time taken : ' + timetaken.__str__())
 
         return playlist_comment
-
-# ====================== API RUNNING ====================== #
-def run_covid_api():
-    # DATA_GO_KR
-    api_encodetype(name='covid_vaccines', environment='data_go_kr')
-    api_decodetype(name='covid_age_sex', environment='data_go_kr', startdate='20200210')
-    api_decodetype(name='covid_city', environment='data_go_kr', startdate='20200210')
-    api_decodetype(name='covid_cases', environment='data_go_kr', startdate='20200210')
-
-def run_youtube_chart():
-    # YOUTUBE_POPULAR_CHART
-    api_youtube_popular(name='youtube_popular', environment='youtube', max_result=20)
-
-

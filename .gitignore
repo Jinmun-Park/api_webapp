@@ -1,5 +1,4 @@
-config/database.ini
-config/credentials.yaml
+config/
 data/
 *.pkl
 *.pth
