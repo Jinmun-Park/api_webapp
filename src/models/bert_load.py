@@ -136,9 +136,10 @@ def run_sentiment():
 
 # ====================== RUNNING MODEL ====================== #
 device = setup_device()
-model, tokenizer = load_model(path='bert_model_gpu.pth', device=device)
+model, tokenizer = load_model(path='bert_model_gpu_v2.pth', device=device)
 result = run_sentiment()
 
 # ====================== ANALYSIS ====================== #
 공포 = result[result['emotion']=='공포']
 혐오 = result[result['emotion']=='혐오']
+분노 = result[result['emotion']=='분노']

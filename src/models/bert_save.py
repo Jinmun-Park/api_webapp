@@ -145,7 +145,7 @@ seed_val = 42
 random.seed(seed_val)
 np.random.seed(seed_val)
 torch.manual_seed(seed_val)
-if device == 'gpu':
+if torch.cuda.is_available():
     torch.cuda.manual_seed_all(seed_val)
 else:
     print("Your device is running CPU, manual seed will be used instead")
@@ -319,5 +319,5 @@ print("Completed Running Test if you see this message")
 
 # ====================== MODEL EXPORTING ====================== #
 # ======================================================== #
-torch.save(model.state_dict(), 'bert_model_gpu.pth')
+torch.save(model.state_dict(), 'bert_model_gpu_v2.pth')
 # ======================================================== #

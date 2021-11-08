@@ -17,15 +17,25 @@ This project is licensed under the terms of the GNU General Public License v3.0
 | --- | --- | --- | --- |
 | API SETUP | 01'OCT'2021 | COMPLETED | API Connection |
 | DATA MAPPING | 6'OCT'2021 | COMPLETED | Mapping API |
-| POSTGRESSQL | 8'OCT'2021 | COMPLETED | Postgresql DB|
+| POSTGRESSQL | 8'OCT'2021 | COMPLETED | Postgresql DB |
 | HEROKU   | OCT | COMPLETED | Autopush |
 
-### SECOND STAGE (20'OCT'2021 ~ ) :
+### SECOND STAGE (20'OCT'2021 ~ 11'OCT'2021) :
+* Replace Heroku with GCP (MySQL, Cloud Function, Cloud Run)
+* Replace Kobert with <bert-base-multilingual-cased>
 
 | PLAN &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| DATE &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| STATUS &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| DESCRIPTION &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; |
 | --- | --- | --- | --- |
 | KOBERT | 25'OCT'2021 | COMPLETED | Sentiment Analysis |
-| Google Cloud | - | IN PROGRESS | Replace Heroku |
+| G SQL | 5'NOV'2021 | COMPLETED | Replace Heroku |
+| G FUNCTION | 9'NOV'2021 | COMPLETED | Replace Heroku |
+
+### THIRD STAGE (11'OCT'2021 ~ ) :
+
+| PLAN &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| DATE &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| STATUS &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| DESCRIPTION &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; |
+| --- | --- | --- | --- |
+| G RUN | - | IN PROGRESS | DEPLOY FLASK |
+| FLASAK | - | IN PROGRESS | APP PROTOTYPE |
 
 
 ### SUPPORT
