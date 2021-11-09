@@ -1,4 +1,5 @@
 import pandas as pd
+from src.utils.api import gcp_sql_connection
 import datetime as dt
 
 # ====================== FUNCTION SETUP ====================== #
@@ -9,6 +10,7 @@ def flask_popular_chart():
     # ====================== READ FILES ====================== #
     # Read pickle files
     df = read_pickle('youtube_popular.pkl')
+    #df = gcp_sql_connection()
 
     # ================== DATA PREPROCESSING ================== #
     # Rename columns (English - Korean)
