@@ -1,6 +1,6 @@
 '''
-set FLASK_APP=webapp.py
-$env:FLASK_APP = "webapp"
+set FLASK_APP=app.py
+$env:FLASK_APP = "app"
 $env:FLASK_ENV = "development"
 set FLASK_DEBUG=1
 flask run
