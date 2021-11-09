@@ -21,4 +21,6 @@ def create_app():
 
 if __name__ == '__main__':
     app = create_app()
-    app.run(debug=True)
+    HOST = '0.0.0.0'
+    PORT = 8080
+    app.run(HOST, PORT, debug=True)
