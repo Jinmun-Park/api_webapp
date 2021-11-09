@@ -17,8 +17,9 @@ import pandas as pd
 from datetime import datetime, date
 import calendar
 from tabulate import tabulate #Future Markdown
-# GOOGLE SECRET MANAGER
+# GOOGLE SETUP
 import google.cloud.secretmanager as secretmanager #pip install google-cloud-secret-manager
+import sqlalchemy
 
 # ====================== FUNCTION SETUP ====================== #
 def secret_manager_setup():
@@ -73,6 +74,43 @@ def picke_replace(name, file):
 
 def read_pickle(file_name: str) -> pd.DataFrame:
     return pd.read_pickle('Pickle/' + file_name)
+
+# ==================== RETRIEVING DATA FROM GOOGLE CLOUD SQL =================== #
+def gcp_sql_connection():
+
+    # ======================== GOOGLE SECRET Reading ========================= #
+    query_string, db_name, db_user, db_password, driver_name, service_key = keys()
+    # ======================================================================== #
+
+    # ============================ GCP Connection ============================ #
+    # Create engine
+    db = sqlalchemy.create_engine(
+        sqlalchemy.engine.url.URL(
+            drivername=driver_name,
+            username=db_user,
+            password=db_password,
+            database=db_name,
+            query=query_string,
+        ),
+        pool_size=5,
+        max_overflow=2,
+        pool_timeout=30,
+        pool_recycle=1800
+    )
+    # Query
+    query = ("SELECT * FROM youtube_chart")
+    # Connect & Execute
+    try:
+        with db.connect() as conn:
+            cursor = conn.cursor()
+            cursor.execute(query)
+            df = pd.DataFrame(cursor.fetchall())
+            df.columns = [['run_date', 'run_time', 'day', 'video_title', 'video_id', 'channel_title', 'channel_id', 'published_at', 'category_id',
+                          'view_count', 'like_count', 'dislike_count', 'favorite_count','comment_count', 'for_kids', 'wiki_category', 'reg_category']]
+        cursor.close()
+    except Exception as e:
+        return 'Error: {}'.format(str(e))
+    return df
 
 # ====================== RETRIEVING DATA FROM YOUTUBE API ====================== #
 
