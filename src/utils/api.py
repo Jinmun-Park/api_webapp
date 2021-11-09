@@ -98,7 +98,7 @@ def gcp_sql_connection():
         pool_recycle=1800
     )
     # Query
-    query = ("SELECT * FROM youtube_chart")
+    query = ("SELECT * FROM youtube_daily_chart")
     # Connect & Execute
     try:
         with db.connect() as conn:

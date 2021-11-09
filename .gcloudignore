@@ -1,0 +1,7 @@
+/Pickle
+/data
+/config
+/src/models
+/src/utils/sent_function
+bert_model_gpu.pth
+bert_model_gpu_v2.pth

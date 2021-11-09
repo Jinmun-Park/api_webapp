@@ -9,8 +9,8 @@ def read_pickle(file_name: str) -> pd.DataFrame:
 def flask_popular_chart():
     # ====================== READ FILES ====================== #
     # Read pickle files
-    df = read_pickle('youtube_popular.pkl')
-    #df = gcp_sql_connection()
+    #df = read_pickle('youtube_popular.pkl')
+    df = gcp_sql_connection()
 
     # ================== DATA PREPROCESSING ================== #
     # Rename columns (English - Korean)
