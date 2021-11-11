@@ -1,0 +1,24 @@
+# Files
+**/Pickle
+**/data
+/config/credentials.yaml
+/config/database.ini
+
+# BERT Model
+bert_model_gpu_v2.pth
+
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__
+.pytest_cache
+
+# Python Files
+/src/models
+/src/utils/sent_function.py
+
+# Git files
+README.md
+LICENSE
+.gitignore

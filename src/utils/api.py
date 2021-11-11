@@ -1,14 +1,13 @@
 # ====================== LIBRARY SETUP ====================== #
 # API READER SETUP
-from googleapiclient.discovery import build #GOOGLE API
-from urllib.request import Request, urlopen #공공데이터 API
-from urllib.parse import urlencode, quote_plus, unquote #공공데이터 API
+from googleapiclient.discovery import build #pip install google-api-python-client
+#from urllib.request import Request, urlopen #공공데이터 API
+#from urllib.parse import urlencode, quote_plus, unquote #공공데이터 API
 from pandas import json_normalize
-import json #공공데이터 API
-import requests #XML DECODING & 공공데이터 API
-import xmltodict ##공공데이터 API
-# YAML READER SETUP
-import yaml
+#import json #공공데이터 API
+#import requests #XML DECODING & 공공데이터 API
+#import xmltodict ##공공데이터 API
+# DIRECTORY SETUP
 import os
 # PICKLE SETUP
 import pickle
@@ -16,15 +15,17 @@ import pickle
 import pandas as pd
 from datetime import datetime, date
 import calendar
-from tabulate import tabulate #Future Markdown
+#from tabulate import tabulate #Future Markdown
 # GOOGLE SETUP
 import google.cloud.secretmanager as secretmanager #pip install google-cloud-secret-manager
-import sqlalchemy
+import mysql.connector #pip install mysql-connector-python #Private IP
+import sqlalchemy #pip install cloud-sql-python-connector[pymysql] #SOCKET
 
 # ====================== FUNCTION SETUP ====================== #
 def secret_manager_setup():
     # GOOGLE SECRET MANAGER
-    project_id = os.environ["PROJECT_ID"]
+    project_id = "youtubeapi-314206"
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "config/youtubeapi-314206-bf48e1ce8e42.json"
     client = secretmanager.SecretManagerServiceClient()
     return project_id, client
 
@@ -43,9 +44,11 @@ def keys():
     db_user = get_secrets("db_user", project_id, client)
     db_password = get_secrets("db_password", project_id, client)
     driver_name = 'mysql+pymysql'
+    # GCP CLOUD PUBLIC IP
+    public_ip = get_secrets("public_ip", project_id, client)
     # YOUTUBE API SERVICE KEY
     service_key = get_secrets("service_key", project_id, client)
-    return query_string, db_name, db_user, db_password, driver_name, service_key
+    return query_string, db_name, db_user, db_password, driver_name, public_ip, service_key
 
 # PICKLE SETUP
 def picke_replace(name, file):
@@ -112,6 +115,25 @@ def gcp_sql_connection():
         return 'Error: {}'.format(str(e))
     return df
 
+def gcp_sql_ip_connection():
+
+    # ======================== GOOGLE SECRET Reading ========================= #
+    query_string, db_name, db_user, db_password, driver_name, public_ip, service_key = keys()
+    # ======================================================================== #
+
+    # ============================ GCP Connection ============================ #
+    # Create engine
+    cnx = mysql.connector.connect(user=db_user, password=db_password, host=public_ip, database=db_name)
+    cursor = cnx.cursor()
+    # Query
+    query = ("SELECT * FROM youtube_daily_chart")
+    # Connect & Execute
+    cursor.execute(query)
+    df = pd.DataFrame(cursor.fetchall())
+    df.columns = [['run_date', 'run_time', 'day', 'video_title', 'video_id', 'channel_title', 'channel_id', 'published_at',
+                   'category_id', 'view_count', 'like_count', 'dislike_count', 'favorite_count', 'comment_count', 'for_kids',
+                   'wiki_category', 'reg_category']]
+    return df
 # ====================== RETRIEVING DATA FROM YOUTUBE API ====================== #
 
 def api_youtube_popular(name, max_result):

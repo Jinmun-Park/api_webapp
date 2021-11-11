@@ -15,5 +15,5 @@ COPY . /app
 WORKDIR app
 
 # Run
-CMD ["gunicorn", "app:app", "-b", ":8080", "--timeout", "300"]
-
+#CMD ["gunicorn", "-b", ":8080", "app:app", "--timeout", "300"]
+CMD exec gunicorn --bind :8080 --workers 1 --threads 8 app:app --timeout 0

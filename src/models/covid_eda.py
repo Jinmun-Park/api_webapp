@@ -1,4 +1,4 @@
-from src.utils.api import run_covid_api
+#from src.utils.api import run_covid_api
 import pandas as pd
 
 # ====================== DEFINE FUNCTION ====================== #
@@ -7,7 +7,7 @@ def read_pickle(file_name: str) -> pd.DataFrame:
 
 # ====================== DATA.GO.KR API RUNNING ====================== #
 # Korea Government API
-run_covid_api()
+#run_covid_api()
 # ==================================================================== #
 
 # ====================== LOAD PICKLES ====================== #
