@@ -18,8 +18,7 @@ import calendar
 #from tabulate import tabulate #Future Markdown
 # GOOGLE SETUP
 import google.cloud.secretmanager as secretmanager #pip install google-cloud-secret-manager
-import mysql.connector #pip install mysql-connector-python #Private IP
-import sqlalchemy #pip install cloud-sql-python-connector[pymysql] #SOCKET
+from google.cloud.sql.connector import connector #pip install cloud-sql-python-connector[pymysql] #FINAL LIBRARY
 
 # ====================== FUNCTION SETUP ====================== #
 def secret_manager_setup():
@@ -48,7 +47,7 @@ def keys():
     public_ip = get_secrets("public_ip", project_id, client)
     # YOUTUBE API SERVICE KEY
     service_key = get_secrets("service_key", project_id, client)
-    return query_string, db_name, db_user, db_password, driver_name, public_ip, service_key
+    return connection_name, query_string, db_name, db_user, db_password, driver_name, public_ip, service_key
 
 # PICKLE SETUP
 def picke_replace(name, file):
@@ -79,61 +78,35 @@ def read_pickle(file_name: str) -> pd.DataFrame:
     return pd.read_pickle('Pickle/' + file_name)
 
 # ==================== RETRIEVING DATA FROM GOOGLE CLOUD SQL =================== #
-def gcp_sql_connection():
+
+def gcp_sql_pull():
 
     # ======================== GOOGLE SECRET Reading ========================= #
-    query_string, db_name, db_user, db_password, driver_name, service_key = keys()
+    connection_name, query_string, db_name, db_user, db_password, driver_name, public_ip, service_key = keys()
     # ======================================================================== #
 
     # ============================ GCP Connection ============================ #
-    # Create engine
-    db = sqlalchemy.create_engine(
-        sqlalchemy.engine.url.URL(
-            drivername=driver_name,
-            username=db_user,
-            password=db_password,
-            database=db_name,
-            query=query_string,
-        ),
-        pool_size=5,
-        max_overflow=2,
-        pool_timeout=30,
-        pool_recycle=1800
+    # Create connection
+    conn = connector.connect(
+        connection_name,
+        "pymysql",
+        user=db_user,
+        password=db_password,
+        db=db_name
     )
-    # Query
-    query = ("SELECT * FROM youtube_daily_chart")
     # Connect & Execute
     try:
-        with db.connect() as conn:
-            cursor = conn.cursor()
-            cursor.execute(query)
-            df = pd.DataFrame(cursor.fetchall())
-            df.columns = [['run_date', 'run_time', 'day', 'video_title', 'video_id', 'channel_title', 'channel_id', 'published_at', 'category_id',
-                          'view_count', 'like_count', 'dislike_count', 'favorite_count','comment_count', 'for_kids', 'wiki_category', 'reg_category']]
-        cursor.close()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM youtube_daily_chart")
+        result = cursor.fetchall()
+        df = pd.DataFrame(result)
+        df.columns = ['run_date', 'run_time', 'day', 'video_title', 'video_id', 'channel_title', 'channel_id', 'published_at',
+                      'category_id', 'view_count', 'like_count', 'dislike_count', 'favorite_count', 'comment_count', 'for_kids',
+                      'wiki_category', 'reg_category']
     except Exception as e:
         return 'Error: {}'.format(str(e))
     return df
 
-def gcp_sql_ip_connection():
-
-    # ======================== GOOGLE SECRET Reading ========================= #
-    query_string, db_name, db_user, db_password, driver_name, public_ip, service_key = keys()
-    # ======================================================================== #
-
-    # ============================ GCP Connection ============================ #
-    # Create engine
-    cnx = mysql.connector.connect(user=db_user, password=db_password, host=public_ip, database=db_name)
-    cursor = cnx.cursor()
-    # Query
-    query = ("SELECT * FROM youtube_daily_chart")
-    # Connect & Execute
-    cursor.execute(query)
-    df = pd.DataFrame(cursor.fetchall())
-    df.columns = [['run_date', 'run_time', 'day', 'video_title', 'video_id', 'channel_title', 'channel_id', 'published_at',
-                   'category_id', 'view_count', 'like_count', 'dislike_count', 'favorite_count', 'comment_count', 'for_kids',
-                   'wiki_category', 'reg_category']]
-    return df
 # ====================== RETRIEVING DATA FROM YOUTUBE API ====================== #
 
 def api_youtube_popular(name, max_result):
@@ -268,7 +241,7 @@ class channel:
         print(starttime)
 
         # ======================== GOOGLE SECRET Reading ========================= #
-        query_string, db_name, db_user, db_password, driver_name, service_key = keys()
+        connection_name, query_string, db_name, db_user, db_password, driver_name, public_ip, service_key = keys()
         youtube = build('youtube', 'v3', developerKey=service_key)
         # ======================================================================== #
 
@@ -350,7 +323,7 @@ class channel:
         dictionary_list = list(dictionary.values())
 
         # ======================== GOOGLE SECRET Reading ========================= #
-        query_string, db_name, db_user, db_password, driver_name, service_key = keys()
+        connection_name, query_string, db_name, db_user, db_password, driver_name, public_ip, service_key = keys()
         youtube = build('youtube', 'v3', developerKey=service_key)
         # ======================================================================== #
 
@@ -463,7 +436,7 @@ class channel:
         dictionary_list = list(dictionary.values())
 
         # ======================== GOOGLE SECRET Reading ========================= #
-        query_string, db_name, db_user, db_password, driver_name, service_key = keys()
+        connection_name, query_string, db_name, db_user, db_password, driver_name, public_ip, service_key = keys()
         youtube = build('youtube', 'v3', developerKey=service_key)
         # ======================================================================== #
 
@@ -636,7 +609,7 @@ class channel:
         video_info_filter = read_pickle('video_info_filter.pkl')
 
         # ======================== GOOGLE SECRET Reading ========================= #
-        query_string, db_name, db_user, db_password, driver_name, service_key = keys()
+        connection_name, query_string, db_name, db_user, db_password, driver_name, public_ip, service_key = keys()
         youtube = build('youtube', 'v3', developerKey=service_key)
         # ======================================================================== #
 

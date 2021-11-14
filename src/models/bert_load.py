@@ -6,6 +6,7 @@ from transformers import BertTokenizer
 from transformers import BertForSequenceClassification, AdamW, BertConfig
 from keras.preprocessing.sequence import pad_sequences
 import numpy as np
+from datetime import datetime, date
 
 # ====================== FUNCTION SETUP ====================== #
 #print(torch.cuda.memory_allocated())
@@ -104,6 +105,10 @@ def run_model(tokenizer, sentences, device):
     return int(np.argmax(logits))
 
 def run_sentiment():
+    # ====================== Setup ====================== #
+    pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
+    starttime = datetime.now()
+    print(starttime)
 
     # Read comment pickle after running youtube comment api
     df = read_pickle('video_comment.pkl')

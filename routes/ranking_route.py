@@ -1,6 +1,5 @@
 import pandas as pd
-from src.utils.api import gcp_sql_connection
-from src.utils.api import gcp_sql_ip_connection
+from src.utils.api import gcp_sql_pull
 import datetime as dt
 
 # ====================== FUNCTION SETUP ====================== #
@@ -11,19 +10,31 @@ def flask_popular_chart():
     # ====================== READ FILES ====================== #
     # Read pickle files
     #df = read_pickle('youtube_popular.pkl')
-    #df = gcp_sql_connection()
-    df = gcp_sql_ip_connection()
+    df = gcp_sql_pull()
+    #df = gcp_sql_ip_connection()
 
     # ================== DATA PREPROCESSING ================== #
-    # Rename columns (English - Korean)
+    # Select columns
     df = df[['video_title', 'video_id', 'channel_title', 'published_at', 'view_count', 'like_count', 'dislike_count', 'comment_count', 'wiki_category']]
-    df.columns = ['동영상', '동영상아이디', '채널명', '날짜', '조회수', '좋아요수', '싫어요수', '댓글수', '카테고리']
-    # Converting Field type : Date
+    # Rename columns (English - Korean)
+    df.rename(columns={'video_title': '동영상',
+                       'video_id': '동영상아이디',
+                       'channel_title': '채널명',
+                       'published_at': '날짜',
+                       'view_count': '조회수',
+                       'like_count': '좋아요수',
+                       'dislike_count': '싫어요수',
+                       'comment_count': '댓글수',
+                       'wiki_category': '카테고리'
+                       }, inplace=True)
+    # Reset index
+    df = df.reset_index(drop=True)
+    # Converting field type : Date
     df['날짜'] = pd.to_datetime(df['날짜'], infer_datetime_format=True)
     df['날짜'] = df['날짜'].dt.strftime("%Y-%m-%d")
-    # Converting Field type : Numeric
+    # Converting field type : Numeric
     df[['조회수', '좋아요수', '싫어요수', '댓글수']] = df[['조회수', '좋아요수', '싫어요수', '댓글수']].apply(pd.to_numeric)
-    # Converting Field type : Category
+    # Converting field type : Category
     df['카테고리'].replace('Entertainment', '엔터테인먼트', inplace=True)
     df['카테고리'].replace(['Music','Hip_hop_music','Electronic_music'], '뮤직', inplace=True)
     df['카테고리'].replace('Food', '푸드', inplace=True)

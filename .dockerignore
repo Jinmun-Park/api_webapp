@@ -6,6 +6,7 @@
 
 # BERT Model
 bert_model_gpu_v2.pth
+*.pth
 
 # Python
 *.pyc
