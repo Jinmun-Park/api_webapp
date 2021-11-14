@@ -22,9 +22,9 @@ from google.cloud.sql.connector import connector #pip install cloud-sql-python-c
 
 # ====================== FUNCTION SETUP ====================== #
 def secret_manager_setup():
-    # GOOGLE SECRET MANAGER
+    # GOOGLE CREDENTIALS & SECRET MANAGER
     project_id = "youtubeapi-314206"
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "config/youtubeapi-314206-bf48e1ce8e42.json"
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "config/youtubeapi-314206-46ffa30d1127.json"
     client = secretmanager.SecretManagerServiceClient()
     return project_id, client
 

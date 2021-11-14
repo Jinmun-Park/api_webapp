@@ -1,4 +1,5 @@
 # ====================== LIBRARY SETUP ====================== #
+# BEET LOAD
 import pandas as pd
 import re
 import torch
@@ -7,6 +8,10 @@ from transformers import BertForSequenceClassification, AdamW, BertConfig
 from keras.preprocessing.sequence import pad_sequences
 import numpy as np
 from datetime import datetime, date
+# GOOGLE CLOUD BUCKET
+import os
+from google.cloud import storage #pip install --upgrade google-cloud-storage
+import io
 
 # ====================== FUNCTION SETUP ====================== #
 #print(torch.cuda.memory_allocated())
@@ -45,10 +50,40 @@ def setup_device():
         print('No GPU available, using the CPU instead.')
     return device
 
+def load_model_bucket():
+    # ====================== Setup ====================== #
+    pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
+    starttime = datetime.now()
+    print(starttime)
+    print('Started loading Traiend BERT Model from Google Cloud')
+
+    # GOOGLE CREDENTIALS & SECRET MANAGER
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "config/youtubeapi-314206-46ffa30d1127.json"
+    # Initiate storage
+    storage_client = storage.Client()
+    bucket = storage_client.get_bucket('bert_ver2')
+    # Get blob
+    en_model_blob = bucket.get_blob('bert_model_gpu_v2.pth')
+    en_model = en_model_blob.download_as_string()
+    # Because model downloaded into string, need to convert it back
+    buffer = io.BytesIO(en_model)
+
+    # ====================== End time ====================== #
+    print('Successfully loaded Trained BERT Model from Google Cloud')
+    endtime = datetime.now()
+    print(endtime)
+    timetaken = endtime - starttime
+    print('Time taken : ' + timetaken.__str__())
+
+    return buffer
+
 def load_model(path, device):
     """
     path : model file name
     """
+    # ====================== Setup ====================== #
+    pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
+
     # Model setup
     model = BertForSequenceClassification.from_pretrained("bert-base-multilingual-cased", num_labels=7)
     model.load_state_dict(torch.load(path, map_location='cpu'))
@@ -59,11 +94,14 @@ def load_model(path, device):
 
     return model, tokenizer
 
-def run_model(tokenizer, sentences, device):
+def run_model(model, tokenizer, sentences, device):
     """
     sentences : put sentences extracted from youtube. Please note that the sentence should be in the nested list format
     device : run setup_device() function
     """
+    # ====================== Setup ====================== #
+    pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
+
     # Pytorch evaluating model
     model.eval()
 
@@ -104,7 +142,7 @@ def run_model(tokenizer, sentences, device):
 
     return int(np.argmax(logits))
 
-def run_sentiment():
+def run_sentiment(model, tokenizer, device):
     # ====================== Setup ====================== #
     pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
     starttime = datetime.now()
@@ -125,7 +163,7 @@ def run_sentiment():
     print("Started running sentiment analysis")
     predict = []
     for i in range(len(df_comment)):
-        score = run_model(sentences=[df_comment['comment'][i]], tokenizer=tokenizer, device=device)
+        score = run_model(sentences=[df_comment['comment'][i]], model=model, tokenizer=tokenizer, device=device)
         predict.append(score)
 
     # Converting sentiment scores to language
@@ -137,14 +175,20 @@ def run_sentiment():
     result = result.rename(columns={0: 'emotion'}, inplace=False)
     result['emotion'] = result['emotion'].apply(sentiment_score)
 
+    # ====================== End time ====================== #
+    endtime = datetime.now()
+    print(endtime)
+    timetaken = endtime - starttime
+    print('Time taken : ' + timetaken.__str__())
+
     return result
 
 # ====================== RUNNING MODEL ====================== #
-device = setup_device()
-model, tokenizer = load_model(path='bert_model_gpu_v2.pth', device=device)
-result = run_sentiment()
+def run_predict():
+    device = setup_device()
+    buffer = load_model_bucket()
+    model, tokenizer = load_model(path=buffer, device=device)
+    #model, tokenizer = load_model(path='bert_model_gpu_v2.pth', device=device)
+    result = run_sentiment(model=model, tokenizer=tokenizer, device=device)
+    return result
 
-# ====================== ANALYSIS ====================== #
-공포 = result[result['emotion']=='공포']
-혐오 = result[result['emotion']=='혐오']
-분노 = result[result['emotion']=='분노']
