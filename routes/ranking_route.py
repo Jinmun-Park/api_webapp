@@ -1,11 +1,10 @@
 import pandas as pd
-from src.utils.api import gcp_sql_pull
+from src.utils.api import read_pickle, gcp_sql_pull
+from src.models.bert_load import run_predict
 import datetime as dt
 
-# ====================== FUNCTION SETUP ====================== #
-def read_pickle(file_name: str) -> pd.DataFrame:
-    return pd.read_pickle('Pickle/' + file_name)
 
+# ====================== FUNCTION SETUP ====================== #
 def flask_popular_chart():
     # ====================== READ FILES ====================== #
     # Read pickle files
@@ -79,3 +78,10 @@ def channel():
     channeltitle_rate = [i for i in df_channeltitle.채널명]
     channeltitle = df.groupby('채널명').sum().sort_values('조회수', ascending=False).reset_index()
     return render_template('channel.html', data=df, channeltitle=channeltitle)
+
+@bp.route('/predict', methods=["GET"])
+def predict():
+    result = run_predict()
+    공포 = result[result['emotion'] == '공포']
+    혐오 = result[result['emotion'] == '혐오']
+    분노 = result[result['emotion'] == '분노']
