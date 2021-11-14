@@ -1,6 +1,6 @@
 '''
-set FLASK_APP=app.py
-$env:FLASK_APP = "app"
+set FLASK_APP=main.py
+$env:FLASK_APP = "main"
 $env:FLASK_ENV = "development"
 set FLASK_DEBUG=1
 flask run
@@ -19,8 +19,9 @@ def create_app():
         return render_template('index.html')
     return app
 
+app = create_app()
+
 if __name__ == '__main__':
-    app = create_app()
     HOST = '0.0.0.0'
     PORT = 8080
     app.run(HOST, PORT, debug=True)
