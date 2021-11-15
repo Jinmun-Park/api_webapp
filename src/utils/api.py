@@ -623,9 +623,9 @@ class channel:
                 df = json_normalize(res_rel_comments['items'])
                 df_comment = df_comment.append(df)
                 # CommentThread based on order filter
-                res_ord_comments = youtube.commentThreads().list(part='snippet', videoId=id, order='time', maxResults=25).execute()
-                df = json_normalize(res_ord_comments['items'])
-                df_comment = df_comment.append(df, ignore_index=True)
+                # res_ord_comments = youtube.commentThreads().list(part='snippet', videoId=id, order='time', maxResults=25).execute()
+                # df = json_normalize(res_ord_comments['items'])
+                # df_comment = df_comment.append(df, ignore_index=True)
             # Reset_index()
             df_comment = df_comment.reset_index(drop=True)
             print(str(len(df_comment)) + ' Comments has been successfully loaded')

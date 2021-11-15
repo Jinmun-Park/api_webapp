@@ -1,7 +1,25 @@
 {% extends 'base.html' %}
 
 {% block title %}
-인기 동영상 랭킹
+댓글 감성 분석
 {% endblock %}
 
 {% block content %}
+
+<div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
+  <input type="checkbox" class="btn-check" id="btncheck1" autocomplete="off">
+  <label class="btn btn-outline-primary" for="btncheck1"><a class="dropdown-item" href="/sentiment/공포">공포</a></label>
+
+  <input type="checkbox" class="btn-check" id="btncheck2" autocomplete="off">
+  <label class="btn btn-outline-primary" for="btncheck2"><a class="dropdown-item" href="/sentiment/혐오">혐오</a></label>
+
+  <input type="checkbox" class="btn-check" id="btncheck3" autocomplete="off">
+  <label class="btn btn-outline-primary" for="btncheck3"><a class="dropdown-item" href="/sentiment/분노">분노</a></label>
+</div>
+
+{% for table in tables %}
+            {{titles[loop.index]}}
+            {{ table|safe }}
+{% endfor %}
+
+{% endblock %}
