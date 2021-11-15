@@ -186,9 +186,9 @@ def run_sentiment(model, tokenizer, device):
 # ====================== RUNNING MODEL ====================== #
 def run_predict():
     device = setup_device()
-    buffer = load_model_bucket()
-    model, tokenizer = load_model(path=buffer, device=device)
-    #model, tokenizer = load_model(path='bert_model_gpu_v2.pth', device=device)
+    # buffer = load_model_bucket()
+    # model, tokenizer = load_model(path=buffer, device=device)
+    model, tokenizer = load_model(path='bert_model_gpu_v2.pth', device=device)
     result = run_sentiment(model=model, tokenizer=tokenizer, device=device)
     return result
 

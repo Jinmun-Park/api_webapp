@@ -12,7 +12,9 @@ def create_app():
     app = Flask(__name__)
 
     from routes.ranking_route import bp as ranking_bp
+    from routes.sentiment_route import bp as sentiment_bp
     app.register_blueprint(ranking_bp)
+    app.register_blueprint(sentiment_bp)
 
     @app.route('/')
     def home_page():
