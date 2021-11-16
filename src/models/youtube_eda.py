@@ -1,5 +1,5 @@
 from src.utils.api import api_youtube_popular
-from src.utils.api import channel
+from src.utils.api import channel_search, channel_videos, channel_videos_filter, channel_videos_comments
 import pandas as pd
 import re
 #import matplotlib.pyplot as plt
@@ -16,15 +16,14 @@ def read_pickle(file_name: str) -> pd.DataFrame:
     return pd.read_pickle('Pickle/' + file_name)
 
 # ====================== YOUTUBE API RUNNING ====================== #
-# Youtuve API 1 : Popular Chart
+# Youtube API 1 : Popular Chart
 youtube_popular = api_youtube_popular(name='youtube_popular', max_result=20)
 
-# Youtuve API 2 : Channel Search
-channel = channel(cha_name='슈카월드')
-channel.search()
-video_info = channel.video(channel_id='UCsJ6RuBiTVWRX156FVbeaGg')
-video_info_filter = channel.video_filter(find='코로나')
-video_comment = channel.video_comment()
+# Youtube API 2 : Channel Video Comments Extraction
+search = channel_search('슈카월드')
+vid = channel_videos('UCsJ6RuBiTVWRX156FVbeaGg')
+vid_filter = channel_videos_filter('코로나')
+vid_comments = channel_videos_comments()
 # ================================================================= #
 
 # ====================== MODELLING ====================== #
