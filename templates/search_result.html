@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}
+채널 검색
+{% endblock %}
+
+{% block content %}
+
+{% for table in tables %}
+            {{ table|safe }}
+{% endfor %}
+
+{% endblock %}

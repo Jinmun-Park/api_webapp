@@ -14,6 +14,3 @@ def predict_공포():
     # 혐오 = result[result['emotion'] == '혐오']
     # 분노 = result[result['emotion'] == '분노']
     return render_template('sentiment.html', tables=[공포.to_html(classes='data')], titles=공포.columns.values)
-
-
-
