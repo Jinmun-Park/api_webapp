@@ -1,4 +1,3 @@
-import pandas as pd
 from src.models.bert_load import run_predict
 from flask import Blueprint, render_template
 

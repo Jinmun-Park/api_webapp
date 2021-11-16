@@ -1,5 +1,5 @@
 # ====================== LIBRARY SETUP ====================== #
-# BEET LOAD
+# BEET SETUP
 import pandas as pd
 import re
 import torch
@@ -20,6 +20,10 @@ def read_pickle(file_name: str) -> pd.DataFrame:
     return pd.read_pickle('Pickle/' + file_name)
 
 def sentiment_score(x):
+    """
+    SECTION : sentiment
+    DESCRIPTION : Return text feeling0s from sentiment scores
+    """
     if x == 0:
         return("공포")
     elif x == 1:
@@ -36,6 +40,11 @@ def sentiment_score(x):
         return("혐오")
 
 def setup_device():
+    """
+    SECTION : sentiment
+    USAGE : Select GPU or CPU
+    DESCRIPTION : Choose the device based on Torch library installation
+    """
     # Setup device (CPU or GPU)
     if torch.cuda.is_available():
         # Remove memory
@@ -51,6 +60,11 @@ def setup_device():
     return device
 
 def load_model_bucket():
+    """
+    WARNING : 'load_model_bucket' is depreciated due to time management
+    SECTION : sentiment
+    USAGE : Connection to Google Storage Bucket
+    """
     # ====================== Setup ====================== #
     pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
     starttime = datetime.now()
@@ -79,7 +93,11 @@ def load_model_bucket():
 
 def load_model(path, device):
     """
-    path : model file name
+    SECTION : sentiment
+    DESCRIPTION :
+    1. path : Loading trained BERT Model from 'bert_save.py' We support two ways to call model.
+    One is loading from google bucket or just from local directory.
+    2. device : Loading device (CPU or GPU) from 'setup_device' function
     """
     # ====================== Setup ====================== #
     pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
@@ -96,8 +114,10 @@ def load_model(path, device):
 
 def run_model(model, tokenizer, sentences, device):
     """
-    sentences : put sentences extracted from youtube. Please note that the sentence should be in the nested list format
-    device : run setup_device() function
+    SECTION : sentiment
+    DESCRIPTION :
+    1. sentences : put sentences extracted from youtube. Please note that the sentence should be in the nested list format
+    2. device : run setup_device() function
     """
     # ====================== Setup ====================== #
     pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
@@ -143,6 +163,11 @@ def run_model(model, tokenizer, sentences, device):
     return int(np.argmax(logits))
 
 def run_sentiment(model, tokenizer, device):
+    """
+    SECTION : sentiment
+    DESCRIPTION 1: Running sentiment analysis using comments from 'video_comment.pkl'
+    DESCRIPTION 2: Calling 'run_model' function to run BERT model
+    """
     # ====================== Setup ====================== #
     pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
     starttime = datetime.now()
@@ -185,10 +210,17 @@ def run_sentiment(model, tokenizer, device):
 
 # ====================== RUNNING MODEL ====================== #
 def run_predict():
+    """
+    SECTION : sentiment
+    WARNING : Using Google Bucket takes extra 5 minutes. 'load_model_bucket' is depreciated.
+    USAGE : run_predict()
+    DESCRIPTION : Running sentinment analysis and store the result into dataframe.
+    """
     device = setup_device()
     # buffer = load_model_bucket()
     # model, tokenizer = load_model(path=buffer, device=device)
     model, tokenizer = load_model(path='bert_model_gpu_v2.pth', device=device)
     result = run_sentiment(model=model, tokenizer=tokenizer, device=device)
+
     return result
 

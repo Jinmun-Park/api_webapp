@@ -1,6 +1,5 @@
 import pandas as pd
 from src.utils.api import read_pickle, gcp_sql_pull
-from src.models.bert_load import run_predict
 import datetime as dt
 
 

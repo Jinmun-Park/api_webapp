@@ -3,7 +3,7 @@ env: flex
 
 resources:
  cpu: 4
- memory_gb: 2
+ memory_gb: 6
  disk_size_gb: 20
 
 readiness_check:
