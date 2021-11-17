@@ -1,5 +1,8 @@
 from src.utils.api import api_youtube_popular
-from src.utils.api import channel_search, channel_videos, channel_videos_filter, channel_videos_comments
+from src.utils.api import channel_search
+from src.utils.api import pickle_videos, pickle_videos_filter, pickle_videos_comments
+from src.utils.api import globals_videos, globals_videos_filter, globals_videos_comments
+
 import pandas as pd
 import re
 #import matplotlib.pyplot as plt
@@ -19,11 +22,18 @@ def read_pickle(file_name: str) -> pd.DataFrame:
 # Youtube API 1 : Popular Chart
 youtube_popular = api_youtube_popular(name='youtube_popular', max_result=20)
 
-# Youtube API 2 : Channel Video Comments Extraction
+# Youtube API 2 : Channel video comments extraction and store in pickle format
 search = channel_search('슈카월드')
-vid = channel_videos('UCsJ6RuBiTVWRX156FVbeaGg')
-vid_filter = channel_videos_filter('코로나')
-vid_comments = channel_videos_comments()
+vid = pickle_videos(type='sample', channel_id='UCsJ6RuBiTVWRX156FVbeaGg')
+vid_filter = pickle_videos_filter(type='sample', find='코로나')
+vid_comments = pickle_videos_comments(type='sample', option='delete')
+
+# Youtube API 3 : Channel video comments extraction in globals() foramt
+search = channel_search('슈카월드')
+vid = globals_videos(type='sample', channel_id='UCsJ6RuBiTVWRX156FVbeaGg')
+vid_filter = globals_videos_filter(find='코로나')
+vid_comments = globals_videos_comments(option='delete')
+
 # ================================================================= #
 
 # ====================== MODELLING ====================== #
@@ -68,4 +78,3 @@ def wordcloud(x):
 
 print(wordcloud(youtube_popular['VideoTitle']))
 """
-

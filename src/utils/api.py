@@ -251,7 +251,7 @@ def api_youtube_popular(name, max_result):
 def channel_search(chanel_name):
     """
     SECTION : channel, comment
-    DESCRIPTION : Print channel information from the channel id key in __init__(cha_name)
+    DESCRIPTION : Print channel information using the key. The output is only stored in dataframe.
     USAGE : User can check statistics figures in each relevant channel and finally uses ChanneId.
     """
     pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
@@ -330,12 +330,13 @@ def channel_search(chanel_name):
 
     return df_channel
 
-def channel_videos(channel_id):
+def pickle_videos(type, channel_id):
     """
     SECTION : channel, videos, comment
     DESCRIPTION 1: This function uses youtube.search() and .videos(). Hence, all videos in playlist from the channel may not be extracted.
     DESCRIPTION 2: Create pickle files for all video information from the channel ID key in by users.
-    USAGE : User can have a list of video IDs from the channel with some basic statistic figures.
+    USAGE 1 [type='user'] : User can extract all video IDs from the channel with some basic statistic figures.
+    USAGE 2 [type='sample'] : User can extract only limited video (Default : 50 videos)
     """
     # ====================== Setup ====================== #
     pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
@@ -350,21 +351,36 @@ def channel_videos(channel_id):
     # ======================================================================== #
 
     # STEP1 : Search VIDEO_ID using Search()
-    try:
-        videos = []
-        next_page_token = None
-        while 1:
-            res_video_id = youtube.search().list(part='id', type='video', channelId=channel_id, maxResults=50,
-                                                 pageToken=next_page_token).execute()
-            videos += res_video_id['items']
-            next_page_token = res_video_id.get('nextPageToken')
-            if next_page_token is None:
-                break
-        # Extract VIDEO_IDs only
-        video_ids = list(map(lambda x: x['id']['videoId'], videos))
-        print('Video Item : video IDs has been successfully completed')
-    except:
-        print('Video Item : video IDs has failed to pull video IDs')
+    # DESCRIPTION : 'sample' can extract one page token, whereas 'user' can extract all page tokens
+    if type == 'user':
+        print('Video Item : user is selected. All video ids will be extracted in page tokens')
+        try:
+            videos = []
+            next_page_token = None
+            while 1:
+                res_video_id = youtube.search().list(part='id', type='video', channelId=channel_id, maxResults=50,
+                                                     pageToken=next_page_token).execute()
+                videos += res_video_id['items']
+                next_page_token = res_video_id.get('nextPageToken')
+                if next_page_token is None:
+                    break
+            # Extract VIDEO_IDs only
+            video_ids = list(map(lambda x: x['id']['videoId'], videos))
+            print('Video Item : video IDs has been successfully completed')
+        except:
+            print('Video Item : video IDs has failed to pull video IDs')
+
+    else:
+        print('Video Item : sample is selected. Video ids will be extracted in one page token only')
+        try:
+            videos = []
+            res_video_id = youtube.search().list(part='id', type='video', channelId=channel_id, maxResults=50).execute()
+            videos = res_video_id['items']
+            # Extract VIDEO_IDs only
+            video_ids = list(map(lambda x: x['id']['videoId'], videos))
+            print('Video Item : video IDs has been successfully completed')
+        except:
+            print('Video Item : video IDs has failed to pull video IDs')
 
     # STEP2 : Use VIDEO_ID to extract VIDEO_INFORMATION
     try:
@@ -428,11 +444,15 @@ def channel_videos(channel_id):
     df_video_info = df_video_info.merge(catrgory_split, left_index=True, right_index=True)
     del df_video_info['topic_categories']
     del df_video_info['index']
-    print('Youtube Video Information : Data mapping has been successfully completed')
+    print('Video Information : Data mapping has been successfully completed')
 
     # ====================== Export to Pickle & Read  ====================== #
-    pickle_replace(name='video_info', file=df_video_info)
-    video_info = read_pickle('video_info.pkl')
+    if type == 'user':
+        pickle_replace(name='video_user_info', file=df_video_info)
+        video_info = read_pickle('video_user_info.pkl')
+    else:
+        pickle_replace(name='video_sample_info', file=df_video_info)
+        video_info = read_pickle('video_sample_info.pkl')
     # ====================================================================== #
 
     endtime = datetime.now()
@@ -442,7 +462,7 @@ def channel_videos(channel_id):
 
     return video_info
 
-def channel_videos_filter(find):
+def pickle_videos_filter(type, find):
     """
     SECTION : channel, videos, comment
     DESCRIPTION : Find substrings from the channel title to narrow down the search results.
@@ -453,22 +473,34 @@ def channel_videos_filter(find):
     # =================================================== #
 
     # ====================== LOAD & FILTER PICKLES ====================== #
+    # Choose pickle files based on the type condition
+    if type == 'user':
+        load_dir_path = 'Pickle/video_user_info.pkl'
+        load_filename = 'video_user_info.pkl'
+        save_name = 'video_filter_user_info'
+        save_filename = 'video_filter_user_info.pkl'
+    else:
+        load_dir_path = 'Pickle/video_sample_info.pkl'
+        load_filename = 'video_sample_info.pkl'
+        save_name = 'video_filter_sample_info'
+        save_filename = 'video_filter_sample_info.pkl'
+
     # Load video_info
-    if os.path.exists('Pickle/video_info.pkl'):
-        video_info = read_pickle('video_info.pkl')
+    if os.path.exists(load_dir_path):
+        video_info = read_pickle(load_filename)
         # Find substrings
         video_info_filter = video_info.loc[video_info['video_title'].str.contains(find, case=False)].reset_index(
             drop=True)
         # Export to Pickle & Read
-        pickle_replace(name='video_info_filter', file=video_info_filter)
-        video_info_filter = read_pickle('video_info_filter.pkl')
-        print('Title Searching : Filtering titles from video_information has been successfully completed')
+        pickle_replace(name=save_name, file=video_info_filter)
+        video_info_filter = read_pickle(save_filename)
+        print('Video Filtering : Filtering titles from video_information has been successfully completed')
     else:
-        print('playlist_info.pkl is not exist in the path')
+        print(load_dir_path + ' is not existing in the path')
 
     return video_info_filter
 
-def channel_videos_comments():
+def pickle_videos_comments(type, option):
     """
     SECTION : channel, videos, comment
     DESCRIPTION : Extract comments from video_info_subs
@@ -479,67 +511,316 @@ def channel_videos_comments():
     starttime = datetime.now()
     print(starttime)
 
-    # ====================== Read Pickles (VideoIDs) ====================== #
-    video_info_filter = read_pickle('video_info_filter.pkl')
+    # Choose pickle files based on the type condition
+    if type == 'user':
+        load_filename = 'video_filter_user_info.pkl'
+    else:
+        load_filename = 'video_filter_sample_info.pkl'
+
+    # ====================== Running ====================== #
+    if os.path.exists('Pickle/' + load_filename):
+
+        # ====================== Read Pickles (VideoIDs) ====================== #
+        video_info_filter = read_pickle(load_filename)
+        # ======================== GOOGLE SECRET Reading ========================= #
+        connection_name, query_string, db_name, db_user, db_password, driver_name, public_ip, service_key = keys()
+        youtube = build('youtube', 'v3', developerKey=service_key)
+        # ======================================================================== #
+
+        # ====================== Retrieving API and store in DF  ====================== #
+        print('Video Comments : Starting to extract comments in the filtered video ids')
+        df_comment = pd.DataFrame()
+        try:
+            for id in video_info_filter.video_id:
+                # CommentThread based on relevance filter
+                res_rel_comments = youtube.commentThreads().list(part='snippet', videoId=id, order='relevance',
+                                                                 maxResults=25).execute()
+                df = json_normalize(res_rel_comments['items'])
+                df_comment = df_comment.append(df)
+                # CommentThread based on order filter
+                # res_ord_comments = youtube.commentThreads().list(part='snippet', videoId=id, order='time', maxResults=25).execute()
+                # df = json_normalize(res_ord_comments['items'])
+                # df_comment = df_comment.append(df, ignore_index=True)
+            # Reset_index()
+            df_comment = df_comment.reset_index(drop=True)
+            print(str(len(df_comment)) + ' Comments has been successfully loaded')
+        except:
+            print('Video Comments : Comments has failed to load')
+
+        # ====================== YOUTUBE_COMMENT : Data Mapping  ====================== #
+
+        # Select Columns
+        df_comment = df_comment[[
+            'id',
+            'snippet.topLevelComment.snippet.textOriginal',
+            'snippet.topLevelComment.snippet.authorDisplayName',
+            'snippet.topLevelComment.snippet.likeCount',
+            'snippet.topLevelComment.snippet.publishedAt',
+            'snippet.totalReplyCount'
+        ]]
+
+        # Rename Columns
+        df_comment.rename(columns={'id': 'comment_id',
+                                   'snippet.topLevelComment.snippet.textOriginal': 'comment',
+                                   'snippet.topLevelComment.snippet.authorDisplayName': 'author',
+                                   'snippet.topLevelComment.snippet.likeCount': 'like_count',
+                                   'snippet.topLevelComment.snippet.publishedAt': 'published_at',
+                                   'snippet.totalReplyCount': 'reply_count',
+                                   }, inplace=True)
+
+        # ====================== Export to Pickle & Read ====================== #
+        # Read pickle files
+        pickle_replace(name='video_comment', file=df_comment)
+        video_comment = read_pickle('video_comment.pkl')
+        print('Video Comments : Extracting comments from the filtered video ids has been successfully completed')
+
+        # Delete Path
+        if option == 'delete':
+            os.remove('Pickle/' + load_filename)
+            print("Delete [option] : Filtered video pickle file has been successfully deleted")
+        else:
+            print("Delete [none] : There are no changes in Pickle files")
+        # ===================================================================== #
+
+        return video_comment
+    else:
+        print("Warning : The file directory is not existing. Please execute channel search & video id extraction before you run this code")
+
+    endtime = datetime.now()
+    print(endtime)
+    timetaken = endtime - starttime
+    print('Time taken : ' + timetaken.__str__())
+
+def globals_videos(type, channel_id):
+    """
+    SECTION : channel, videos, comment
+    DESCRIPTION 1: This function uses youtube.search() and .videos(). Hence, all videos in playlist from the channel may not be extracted.
+    DESCRIPTION 2: Create pickle files for all video information from the channel ID key in by users.
+    USAGE 1 [type='user'] : User can extract all video IDs from the channel with some basic statistic figures.
+    USAGE 2 [type='sample'] : User can extract only limited video (Default : 50 videos)
+    """
+    # ====================== Setup ====================== #
+    pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
+    starttime = datetime.now()
+    print(starttime)
+    dictionary = {0: 'wiki_category'}
+    dictionary_list = list(dictionary.values())
 
     # ======================== GOOGLE SECRET Reading ========================= #
     connection_name, query_string, db_name, db_user, db_password, driver_name, public_ip, service_key = keys()
     youtube = build('youtube', 'v3', developerKey=service_key)
     # ======================================================================== #
 
-    # ====================== Retrieving API and store in DF  ====================== #
-    print('Video Comments : Starting to extract comments in the filtered video ids')
-    df_comment = pd.DataFrame()
+    # STEP1 : Search VIDEO_ID using Search()
+    # DESCRIPTION : 'sample' can extract one page token, whereas 'user' can extract all page tokens
+    if type == 'user':
+        print('Video Item : user is selected. All video ids will be extracted in page tokens')
+        try:
+            videos = []
+            next_page_token = None
+            while 1:
+                res_video_id = youtube.search().list(part='id', type='video', channelId=channel_id, maxResults=50,
+                                                     pageToken=next_page_token).execute()
+                videos += res_video_id['items']
+                next_page_token = res_video_id.get('nextPageToken')
+                if next_page_token is None:
+                    break
+            # Extract VIDEO_IDs only
+            video_ids = list(map(lambda x: x['id']['videoId'], videos))
+            print('Video Item : video IDs has been successfully completed')
+        except:
+            print('Video Item : video IDs has failed to pull video IDs')
+
+    else:
+        print('Video Item : sample is selected. Video ids will be extracted in one page token only')
+        try:
+            videos = []
+            res_video_id = youtube.search().list(part='id', type='video', channelId=channel_id, maxResults=50).execute()
+            videos = res_video_id['items']
+            # Extract VIDEO_IDs only
+            video_ids = list(map(lambda x: x['id']['videoId'], videos))
+            print('Video Item : video IDs has been successfully completed')
+        except:
+            print('Video Item : video IDs has failed to pull video IDs')
+
+    # STEP2 : Use VIDEO_ID to extract VIDEO_INFORMATION
     try:
-        for id in video_info_filter.video_id:
-            # CommentThread based on relevance filter
-            res_rel_comments = youtube.commentThreads().list(part='snippet', videoId=id, order='relevance',
-                                                             maxResults=25).execute()
-            df = json_normalize(res_rel_comments['items'])
-            df_comment = df_comment.append(df)
-            # CommentThread based on order filter
-            # res_ord_comments = youtube.commentThreads().list(part='snippet', videoId=id, order='time', maxResults=25).execute()
-            # df = json_normalize(res_ord_comments['items'])
-            # df_comment = df_comment.append(df, ignore_index=True)
-        # Reset_index()
-        df_comment = df_comment.reset_index(drop=True)
-        print(str(len(df_comment)) + ' Comments has been successfully loaded')
+        df_video_info = pd.DataFrame()
+        for id in video_ids:
+            res_video_info = youtube.videos().list(part=['snippet', 'statistics', 'status', 'topicDetails'],
+                                                   id=id,
+                                                   regionCode='KR').execute()
+            df = json_normalize(res_video_info['items'])
+            df_video_info = df_video_info.append(df)
+        print('Collecting Video Information has been successfully completed')
     except:
-        print('Comments has failed to load')
+        print('Collecting Video Information has failed to extract')
 
-    # ====================== YOUTUBE_COMMENT : Data Mapping  ====================== #
-
+    # ====================== YOUTUBE_CHANNEL_INFO : Data Mapping  ======================#
     # Select Columns
-    df_comment = df_comment[[
+    df_video_info = df_video_info[[
         'id',
-        'snippet.topLevelComment.snippet.textOriginal',
-        'snippet.topLevelComment.snippet.authorDisplayName',
-        'snippet.topLevelComment.snippet.likeCount',
-        'snippet.topLevelComment.snippet.publishedAt',
-        'snippet.totalReplyCount'
-    ]]
+        'snippet.title', 'snippet.publishedAt',
+        'statistics.viewCount', 'statistics.likeCount', 'statistics.dislikeCount', 'statistics.favoriteCount',
+        'statistics.commentCount',  # video().list(part='statistics')
+        'topicDetails.topicCategories',  # video().list(part='topicDetails')
+        'status.madeForKids']]
 
     # Rename Columns
-    df_comment.rename(columns={'id': 'comment_id',
-                               'snippet.topLevelComment.snippet.textOriginal': 'comment',
-                               'snippet.topLevelComment.snippet.authorDisplayName': 'author',
-                               'snippet.topLevelComment.snippet.likeCount': 'like_count',
-                               'snippet.topLevelComment.snippet.publishedAt': 'published_at',
-                               'snippet.totalReplyCount': 'reply_count',
-                               }, inplace=True)
+    df_video_info.rename(columns={'id': 'video_id',
+                                  'snippet.title': 'video_title',
+                                  'snippet.publishedAt': 'published_at',
+                                  'statistics.viewCount': 'view_count',
+                                  'statistics.likeCount': 'like_count',
+                                  'statistics.dislikeCount': 'dislike_count',
+                                  'statistics.favoriteCount': 'favorite_count',
+                                  'statistics.commentCount': 'comment_count',
+                                  'topicDetails.topicCategories': 'topic_categories',
+                                  'status.madeForKids': 'for_kids'
+                                  }, inplace=True)
 
-    # ====================== Export to Pickle & Read ====================== #
-    pickle_replace(name='video_comment', file=df_comment)
-    video_comment = read_pickle('video_comment.pkl')
-    # ===================================================================== #
+    # Reset Index
+    df_video_info = df_video_info.reset_index()
 
-    print('Video Comments : Extracting comments from the filtered video ids has been successfully completed')
+    # Split TopicCategories URL
+    catrgory_split = df_video_info['topic_categories']
+    catrgory_split = pd.DataFrame(catrgory_split)
+    catrgory_split = catrgory_split['topic_categories'].apply(pd.Series).rename(columns=dictionary)
+
+    # Filter columns based on the length
+    dictionary_list = dictionary_list[0:len(catrgory_split.columns)]
+
+    # Split WIKI_URL and pick up the last word (Filtering category)
+    for i in range(len(catrgory_split.columns)):
+        df = catrgory_split.iloc[:, i].str.split('/').apply(pd.Series).iloc[:, -1]
+        df.columns = [i]
+        catrgory_split[i] = df
+
+    # Remove & Rename columns
+    catrgory_split.drop(dictionary_list, axis=1, inplace=True)
+    catrgory_split = catrgory_split.rename(columns=dictionary)
+    catrgory_split = catrgory_split['wiki_category']
+
+    # Merge & Rename columns
+    vid = df_video_info.merge(catrgory_split, left_index=True, right_index=True)
+    del vid['topic_categories']
+    del vid['index']
+    print('Video Information : Data mapping has been successfully completed')
+
     endtime = datetime.now()
     print(endtime)
     timetaken = endtime - starttime
     print('Time taken : ' + timetaken.__str__())
 
-    return video_comment
+    return vid
+
+def globals_videos_filter(find):
+    """
+    SECTION : channel, videos, comment
+    DESCRIPTION : Find substrings from the channel title to narrow down the search results.
+    USAGE : Extraction of the comments takes less number of videos after the tile search.
+    """
+    # ====================== Setup ====================== #
+    pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
+    # =================================================== #
+
+    # ====================== Load & Return Globals() ====================== #
+    # Load video_info
+    if 'vid' in globals():
+        # Load the global file in the current running environment
+        vid = globals()['vid']
+        # Find substrings
+        vid_filter = vid.loc[vid['video_title'].str.contains(find, case=False)].reset_index(
+            drop=True)
+        print('Video Filtering : Filtering titles from video_information has been successfully completed')
+    else:
+        print('vid globals() is not existing in the path')
+
+    return vid_filter
+
+def globals_videos_comments(option):
+    """
+    SECTION : channel, videos, comment
+    DESCRIPTION : Extract comments from video_info_subs
+    USAGE : The comment will be used to have sentiment analysis
+    """
+    # ====================== Setup ====================== #
+    pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
+    starttime = datetime.now()
+    print(starttime)
+
+    # ====================== Running ====================== #
+    if 'vid_filter' in globals():
+        # Load the global file in the current running environment
+        vid_filter = globals()['vid_filter']
+        load_filename = 'vid_filter'
+
+        # ======================== GOOGLE SECRET Reading ========================= #
+        connection_name, query_string, db_name, db_user, db_password, driver_name, public_ip, service_key = keys()
+        youtube = build('youtube', 'v3', developerKey=service_key)
+        # ======================================================================== #
+
+        # ====================== Retrieving API and store in DF  ====================== #
+        print('Video Comments : Starting to extract comments in the filtered video ids')
+        df_comment = pd.DataFrame()
+        try:
+            for id in vid_filter.video_id:
+                # CommentThread based on relevance filter
+                res_rel_comments = youtube.commentThreads().list(part='snippet', videoId=id, order='relevance',
+                                                                 maxResults=25).execute()
+                df = json_normalize(res_rel_comments['items'])
+                df_comment = df_comment.append(df)
+                # CommentThread based on order filter
+                # res_ord_comments = youtube.commentThreads().list(part='snippet', videoId=id, order='time', maxResults=25).execute()
+                # df = json_normalize(res_ord_comments['items'])
+                # df_comment = df_comment.append(df, ignore_index=True)
+            # Reset_index()
+            df_comment = df_comment.reset_index(drop=True)
+            print(str(len(df_comment)) + ' Comments has been successfully loaded')
+        except:
+            print('Video Comments : Comments has failed to load')
+
+        # ====================== YOUTUBE_COMMENT : Data Mapping  ====================== #
+
+        # Select Columns
+        vid_comments = df_comment[[
+            'id',
+            'snippet.topLevelComment.snippet.textOriginal',
+            'snippet.topLevelComment.snippet.authorDisplayName',
+            'snippet.topLevelComment.snippet.likeCount',
+            'snippet.topLevelComment.snippet.publishedAt',
+            'snippet.totalReplyCount'
+        ]]
+
+        # Rename Columns
+        vid_comments.rename(columns={'id': 'comment_id',
+                                   'snippet.topLevelComment.snippet.textOriginal': 'comment',
+                                   'snippet.topLevelComment.snippet.authorDisplayName': 'author',
+                                   'snippet.topLevelComment.snippet.likeCount': 'like_count',
+                                   'snippet.topLevelComment.snippet.publishedAt': 'published_at',
+                                   'snippet.totalReplyCount': 'reply_count',
+                                   }, inplace=True)
+
+        # ====================== Load & Return Globals() ====================== #
+        # Check
+        print('Video Comments : Extracting comments from the filtered video ids has been successfully completed')
+
+        # Delete Path
+        if option == 'delete':
+            del globals()[load_filename]
+            print("Delete [option] : Filtered Globals() variable has been successfully deleted")
+        else:
+            print("Delete [none] : There are no changes in Globals() variable in the running environment")
+
+        return vid_comments
+        # ===================================================================== #
+    else:
+        print("Warning : The file directory is not existing. Please execute channel search & video id extraction before you run this code")
+
+    endtime = datetime.now()
+    print(endtime)
+    timetaken = endtime - starttime
+    print('Time taken : ' + timetaken.__str__())
 
 def channel_playlist(channel_id):
     """
