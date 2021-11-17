@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}
+채널 검색
+{% endblock %}
+
+{% block content %}
+<div class="search">
+  <form id="search_channel" method="get" action="/search/search_result">
+  <input name="cha_name" type="text" class="form-control" placeholder="채널을 검색하세요." aria-label="채널을 검색하세요." aria-describedby="button-addon2">
+  <input type="submit" value="검색">
+  </form>
+</div>
+
+<div class="search">
+  <form id="search_channel_id" method="get" action="/search/video_result">
+  <input name="channel_id" type="text" class="form-control" placeholder="채널아이디를 검색하세요." aria-label="채널아이디를 검색하세요." aria-describedby="button-addon2">
+  <input type="submit" value="검색">
+  </form>
+</div>
+
+<div class="search">
+  <form id="search_keyword" method="get" action="/search/filter_result">
+  <input name="find" type="text" class="form-control" placeholder="키워드를 검색하세요." aria-label="키워드를 검색하세요." aria-describedby="button-addon2">
+  <input type="submit" value="검색">
+  </form>
+</div>
+
+
+{% endblock %}

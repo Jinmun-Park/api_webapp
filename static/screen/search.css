@@ -1,0 +1,11 @@
+.search{
+    margin-top: 30px;
+    margin-left: 100px;
+    margin-right: 100px;
+    }
+
+#search_channel,
+#search_channel_id,
+#search_keyword{
+    display: flex;
+    }
