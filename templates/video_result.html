@@ -5,9 +5,38 @@
 {% endblock %}
 
 {% block content %}
+
 <div class="dashboard">
 <div class="dashboard_left">
-  <h6>                   </h6>
+<h5> {{ title }} 검색 결과 </h5>
+
+<table id="table" class="table table-hover">
+  <thead>
+    <tr>
+        <th scope="col"></th>
+        {% for t in titles %}
+            <th scope="col">{{ t }}</th>
+        {% endfor %}
+    </tr>
+  </thead>
+
+  <tbody>
+        {% for i in data.index %}        <! -- for tag start -->
+        <tr>
+            <td> </td>
+            <td>{{ data['video_id'][i] }}</td>
+            <td>{{ data['video_title'][i] }}</td>
+            <td>{{ data['published_at'][i] }}</td>
+            <td>{{ data['view_count'][i] }}</td>
+            <td>{{ data['like_count'][i] }}</td>
+            <td>{{ data['dislike_count'][i] }}</td>
+            <td>{{ data['favorite_count'][i] }}</td>
+            <td>{{ data['comment_count'][i] }}</td>
+            <td>{{ data['wiki_category'][i] }}</td>
+        </tr>
+        {% endfor %}                          <! -- for tag end -->
+  </tbody>
+</table>
 </div>
 
 <div class="dashboard_right">
@@ -33,7 +62,5 @@
 </div>
 </div>
 </div>
-
-
 
 {% endblock %}

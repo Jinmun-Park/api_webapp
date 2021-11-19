@@ -25,7 +25,7 @@ youtube_popular = api_youtube_popular(name='youtube_popular', max_result=20)
 # Youtube API 2 : Channel video comments extraction and store in pickle format
 search = channel_search('슈카월드')
 vid = pickle_videos(type='sample', channel_id='UCsJ6RuBiTVWRX156FVbeaGg')
-vid_filter = pickle_videos_filter(type='sample', find='코로나')
+vid_filter = pickle_videos_filter(type='sample', find='중국')
 vid_comments = pickle_videos_comments(type='sample', option='delete')
 
 # Youtube API 3 : Channel video comments extraction in globals() foramt
