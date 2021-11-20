@@ -275,11 +275,10 @@ def channel_search(chanel_name):
     # ====================== YOUTUBE_CHANNEL_SEARCH : Data Mapping  ====================== #
 
     # Select Columns
-    df_channel_search = df_channel_search[['id.kind', 'id.channelId', 'snippet.publishedAt', 'snippet.title']]
+    df_channel_search = df_channel_search[['id.channelId', 'snippet.publishedAt', 'snippet.title']]
 
     # Rename Columns
-    df_channel_search.rename(columns={'id.kind': 'type',
-                                      'id.channelId': 'channel_id',
+    df_channel_search.rename(columns={'id.channelId': 'channel_id',
                                       'snippet.publishedAt': 'published_at',
                                       'snippet.title': 'channel_title',
                                       'snippet.categoryId': 'category_id'
