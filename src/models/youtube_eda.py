@@ -2,8 +2,8 @@ from src.utils.api import api_youtube_popular
 from src.utils.api import channel_search
 from src.utils.api import pickle_videos, pickle_videos_filter, pickle_videos_comments
 from src.utils.api import globals_videos, globals_videos_filter, globals_videos_comments
-
 import pandas as pd
+
 import re
 #import matplotlib.pyplot as plt
 #from matplotlib import font_manager, rc
@@ -26,7 +26,7 @@ youtube_popular = api_youtube_popular(name='youtube_popular', max_result=20)
 search = channel_search('슈카월드')
 vid = pickle_videos(type='sample', channel_id='UCsJ6RuBiTVWRX156FVbeaGg')
 vid_filter = pickle_videos_filter(type='sample', find='중국')
-vid_comments = pickle_videos_comments(type='sample', option='delete')
+vid_comments = pickle_videos_comments(type='sample', option='save')
 
 # Youtube API 3 : Channel video comments extraction in globals() foramt
 search = channel_search('슈카월드')
