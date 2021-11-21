@@ -9,7 +9,7 @@ This project is licensed under the terms of the GNU General Public License v3.0
 | Source | URL | Description |
 | --- | --- | --- |
 | GoogleAPI | https://developers.google.com/youtube/v3 | Youtube Comments |
-| 공공데이터 | https://www.data.go.kr/index.do | Covid 19/ Accident cases | 
+| 공공데이터 | https://www.data.go.kr/index.do | Covid 19 | 
 
 ### FIRST STAGE (15'SEPT'2021 ~ 20'OCT'2021) :
 
@@ -21,21 +21,23 @@ This project is licensed under the terms of the GNU General Public License v3.0
 | HEROKU   | OCT | COMPLETED | Autopush |
 
 ### SECOND STAGE (20'OCT'2021 ~ 11'OCT'2021) :
-* Replace Heroku with GCP (MySQL, Cloud Function, Cloud Run)
-* Replace Kobert with <bert-base-multilingual-cased>
+* Replace Heroku with GCP (MySQL, Cloud Function, Cloud Engine)
+* Replace Kobert with <bert-base-multilingual-cased> due to library dependencies issue
 
 | PLAN &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| DATE &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| STATUS &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| DESCRIPTION &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; |
 | --- | --- | --- | --- |
 | KOBERT | 25'OCT'2021 | COMPLETED | Sentiment Analysis |
 | G SQL | 5'NOV'2021 | COMPLETED | Replace Heroku |
+| BERT | 25'OCT'2021 | COMPLETED | Replace KOBERT |
 | G FUNCTION | 9'NOV'2021 | COMPLETED | Replace Heroku |
 
 ### THIRD STAGE (11'OCT'2021 ~ ) :
 
 | PLAN &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| DATE &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| STATUS &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| DESCRIPTION &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; |
 | --- | --- | --- | --- |
-| G RUN | - | IN PROGRESS | DEPLOY FLASK |
-| FLASAK | - | IN PROGRESS | APP PROTOTYPE |
+| G ENGINE | 16'NOV'2021 | COMPLETED | Deployment |
+| FLASK | - | IN PROGRESS | App Design |
+
 
 
 ### SUPPORT
@@ -46,20 +48,6 @@ This project is licensed under the terms of the GNU General Public License v3.0
 | Kobert | https://github.com/SKTBrain/KoBERT | Korean Bert |
 
 ## PROJECT NOTE
-### API SETUP
-pip install --upgrade google-api-python-client
-
 ### Requirements.txt
 pip freeze > requirements.txt <br/>
 pip install -r requirements.txt 
-
-### FLASK RUN
-set FLASK_APP=webapp.py <br/>
-$env:FLASK_APP = "webapp" <br/>
-$env:FLASK_ENV = "development" <br/>
-set FLASK_DEBUG=1 <br/>
-flask run <br/>
-
-### NOTE
-유튜브 API -> 데이터 시각화(title word cloud 시각화...), 댓글 감성분석 <br/>
-코로나19 데이터 -> 코로나19 예측 모델링 <br/>
