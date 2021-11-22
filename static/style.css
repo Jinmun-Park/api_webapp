@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap');
 
-@import "screen/sidebars.css";
 @import "screen/index.css";
 @import "screen/ranking.css";
 @import "screen/category.css";
@@ -9,3 +8,6 @@
 
 
 /* font-family: 'Times New Roman', sans-serif; */
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+}
