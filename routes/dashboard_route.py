@@ -6,17 +6,17 @@ from src.utils.api import globals_videos, globals_videos_filter, globals_videos_
 import pandas as pd
 import pickle
 
-bp = Blueprint('search', __name__, url_prefix='/search')
+bp = Blueprint('dashboard', __name__, url_prefix='/dashboard')
 
 @bp.route('/', methods=["GET"])
 def search():
-    return render_template('search.html')
+    return render_template('dashboard.html')
 
-@bp.route('/search_result', methods=["GET"])
+@bp.route('/channel_result', methods=["GET"])
 def search_result():
     chanel_name = request.args.get('cha_name')
     search = channel_search(chanel_name)
-    return render_template('search_result.html', title=chanel_name, data=search, titles=['channel_id', 'published_at', 'channel_title', 'view_count','subscriber_count', 'video_count'])
+    return render_template('channel_result.html', title=chanel_name, data=search, titles=['channel_id', 'published_at', 'channel_title', 'view_count','subscriber_count', 'video_count'])
 
 @bp.route('/video_result', methods=["GET"])
 def video_result():

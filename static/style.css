@@ -12,11 +12,18 @@ body {
     font-family: 'Noto Sans KR', sans-serif;
 }
 
+.head{
+ -webkit-box-shadow:0px 2px 2px #DCDCDC;
+ -moz-box-shadow:0px 2px 2px #DCDCDC;
+ box-shadow:0px 4px 4px #DCDCDC;
+}
+
 .form-control-dark {
   color: #fff;
   background-color: var(--bs-dark);
   border-color: var(--bs-gray);
 }
+
 .form-control-dark:focus {
   color: #fff;
   background-color: var(--bs-dark);
