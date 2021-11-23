@@ -11,7 +11,7 @@
 
 <div class="ranking_analysis">
 <div>
-<select  class="form-select" aria-label="Default select example" onchange="if(this.value) location.href=(this.value);">
+<select class="form-select" aria-label="Default select example" onchange="if(this.value) location.href=(this.value);">
     <option selected>인기 동영상 분석</option>
     <option value="/ranking/category">카테고리별 분석</option>
     <option value="/ranking/channel">채널별 분석</option>
@@ -53,7 +53,7 @@
 {% block scripts %}
   <script>
     $(document).ready(function () {
-      $('#table').DataTable({
+      $('#table').dataTables({
         columns: [
           {orderable: false, searchable: false},
           {orderable: false},

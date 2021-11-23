@@ -2,6 +2,7 @@ from src.models.bert_load import run_predict
 from flask import Blueprint, render_template, request, redirect
 from src.utils.api import channel_search
 from src.utils.api import pickle_videos, pickle_videos_filter, pickle_videos_comments
+from src.utils.api import globals_videos, globals_videos_filter, globals_videos_comments
 import pandas as pd
 import pickle
 
@@ -20,16 +21,18 @@ def search_result():
 @bp.route('/video_result', methods=["GET"])
 def video_result():
     channel_id = request.args.get('channel_id')
-    # vid = pickle_videos(type='sample', channel_id)
-    data = pd.read_pickle('Pickle/video_sample_info.pkl')
-    return render_template('video_result.html', title=channel_id, data=data, titles=['video_id', 'video_title', 'published_at', 'view_count', 'like_count', 'dislike_count', 'favorite_count', 'comment_count', 'wiki_category'])
+    vid = pickle_videos(type='sample', channel_id=channel_id)
+    # vid = globals_videos(type='sample', channel_id=channel_id)
+    # vid = pd.read_pickle('Pickle/video_sample_info.pkl')
+    return render_template('video_result.html', title=channel_id, data=vid, titles=['video_id', 'video_title', 'published_at', 'view_count', 'like_count', 'dislike_count', 'favorite_count', 'comment_count', 'wiki_category'])
 
 @bp.route('/filter_result', methods=["GET"])
 def video_filter():
     find = request.args.get('find')
-    # vid_filter = pickle_videos_filter(type='sample', find)
-    data = pd.read_pickle('Pickle/video_info_filter.pkl')
-    return render_template('video_result.html', title=find, data=data, titles=['video_id', 'video_title', 'published_at', 'view_count', 'like_count', 'dislike_count', 'favorite_count', 'comment_count', 'wiki_category'])
+    vid_filter = pickle_videos_filter(type='sample', find=find)
+    # vid_filter = globals_videos_filter(find)
+    # vid_filter = pd.read_pickle('Pickle/video_info_filter.pkl')
+    return render_template('video_result.html', title=find, data=vid_filter, titles=['video_id', 'video_title', 'published_at', 'view_count', 'like_count', 'dislike_count', 'favorite_count', 'comment_count', 'wiki_category'])
 
 # @bp.route('/comment_result', methods=["GET"])
 # def video_comment():
