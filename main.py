@@ -11,10 +11,12 @@ from flask import Flask, render_template
 def create_app():
     app = Flask(__name__)
 
-    from routes.ranking_route import bp as ranking_bp
-    from routes.search_route import bp as search_bp
-    app.register_blueprint(ranking_bp)
-    app.register_blueprint(search_bp)
+    from routes.chart_route import bp as chart_bp
+    from routes.dashboard_route import bp as dashboard_bp
+    from routes.trend_route import bp as trend_bp
+    app.register_blueprint(chart_bp)
+    app.register_blueprint(dashboard_bp)
+    app.register_blueprint(trend_bp)
 
     @app.route('/')
     def home_page():

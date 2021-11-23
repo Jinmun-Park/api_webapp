@@ -1,11 +1,36 @@
 #main_page{
-    background: url(https://upload.wikimedia.org/wikipedia/commons/e/e1/Logo_of_YouTube_%282015-2017%29.svg) no-repeat 50%;
     text-align: center;
-    height: 360px;
-    opacity: 0.5;
 }
 
 #container_search{
-    padding: 270px 100px 100px 100px;
+    padding: 40px 100px 60px 100px;
 }
 
+/* carousel image size */
+.carousel-item{
+    height: 400px;
+}
+
+.carousel-item img{
+    height: 400px;
+}
+
+.carousel_size {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
+
+/* carousel caption size */
+#carousel-01{
+    margin-left: 100px;
+}
+
+#carousel-02{
+    margin-bottom: 50px;
+}
+
+#carousel-03{
+    margin-right: 100px;
+}

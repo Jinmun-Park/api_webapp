@@ -1,7 +1,5 @@
 .ranking_title {
     text-align: center;
-    text-decoration: underline;
-    color: AntiqueWhite;
     margin-top: 30px;
 }
 
@@ -31,11 +29,10 @@
 
 .table thead tr th {
     font-size: 13px;
-    color: BurlyWood;
-    background-color: AntiqueWhite;
+    color: lightslategrey;
+    /* background-color: AntiqueWhite; */
     word-break: keep-all;
     }
-
 
 .table tbody {
     font-size: 12px;

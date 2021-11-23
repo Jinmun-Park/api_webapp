@@ -57,25 +57,11 @@ def flask_popular_chart():
 # ====================== Flask ====================== #
 from flask import Blueprint, render_template
 df, df_category, df_channeltitle = flask_popular_chart()
-bp = Blueprint('ranking', __name__, url_prefix='/ranking')
+bp = Blueprint('chart', __name__, url_prefix='/chart')
 
 @bp.route('/', methods=["GET"])
-def list():
+def chart():
     video_ids = df.동영상아이디
-    return render_template('ranking.html', data=df, video_ids=video_ids, titles=['동영상', '채널명', '날짜', '조회수', '좋아요수', '싫어요수', '댓글수', '카테고리'])
-
-@bp.route('/category', methods=["GET"])
-def category():
-    category = [i for i in df_category.index]
-    category_rate = [i for i in df_category.카테고리]
-    category_channel = df.groupby(['카테고리', '채널명']).sum().sort_values('조회수', ascending=False).reset_index()
-    return render_template('category.html', data=df, category=category, category_rate=category_rate, category_channel=category_channel)
-
-@bp.route('/channel', methods=["GET"])
-def channel():
-    channeltitle = [i for i in df_channeltitle.index]
-    channeltitle_rate = [i for i in df_channeltitle.채널명]
-    channeltitle = df.groupby('채널명').sum().sort_values('조회수', ascending=False).reset_index()
-    return render_template('channel.html', data=df, channeltitle=channeltitle)
+    return render_template('chart.html', data=df, video_ids=video_ids, titles=['동영상', '채널명', '날짜', '조회수', '좋아요수', '싫어요수', '댓글수', '카테고리'])
 
 

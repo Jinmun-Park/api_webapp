@@ -12,54 +12,82 @@
   <!-- Chart js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 
+  <!-- Header Style -->
+      <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
 
     <title>
       {% block title %}{% endblock %}
     </title>
   </head>
+  <body>
 
-<body>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="/">Youtube Analysis</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarScroll">
-      <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="/ranking">인기 동영상 랭킹</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/search">채널 분석</a>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarScrollingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            채널 카테고리
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
-            <li><a class="dropdown-item" href="/entertainment">엔터테인먼트</a></li>
-            <li><a class="dropdown-item" href="/food">푸드</a></li>
-            <li><a class="dropdown-item" href="/music">음악</a></li>
-            <li><a class="dropdown-item" href="/game">게임</a></li>
-            <li><a class="dropdown-item" href="/lifestyle">라이프스타일</a></li>
-          </ul>
-        </li>
-      </ul>
+ <!-- Header -->
+  <div class="head">
+      <div class="px-3 py-3">
+        <div class="container-fluid">
+          <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+            <a href="/" class="fw-bold d-flex align-items-center my-2 my-lg-0 me-lg-auto text-dark text-decoration-none text-large">
+              YOUTUBE ANALYSIS
+            </a>
+            <ul class="nav col-12 col-lg-auto my-2 justify-content-center my-md-0 text-small">
+              <li>
+                <a href="/" class="nav-link text-secondary">
+                  Home
+                </a>
+              </li>
+              <li>
+                <a href="/chart" class="nav-link text-dark">
+                  Chart
+                </a>
+              </li>
+              <li>
+                <a href="/dashboard" class="nav-link text-dark">
+                  Dashboard
+                </a>
+              </li>
+              <li>
+                <a href="#" class="nav-link text-dark dropdown-toggle" id="trend_dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                  Trend
+                </a>
+                <ul class="dropdown-menu text-small shadow" aria-labelledby="trend_dropdown">
+                  <li><a class="dropdown-item" href="/latest_trend">Latest Trend</a></li>
+                  <li><a class="dropdown-item" href="#">15days Trend</a></li>
+                  <li><a class="dropdown-item" href="#">30days Trend</a></li>
+                </ul>
+              </li>
+              <li>
+                <a href="#" class="nav-link text-dark">
+                  Customers
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-</nav>
-    </div>
-  </div>
-</nav>
 
     {% block content %}
     {% endblock %}
 
-    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.js"></script>
     {% block scripts %}{% endblock %}
+
 
   </body>
 </html>
