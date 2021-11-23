@@ -8,34 +8,60 @@
 
 <!-- search -->
 <div id="main_page">
-  <div id="container_search" class="container-fluid">
+  <div id="container_search" class="container">
     <form class="d-flex">
-      <input class="form-control me-2" type="search" placeholder="채널을 검색하세요" aria-label="Search">
-      <button class="btn btn-outline-success" type="submit">Search</button>
+      <input class="form-control form-control-lg" type="search" placeholder="채널을 검색하세요" aria-label="Search">
+      <button class="btn btn-outline-danger btn-lg" type="submit">Search</button>
     </form>
   </div>
 </div>
 
-<!-- carousel -->
+<!-- carousel start -->
 <div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel">
   <div class="carousel-indicators">
     <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
     <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1" aria-label="Slide 2"></button>
+    <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2" aria-label="Slide 3"></button>
   </div>
   <div class="carousel-inner">
+    <!-- carousel 001 -->
     <div class="carousel-item active" data-bs-interval="10000">
-      <img src="https://developers.google.com/youtube/images/youtube_home_page_analytics_api_1440.png" class="d-block w-100" alt="...">
-      <div class="carousel-caption d-none d-md-block">
-        <h5>인기 동영상 랭킹 분석</h5>
-        <p>지금 제일 인기있는 영상에 대한 분석 서비스를 제공합니다</p>
-      </div>
+      <img src="../static/images/carousel_01.jpg" class="carousel_size" alt="...">
+        <!-- caption button 001 -->
+         <div class="container">
+          <div id="carousel-01" class="carousel-caption text-start">
+            <h2>어느 채널을 알아볼까요?</h2>
+            <p> 원하시는 채널을 분석해보세요</p>
+            <p><a class="btn btn-lg btn-danger" href="#">DASHBOARD</a></p>
+          </div>
+        </div>
+        <!-- caption button 001 ends -->
     </div>
-    <div class="carousel-item" data-bs-interval="2000">
-      <img src="https://developers.google.com/youtube/images/youtube_home_page_data_api_856.png" class="d-block w-100" alt="...">
-      <div class="carousel-caption d-none d-md-block">
-        <h5>채널 분석</h5>
-        <p>채널을 검색하면 채널에 대한 분석 서비스를 제공합니다</p>
-      </div>
+    <!-- carousel 002 -->
+    <div class="carousel-item" data-bs-interval="8000">
+      <img src="../static/images/carousel_02.jpg" class="carousel_size" alt="...">
+        <!-- caption button 002 -->
+        <div class="container">
+          <div id="carousel-02" class="carousel-caption text-center">
+            <h2>최근 트렌드가 뭔지 볼까?</h2>
+            <p>기간별로 트렌드를 확인하세요</p>
+            <p><a class="btn btn-lg btn-warning" href="#">LATEST TREND</a></p>
+          </div>
+        </div>
+        <!-- caption button 002 ends -->
+    </div>
+    <!-- carousel 003 -->
+    <div class="carousel-item" data-bs-interval="8000">
+      <img src="../static/images/carousel_03.jpg" class="carousel_size" alt="...">
+        <!-- caption button 003 -->
+        <div class="container">
+          <div id="carousel-03" class="carousel-caption text-end">
+            <h2>오늘의 차트1위 비디오는?</h2>
+            <p>지금 YOUTUBE 차트순위를 확인해보세요</p>
+            <p><a class="btn btn-lg btn-primary" href="#">CHART</a></p>
+          </div>
+        </div>
+        <!-- caption button 003 ends -->
     </div>
   </div>
   <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
