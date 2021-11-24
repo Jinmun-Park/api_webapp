@@ -23,6 +23,7 @@
     <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1" aria-label="Slide 2"></button>
     <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2" aria-label="Slide 3"></button>
   </div>
+  <!-- carousel starts -->
   <div class="carousel-inner">
     <!-- carousel 001 -->
     <div class="carousel-item active" data-bs-interval="10000">
@@ -31,12 +32,12 @@
          <div class="container">
           <div id="carousel-01" class="carousel-caption text-start">
             <h2>어느 채널을 알아볼까요?</h2>
-            <p> 원하시는 채널을 분석해보세요</p>
-            <p><a class="btn btn-lg btn-danger" href="#">DASHBOARD</a></p>
+            <p style="font-size:110%;"> 원하시는 채널을 분석해보세요</p>
+            <p><a class="btn btn-lg btn-danger" href="/dashboard">DASHBOARD</a></p>
           </div>
         </div>
-        <!-- caption button 001 ends -->
     </div>
+    <!-- caption button 001 ends -->
     <!-- carousel 002 -->
     <div class="carousel-item" data-bs-interval="8000">
       <img src="../static/images/carousel_02.jpg" class="carousel_size" alt="...">
@@ -44,12 +45,12 @@
         <div class="container">
           <div id="carousel-02" class="carousel-caption text-center">
             <h2>최근 트렌드가 뭔지 볼까?</h2>
-            <p>기간별로 트렌드를 확인하세요</p>
+            <p style="font-size:110%;">기간별로 트렌드를 확인하세요</p>
             <p><a class="btn btn-lg btn-warning" href="#">LATEST TREND</a></p>
           </div>
         </div>
-        <!-- caption button 002 ends -->
     </div>
+    <!-- caption button 002 ends -->
     <!-- carousel 003 -->
     <div class="carousel-item" data-bs-interval="8000">
       <img src="../static/images/carousel_03.jpg" class="carousel_size" alt="...">
@@ -57,13 +58,14 @@
         <div class="container">
           <div id="carousel-03" class="carousel-caption text-end">
             <h2>오늘의 차트1위 비디오는?</h2>
-            <p>지금 YOUTUBE 차트순위를 확인해보세요</p>
-            <p><a class="btn btn-lg btn-primary" href="#">CHART</a></p>
+            <p style="font-size:110%;">지금 YOUTUBE 차트순위를 확인해보세요</p>
+            <p><a class="btn btn-lg btn-primary" href="/chart">CHART</a></p>
           </div>
         </div>
-        <!-- caption button 003 ends -->
     </div>
+    <!-- caption button 003 ends -->
   </div>
+   <!-- carousel ends -->
   <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
     <span class="visually-hidden">Previous</span>
@@ -74,4 +76,78 @@
   </button>
 </div>
 
+<!-- middle page start -->
+<div id="main_background" class="carousel-inner bg-light">
+ <div class="main-head">
+     <h3 style="font-weight: bold">YOUTUBE 데이터를 분석해보세요</h3>
+     <h5 style="color:#5F6562">BERT를 활용한 감정분석과 다양한 데이터 시각화를 즐겨보세요</h5>
+ </div>
+ <div id="middle_page" class="container marketing">
+   <!-- Three columns of text below the carousel -->
+   <div class="row">
+     <!-- middle image 001 -->
+     <div class="col-lg-4">
+       <img src="../static/images/middle_page_01.png" class="bd-placeholder-img rounded-circle" width="140" height="140" alt="...">
+       <h3 style="color:#155E39">인기차트</h3>
+       <p style="font-size:110%;">매일 국내 YOUTUBE 인기차트를 제공합니다. 오늘의 인기 비디오는 무엇인지 확인해보세요</p>
+     </div>
+     <!-- middle image 002 -->
+     <div class="col-lg-4">
+       <img src="../static/images/middle_page_02.png" class="bd-placeholder-img rounded-circle" width="140" height="140" alt="...">
+       <h3 style="color:#155E39">대시보드</h3>
+       <p style="font-size:110%;">원하는 채널을 집중적으로 분석해보세요. 선택하신 채널의 댓글을 BERT를 사용하여 감정분석을 해보세요</p>
+     </div>
+     <!-- middle image 003 -->
+     <div class="col-lg-4">
+       <img src="../static/images/middle_page_03.png" class="bd-placeholder-img rounded-circle" width="140" height="140" alt="...">
+       <h3 style="color:#155E39">트렌드</h3>
+       <p style="font-size:110%;">국내 YOUTUBE 비디오의 최신 트렌드가 궁금하지 않으세요? 기간별로 트렌드를 확인해보세요</p>
+     </div>
+   </div>
+ </div>
+</div>
+<!-- middle page end -->
+
+<!-- bottom page start -->
+<!-- bottom page background -->
+<div class="bg-white">
+  <hr class="featurette-divider">
+  <div class="container marketing">
+    <div class="row featurette">
+      <div class="col-md-7">
+        <h2 class="featurette-heading">First featurette heading. <span class="text-muted">It’ll blow your mind.</span></h2>
+        <p class="lead">Some great placeholder content for the first featurette here. Imagine some exciting prose here.</p>
+      </div>
+      <div class="col-md-5">
+        <img src="../static/images/bottom_page_01.png" class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" alt="...">
+      </div>
+    </div>
+
+    <hr class="featurette-divider">
+
+    <div class="row featurette">
+      <div class="col-md-7 order-md-2">
+        <h2 class="featurette-heading">Oh yeah, it’s that good. <span class="text-muted">See for yourself.</span></h2>
+        <p class="lead">Another featurette? Of course. More placeholder content here to give you an idea of how this layout would work with some actual real-world content in place.</p>
+      </div>
+      <div class="col-md-5 order-md-1">
+        <svg class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 500x500" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#eee"/><text x="50%" y="50%" fill="#aaa" dy=".3em">500x500</text></svg>
+
+      </div>
+    </div>
+
+    <hr class="featurette-divider">
+
+    <div class="row featurette">
+      <div class="col-md-7">
+        <h2 class="featurette-heading">And lastly, this one. <span class="text-muted">Checkmate.</span></h2>
+        <p class="lead">And yes, this is the last block of representative placeholder content. Again, not really intended to be actually read, simply here to give you a better view of what this would look like with some actual content. Your content.</p>
+      </div>
+      <div class="col-md-5">
+        <svg class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 500x500" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#eee"/><text x="50%" y="50%" fill="#aaa" dy=".3em">500x500</text></svg>
+      </div>
+    </div>
+  </div>
+  <hr class="featurette-divider">
+</div>
 {% endblock %}

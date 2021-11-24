@@ -1,8 +1,3 @@
-# Pickle Files
-# **/Pickle
-/Pickle/video_info.pkl
-/Pickle/video_info_filter.pkl
-/Pickle/youtube_popular.pkl
 # Data Files
 **/data
 # Config Files
@@ -12,6 +7,8 @@
 #/src/models
 /src/models/bert_save.py
 /src/models/covid_eda.py
+/src/utils/sent_function.py
+
 
 # BERT Model
 # bert_model_gpu_v2.pth
@@ -23,9 +20,6 @@
 *.pyd
 __pycache__
 .pytest_cache
-
-# Python Files
-/src/utils/sent_function.py
 
 # Git files
 README.md
