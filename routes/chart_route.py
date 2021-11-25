@@ -62,6 +62,6 @@ bp = Blueprint('chart', __name__, url_prefix='/chart')
 @bp.route('/', methods=["GET"])
 def chart():
     video_ids = df.동영상아이디
-    return render_template('chart.html', data=df, video_ids=video_ids, titles=['동영상', '채널명', '날짜', '조회수', '좋아요수', '싫어요수', '댓글수', '카테고리'])
+    return render_template('chart.html', data=df, video_ids=video_ids, titles=['동영상', '동영상 제목', '채널명', '날짜', '조회수', '좋아요수', '싫어요수', '댓글수', '카테고리'])
 
 

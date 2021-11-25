@@ -1,41 +1,75 @@
-.ranking_title {
-    text-align: center;
-    margin-top: 30px;
-}
-
-.ranking_analysis {
-    display:flex;
-    justify-content: flex-end;
-    margin-left: 40px;
-    margin-right: 40px;
-}
-
 .ranking_table {
     text-align: center;
     margin-top: 30px;
     margin-left: 40px;
     margin-right: 40px;
+    margin-bottom: 40px;
 }
 
-.video_title {
-    text-align: center;
-    }
+/* Search engine margin */
+.dataTables_length{
+    margin-bottom: 15px;
+    text-align: left;
+    margin-left: 10px;
+    /* font */
+    font-size: 15px;
+    line-height: 1.75;
+    word-break: keep-all;
+    font-family: 'Noto Sans Korean', 'Apple SD Gothic Neo', 'Nanum Barun Gothic', 'Malgun Gothic', '\\B3CB\C634', 'Dotum', sans-serif;
+    letter-spacing: -0.5px;
+}
+#table_filter{
+    margin-bottom: 15px;
+    /* font */
+    font-size: 15px;
+    line-height: 1.75;
+    word-break: keep-all;
+    font-family: 'Noto Sans Korean', 'Apple SD Gothic Neo', 'Nanum Barun Gothic', 'Malgun Gothic', '\\B3CB\C634', 'Dotum', sans-serif;
+    letter-spacing: -0.5px;
+}
+
+/* Bottom Page information */
+.dataTables_info{
+    text-align: left;
+    margin-left: 10px;
+    /* font */
+    font-size: 15px;
+    line-height: 1.75;
+    word-break: keep-all;
+    font-family: 'Noto Sans Korean', 'Apple SD Gothic Neo', 'Nanum Barun Gothic', 'Malgun Gothic', '\\B3CB\C634', 'Dotum', sans-serif;
+    letter-spacing: -0.5px;
+}
+
+.dataTables_paginate{
+    margin-top: 15px!important;
+}
 
 .video{
-    display: flex;
-    justify-content: center;
-    }
-
+    margin: 0;
+}
 
 .table thead tr th {
-    font-size: 13px;
     color: lightslategrey;
-    /* background-color: AntiqueWhite; */
+    /* th(Index) column size */
+    width: 25px;
+    /* font */
+    font-size: 15px;
+    line-height: 1.75;
     word-break: keep-all;
-    }
+    font-family: 'Noto Sans Korean', 'Apple SD Gothic Neo', 'Nanum Barun Gothic', 'Malgun Gothic', '\\B3CB\C634', 'Dotum', sans-serif;
+    letter-spacing: -0.5px;
+    /* line shadow */
+    -webkit-box-shadow:0px 1px 2px #DCDCDC;
+    -moz-box-shadow:0px 1px 1px #DCDCDC;
+    box-shadow:0px 3px 3px #DCDCDC;
+}
 
 .table tbody {
-    font-size: 12px;
+    /* font */
+    font-size: 14px;
+    line-height: 1.75;
     word-break: keep-all;
-    }
+    font-family: 'Noto Sans Korean', 'Apple SD Gothic Neo', 'Nanum Barun Gothic', 'Malgun Gothic', '\\B3CB\C634', 'Dotum', sans-serif;
+    letter-spacing: -0.5px;
+}
 
