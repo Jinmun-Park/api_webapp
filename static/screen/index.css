@@ -69,7 +69,7 @@
 /* middle page background color layout */
 #main_background{
     margin-top: 40px;
-    margin-bottom: 30px;
+    margin-bottom: auto;
 }
 
 /* main head wording layout */
@@ -110,12 +110,15 @@
 /* Featurettes
 ------------------------- */
 
+.row{
+  margin-bottom: 20px;
+}
 .featurette-divider {
+  margin-top: auto;
   margin-bottom: 30px;
   box-shadow:0px 2px 2px #DCDCDC;
 }
 
-/* Thin out the marketing headings */
 .featurette-heading {
   font-weight: 300;
   line-height: 1;
@@ -133,4 +136,41 @@
   .featurette-heading {
     margin-top: 7rem;
   }
+}
+
+/* bottom-text written besides pictures */
+.bottom-text{
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 140px;
+
+  line-height: 1.75;
+  word-break: keep-all;
+  font-family: 'Noto Sans Korean', 'Apple SD Gothic Neo', 'Nanum Barun Gothic', 'Malgun Gothic', '\\B3CB\C634', 'Dotum', sans-serif;
+  letter-spacing: -0.5px;
+}
+
+.bottom-page-layout{
+ -webkit-box-shadow:0px 2px 2px #DCDCDC;
+ -moz-box-shadow:0px 2px 2px #DCDCDC;
+ box-shadow:0px 4px 4px #DCDCDC;
+}
+
+/* Footer
+------------------------- */
+.row{
+    margin-bottom: 0;
+}
+
+.footer{
+    margin-top: 20px;
+    background-color: rgba(0, 0, 0, 0.05);
+
+    -webkit-box-shadow: 0px -4px 3px rgba(0, 0, 0, 0.075);
+    -moz-box-shadow: 0px -4px 3px rgba(0, 0, 0, 0.075);
+    box-shadow: 0px -4px 3px rgba(0, 0, 0, 0.075);
+}
+
+.text-large {
+  font-size: 150%;
 }

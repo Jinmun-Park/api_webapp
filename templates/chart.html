@@ -5,14 +5,10 @@
 {% endblock %}
 
 {% block content %}
-<div class="ranking_title">
-
-</div>
-
 
 <div class="ranking_table">
-<table id="table" class="table table-hover">
-  <thead>
+<table id="table" class="table table-bordered table-hover align-middle">
+  <thead class="table-light">
     <tr>
         <th scope="col"></th>
         {% for title in titles %}
@@ -25,15 +21,15 @@
         {% for i in data.index %}        <! -- for tag start -->
         <tr>
             <th>{{ i }}</th>
-            <td class="video_title"><div class="video"><iframe width="330" height="150" src="https://www.youtube.com/embed/{{ video_ids[i] }}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
-                {{ data['동영상'][i] }}</td>
-            <td>{{ data['채널명'][i] }}</td>
-            <td>{{ data['날짜'][i] }}</td>
-            <td>{{ data['조회수'][i] }}</td>
-            <td>{{ data['좋아요수'][i] }}</td>
-            <td>{{ data['싫어요수'][i] }}</td>
-            <td>{{ data['댓글수'][i] }}</td>
-            <td>{{ data['카테고리'][i] }}</td>
+            <td style="width: 20%;"><div class="video"><iframe width="320" height="180" src="https://www.youtube.com/embed/{{ video_ids[i] }}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></td>
+            <td style="width: 25%">{{ data['동영상'][i] }}</td>
+            <td style="width: 13%;">{{ data['채널명'][i] }}</td>
+            <td style="width: 7%;">{{ data['날짜'][i] }}</td>
+            <td style="width: 7%;">{{ data['조회수'][i] }}</td>
+            <td style="width: 7%;">{{ data['좋아요수'][i] }}</td>
+            <td style="width: 7%;">{{ data['싫어요수'][i] }}</td>
+            <td style="width: 7%;">{{ data['댓글수'][i] }}</td>
+            <td style="width: 7%;">{{ data['카테고리'][i] }}</td>
         </tr>
         {% endfor %}                          <! -- for tag end -->
   </tbody>
@@ -47,7 +43,8 @@
     $(document).ready(function () {
       $('#table').dataTable({
         columns: [
-          {orderable: false, searchable: false},
+          {searchable: false},
+          {orderable: false},
           {orderable: false},
           {orderable: false},
           {searchable: false},
