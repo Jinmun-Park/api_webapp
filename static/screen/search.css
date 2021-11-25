@@ -1,17 +1,11 @@
-.dashboard{
+.card {
+    position: relative;
     display: flex;
-    justify-content: space-around;
-    margin-top: 50px;
-    }
-
-.dashboard_left{
-    text-align: center;
-    vertical-align: middle;
-    padding: 10px;
-    background-color: #faebd787;
-    border-radius: 16px;
-    border: 1px solid #ffebb5a8;
-    box-shadow: inset 0 0 8px #e9d1aa;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    border-radius: 20px;
 }
 
 .search{
