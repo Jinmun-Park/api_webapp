@@ -13,7 +13,7 @@ def flask_popular_chart():
 
     # ================== DATA PREPROCESSING ================== #
     # Select columns
-    df = df[['video_title', 'video_id', 'channel_title', 'published_at', 'view_count', 'like_count', 'dislike_count', 'comment_count', 'wiki_category']]
+    df = df[['video_title', 'video_id', 'channel_title', 'published_at', 'view_count', 'like_count', 'comment_count', 'wiki_category']]
     # Rename columns (English - Korean)
     df.rename(columns={'video_title': '동영상',
                        'video_id': '동영상아이디',
@@ -21,7 +21,6 @@ def flask_popular_chart():
                        'published_at': '날짜',
                        'view_count': '조회수',
                        'like_count': '좋아요수',
-                       'dislike_count': '싫어요수',
                        'comment_count': '댓글수',
                        'wiki_category': '카테고리'
                        }, inplace=True)
@@ -31,7 +30,7 @@ def flask_popular_chart():
     df['날짜'] = pd.to_datetime(df['날짜'], infer_datetime_format=True)
     df['날짜'] = df['날짜'].dt.strftime("%Y-%m-%d")
     # Converting field type : Numeric
-    df[['조회수', '좋아요수', '싫어요수', '댓글수']] = df[['조회수', '좋아요수', '싫어요수', '댓글수']].apply(pd.to_numeric)
+    df[['조회수', '좋아요수', '댓글수']] = df[['조회수', '좋아요수', '댓글수']].apply(pd.to_numeric)
     # Converting field type : Category
     df['카테고리'].replace('Entertainment', '엔터테인먼트', inplace=True)
     df['카테고리'].replace(['Music','Hip_hop_music','Electronic_music'], '뮤직', inplace=True)
@@ -62,6 +61,6 @@ bp = Blueprint('chart', __name__, url_prefix='/chart')
 @bp.route('/', methods=["GET"])
 def chart():
     video_ids = df.동영상아이디
-    return render_template('chart.html', data=df, video_ids=video_ids, titles=['동영상', '동영상 제목', '채널명', '날짜', '조회수', '좋아요수', '싫어요수', '댓글수', '카테고리'])
+    return render_template('chart.html', data=df, video_ids=video_ids, titles=['동영상', '동영상 제목', '채널명', '날짜', '조회수', '좋아요수', '댓글수', '카테고리'])
 
 

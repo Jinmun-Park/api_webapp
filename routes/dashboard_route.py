@@ -24,7 +24,7 @@ def video_result():
     vid = pickle_videos(type='sample', channel_id=channel_id)
     # vid = globals_videos(type='sample', channel_id=channel_id)
     # vid = pd.read_pickle('Pickle/video_sample_info.pkl')
-    return render_template('video_result.html', title=channel_id, data=vid, titles=['video_id', 'video_title', 'published_at', 'view_count', 'like_count', 'dislike_count', 'favorite_count', 'comment_count', 'wiki_category'])
+    return render_template('video_result.html', title=channel_id, data=vid, titles=['video_id', 'video_title', 'published_at', 'view_count', 'like_count', 'favorite_count', 'comment_count', 'wiki_category'])
 
 @bp.route('/filter_result', methods=["GET"])
 def video_filter():
@@ -32,7 +32,7 @@ def video_filter():
     vid_filter = pickle_videos_filter(type='sample', find=find)
     # vid_filter = globals_videos_filter(find)
     # vid_filter = pd.read_pickle('Pickle/video_info_filter.pkl')
-    return render_template('video_result.html', title=find, data=vid_filter, titles=['video_id', 'video_title', 'published_at', 'view_count', 'like_count', 'dislike_count', 'favorite_count', 'comment_count', 'wiki_category'])
+    return render_template('video_result.html', title=find, data=vid_filter, titles=['video_id', 'video_title', 'published_at', 'view_count', 'like_count', 'favorite_count', 'comment_count', 'wiki_category'])
 
 # @bp.route('/comment_result', methods=["GET"])
 # def video_comment():

@@ -28,8 +28,8 @@ def secret_manager_setup():
     USAGE : Google Application Credentials setup
     """
     # GOOGLE CREDENTIALS & SECRET MANAGER
-    project_id = "youtubeapi-314206"
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "config/youtubeapi-314206-46ffa30d1127.json"
+    project_id = "api-website-333307"
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "config/api-website-333307-2f9aa748b514.json"
     client = secretmanager.SecretManagerServiceClient()
     return project_id, client
 
@@ -118,7 +118,7 @@ def gcp_sql_pull():
         result = cursor.fetchall()
         df = pd.DataFrame(result)
         df.columns = ['run_date', 'run_time', 'day', 'video_title', 'video_id', 'channel_title', 'channel_id', 'published_at',
-                      'category_id', 'view_count', 'like_count', 'dislike_count', 'favorite_count', 'comment_count', 'for_kids',
+                      'category_id', 'view_count', 'like_count', 'favorite_count', 'comment_count', 'for_kids',
                       'wiki_category', 'reg_category']
     except Exception as e:
         return 'Error: {}'.format(str(e))
@@ -169,7 +169,7 @@ def api_youtube_popular(name, max_result):
     df_popular = df_popular[
         ['snippet.title', 'id', 'snippet.channelTitle', 'snippet.channelId', 'snippet.publishedAt',
          'snippet.categoryId',  # video().list(part='snippet')
-         'statistics.viewCount', 'statistics.likeCount', 'statistics.dislikeCount', 'statistics.favoriteCount',
+         'statistics.viewCount', 'statistics.likeCount', 'statistics.favoriteCount',
          'statistics.commentCount',  # video().list(part='statistics')
          'topicDetails.topicCategories',  # video().list(part='topicDetails')
          'status.madeForKids']]
@@ -183,7 +183,6 @@ def api_youtube_popular(name, max_result):
                                'snippet.categoryId': 'category_id',
                                'statistics.viewCount': 'view_count',
                                'statistics.likeCount': 'like_count',
-                               'statistics.dislikeCount': 'dislike_count',
                                'statistics.favoriteCount': 'favorite_count',
                                'statistics.commentCount': 'comment_count',
                                'topicDetails.topicCategories': 'topic_categories',
@@ -399,7 +398,7 @@ def pickle_videos(type, channel_id):
     df_video_info = df_video_info[[
         'id',
         'snippet.title', 'snippet.publishedAt',
-        'statistics.viewCount', 'statistics.likeCount', 'statistics.dislikeCount', 'statistics.favoriteCount',
+        'statistics.viewCount', 'statistics.likeCount', 'statistics.favoriteCount',
         'statistics.commentCount',  # video().list(part='statistics')
         'topicDetails.topicCategories',  # video().list(part='topicDetails')
         'status.madeForKids']]
@@ -410,7 +409,6 @@ def pickle_videos(type, channel_id):
                                   'snippet.publishedAt': 'published_at',
                                   'statistics.viewCount': 'view_count',
                                   'statistics.likeCount': 'like_count',
-                                  'statistics.dislikeCount': 'dislike_count',
                                   'statistics.favoriteCount': 'favorite_count',
                                   'statistics.commentCount': 'comment_count',
                                   'topicDetails.topicCategories': 'topic_categories',
@@ -660,7 +658,7 @@ def globals_videos(type, channel_id):
     df_video_info = df_video_info[[
         'id',
         'snippet.title', 'snippet.publishedAt',
-        'statistics.viewCount', 'statistics.likeCount', 'statistics.dislikeCount', 'statistics.favoriteCount',
+        'statistics.viewCount', 'statistics.likeCount', 'statistics.favoriteCount',
         'statistics.commentCount',  # video().list(part='statistics')
         'topicDetails.topicCategories',  # video().list(part='topicDetails')
         'status.madeForKids']]
@@ -671,7 +669,6 @@ def globals_videos(type, channel_id):
                                   'snippet.publishedAt': 'published_at',
                                   'statistics.viewCount': 'view_count',
                                   'statistics.likeCount': 'like_count',
-                                  'statistics.dislikeCount': 'dislike_count',
                                   'statistics.favoriteCount': 'favorite_count',
                                   'statistics.commentCount': 'comment_count',
                                   'topicDetails.topicCategories': 'topic_categories',
@@ -884,7 +881,7 @@ def channel_playlist(channel_id):
     df_video_info = df_video_info[[
         'id',
         'snippet.title', 'snippet.publishedAt',
-        'statistics.viewCount', 'statistics.likeCount', 'statistics.dislikeCount', 'statistics.favoriteCount',
+        'statistics.viewCount', 'statistics.likeCount', 'statistics.favoriteCount',
         'statistics.commentCount',  # video().list(part='statistics')
         'topicDetails.topicCategories',  # video().list(part='topicDetails')
         'status.madeForKids']]
@@ -895,7 +892,6 @@ def channel_playlist(channel_id):
                                   'snippet.publishedAt': 'published_at',
                                   'statistics.viewCount': 'view_count',
                                   'statistics.likeCount': 'like_count',
-                                  'statistics.dislikeCount': 'dislike_count',
                                   'statistics.favoriteCount': 'favorite_count',
                                   'topicDetails.topicCategories': 'topic_categories',
                                   'status.madeForKids': 'for_kids'

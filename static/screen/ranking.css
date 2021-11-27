@@ -51,7 +51,7 @@
 .table thead tr th {
     color: lightslategrey;
     /* th(Index) column size */
-    width: 25px;
+    width: 3%;
     /* font */
     font-size: 15px;
     line-height: 1.75;
