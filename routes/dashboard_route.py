@@ -18,13 +18,14 @@ def search_result():
     search = channel_search(chanel_name)
     return render_template('channel_result.html', title=chanel_name, data=search, titles=['channel_id', 'published_at', 'channel_title', 'view_count','subscriber_count', 'video_count'])
 
-@bp.route('/video_result', methods=["GET"])
+@bp.route('/video_result', methods=['GET', 'POST'])
 def video_result():
-    channel_id = request.args.get('channel_id')
-    vid = pickle_videos(type='sample', channel_id=channel_id)
-    # vid = globals_videos(type='sample', channel_id=channel_id)
-    # vid = pd.read_pickle('Pickle/video_sample_info.pkl')
-    return render_template('video_result.html', title=channel_id, data=vid, titles=['video_id', 'video_title', 'published_at', 'view_count', 'like_count', 'favorite_count', 'comment_count', 'wiki_category'])
+    if request.method == "POST":
+        channel_id = request.form.get("channel_id")
+        vid = pickle_videos(type='sample', channel_id=channel_id)
+        # vid = globals_videos(type='sample', channel_id=channel_id)
+        # vid = pd.read_pickle('Pickle/video_sample_info.pkl')
+        return render_template('video_result.html', data=search, title=channel_id, vid=vid, titles=['video_id', 'video_title', 'published_at', 'view_count', 'like_count', 'favorite_count', 'comment_count', 'wiki_category'])
 
 @bp.route('/filter_result', methods=["GET"])
 def video_filter():
@@ -32,7 +33,7 @@ def video_filter():
     vid_filter = pickle_videos_filter(type='sample', find=find)
     # vid_filter = globals_videos_filter(find)
     # vid_filter = pd.read_pickle('Pickle/video_info_filter.pkl')
-    return render_template('video_result.html', title=find, data=vid_filter, titles=['video_id', 'video_title', 'published_at', 'view_count', 'like_count', 'favorite_count', 'comment_count', 'wiki_category'])
+    return render_template('video_result.html', title=find, vid=vid_filter, titles=['video_id', 'video_title', 'published_at', 'view_count', 'like_count', 'favorite_count', 'comment_count', 'wiki_category'])
 
 # @bp.route('/comment_result', methods=["GET"])
 # def video_comment():
