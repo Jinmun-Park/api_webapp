@@ -59,7 +59,8 @@ def keys():
     # GCP CLOUD PUBLIC IP
     public_ip = get_secrets("public_ip", project_id, client)
     # YOUTUBE API SERVICE KEY
-    service_key = get_secrets("service_key", project_id, client)
+    #service_key = get_secrets("service_key", project_id, client)
+    service_key = 'AIzaSyAM1a_XGQnnLDyJ7oYmhJV8mBDRY7MDtxk'
     return connection_name, query_string, db_name, db_user, db_password, driver_name, public_ip, service_key
 
 # PICKLE SETUP

@@ -5,6 +5,7 @@
 @import "screen/category.css";
 @import "screen/channel.css";
 @import "screen/search.css";
+@import "screen/latest_trend.css";
 
 body {
     font-family: 'Noto Sans KR', sans-serif;
@@ -29,6 +30,17 @@ body {
   box-shadow: 0 0 0 .25rem rgba(255, 255, 255, .25);
 }
 
+/* Logo Text */
+.logo-text{
+    /* font */
+    font-size: 25px;
+    line-height: 1.75;
+    word-break: keep-all;
+    font-family: 'Noto Sans Korean', 'Apple SD Gothic Neo', 'Nanum Barun Gothic', 'Malgun Gothic', '\\B3CB\C634', 'Dotum', sans-serif;
+    letter-spacing: -0.5px;
+}
+
+/* Head Bar */
 .bi {
   vertical-align: -.125em;
   fill: currentColor;
