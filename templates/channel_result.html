@@ -46,17 +46,6 @@
 
               <li class="nav-item">
                 <a class="nav-link" href="#">
-                    <div class="search">
-                    <form id="search_channel_id" method="get" action="/dashboard/video_result">
-                    <input name="channel_id" type="text" class="form-control" placeholder="채널아이디를 검색하세요." aria-label="채널아이디를 검색하세요." aria-describedby="button-addon2">
-                    <input type="submit" value="검색">
-                    </form>
-                    </div>
-                </a>
-              </li>
-
-              <li class="nav-item">
-                <a class="nav-link" href="#">
                       <div class="search">
                       <form id="search_keyword" method="get" action="/dashboard/filter_result">
                       <input name="find" type="text" class="form-control" placeholder="키워드를 검색하세요." aria-label="키워드를 검색하세요." aria-describedby="button-addon2">
@@ -93,7 +82,11 @@
                               <tbody style="user-select: auto;">
                                     {% for i in data.index %}        <! -- for tag start -->
                                     <tr style="user-select: auto;">
-                                        <td style="user-select: auto;">{{ data['channel_id'][i] }}</td>
+                                        <td style="user-select: auto;">
+                                            <form method="post" action="/dashboard/video_result">
+                                            <input type="radio" id="{{ data['channel_id'][i] }}" value="{{ data['channel_id'][i] }}" name="channel_id" cheked>
+                                            <label for="{{ data['channel_id'][i] }}">{{ data['channel_id'][i] }}</label>
+                                            <input type="submit" value="검색"></form></td>
                                         <td style="user-select: auto;">{{ data['published_at'][i] }}</td>
                                         <td style="user-select: auto;">{{ data['channel_title'][i] }}</td>
                                         <td style="user-select: auto;">{{ data['view_count'][i] }}</td>
@@ -108,15 +101,8 @@
                         </div>
                       </div>
                     </div>
-
-
-
-
-
     </main>
   </div>
 </div>
-
-
-
 {% endblock %}
+

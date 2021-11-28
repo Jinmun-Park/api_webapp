@@ -46,17 +46,6 @@
 
               <li class="nav-item">
                 <a class="nav-link" href="#">
-                    <div class="search">
-                    <form id="search_channel_id" method="get" action="/dashboard/video_result">
-                    <input name="channel_id" type="text" class="form-control" placeholder="채널아이디를 검색하세요." aria-label="채널아이디를 검색하세요." aria-describedby="button-addon2">
-                    <input type="submit" value="검색">
-                    </form>
-                    </div>
-                </a>
-              </li>
-
-              <li class="nav-item">
-                <a class="nav-link" href="#">
                       <div class="search">
                       <form id="search_keyword" method="get" action="/dashboard/filter_result">
                       <input name="find" type="text" class="form-control" placeholder="키워드를 검색하세요." aria-label="키워드를 검색하세요." aria-describedby="button-addon2">
@@ -81,7 +70,7 @@
                           <h5 class="card-title" style="user-select: auto;">{{ title }} 검색 결과</h5>
 
                           <div class="table-responsive pt-3" style="user-select: auto;">
-                            <table class="table table-bordered" style="user-select: auto;">
+                            <table  id="table" class="table table-bordered" style="user-select: auto;">
                               <thead style="user-select: auto;">
                                 <tr style="user-select: auto;">
                                     {% for t in titles %}
@@ -91,16 +80,16 @@
                               </thead>
 
                               <tbody style="user-select: auto;">
-                                    {% for i in data.index %}        <! -- for tag start -->
+                                    {% for i in vid.index %}        <! -- for tag start -->
                                     <tr style="user-select: auto;">
-                                        <td style="user-select: auto;">{{ data['video_id'][i] }}</td>
-                                        <td style="user-select: auto;">{{ data['video_title'][i] }}</td>
-                                        <td style="user-select: auto;">{{ data['published_at'][i] }}</td>
-                                        <td style="user-select: auto;">{{ data['view_count'][i] }}</td>
-                                        <td style="user-select: auto;">{{ data['like_count'][i] }}</td>
-                                        <td style="user-select: auto;">{{ data['favorite_count'][i] }}</td>
-                                        <td style="user-select: auto;">{{ data['comment_count'][i] }}</td>
-                                        <td style="user-select: auto;">{{ data['wiki_category'][i] }}</td>
+                                        <td style="user-select: auto;">{{ vid['video_id'][i] }}</td>
+                                        <td style="user-select: auto;">{{ vid['video_title'][i] }}</td>
+                                        <td style="user-select: auto;">{{ vid['published_at'][i] }}</td>
+                                        <td style="user-select: auto;">{{ vid['view_count'][i] }}</td>
+                                        <td style="user-select: auto;">{{ vid['like_count'][i] }}</td>
+                                        <td style="user-select: auto;">{{ vid['favorite_count'][i] }}</td>
+                                        <td style="user-select: auto;">{{ vid['comment_count'][i] }}</td>
+                                        <td style="user-select: auto;">{{ vid['wiki_category'][i] }}</td>
                                     </tr>
                                     {% endfor %}                          <! -- for tag end -->
                               </tbody>
@@ -110,6 +99,29 @@
                         </div>
                       </div>
                     </div>
+    </main>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+  <script>
+    $(document).ready(function () {
+      $('#table').dataTable({
+        columns: [
+          {searchable: false, orderable: false},
+          {orderable: false},
+          {searchable: false},
+          {searchable: false},
+          {searchable: false},
+          {searchable: false},
+          {searchable: false},
+          null],
+      });
+    });
+  </script>
 
 
 {% endblock %}
