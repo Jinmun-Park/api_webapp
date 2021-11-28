@@ -33,15 +33,17 @@
       {% block title %}{% endblock %}
     </title>
   </head>
-  <body>
 
+<body>
  <!-- Header -->
-  <div class="head">
+<header>
+<div class="head sticky-top">
       <div class="px-3 py-3">
         <div class="container-fluid">
           <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-            <a href="/" class="fw-bold d-flex align-items-center my-2 my-lg-0 me-lg-auto text-dark text-decoration-none text-large">
-              YOUTUBE ANALYSIS
+            <a href="/" class="logo-text fw-bold d-flex align-items-center my-2 my-lg-0 me-lg-auto text-dark text-decoration-none">
+              <img src="../static/images/logo.png" class="bi me-1" style="width: 45px; height: 35px;">
+              DATA <span style="color:#368040">PARK</span>
             </a>
             <ul class="nav col-12 col-lg-auto my-2 justify-content-center my-md-0 text-small">
               <li>
@@ -79,6 +81,8 @@
         </div>
       </div>
     </div>
+</header>
+</body>
 
     {% block content %}
     {% endblock %}
@@ -88,5 +92,4 @@
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.js"></script>
     {% block scripts %}{% endblock %}
 
-  </body>
 </html>

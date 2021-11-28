@@ -4,11 +4,11 @@ import datetime as dt
 from routes.chart_route import df, df_category, df_channeltitle
 
 from flask import Blueprint, render_template
-bp = Blueprint('trend', __name__, url_prefix='/latest_trend')
+bp = Blueprint('latest_trend', __name__, url_prefix='/latest_trend')
 
 @bp.route('/', methods=["GET"])
 def latest_trend():
-    return render_template('trend.html')
+    return render_template('latest_trend.html')
 
 @bp.route('/category', methods=["GET"])
 def trend_category():

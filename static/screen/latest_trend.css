@@ -1,0 +1,47 @@
+body {
+  font-size: .875rem;
+}
+
+.feather {
+  width: 16px;
+  height: 16px;
+  vertical-align: text-bottom;
+}
+
+/*
+ * Sidebar
+ */
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  /* rtl:raw:
+  right: 0;
+  */
+  bottom: 0;
+  /* rtl:remove */
+  left: 0;
+  z-index: 100; /* Behind the navbar */
+  padding: 90px 0 0; /* Height of navbar */
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+  /* font */
+  font-size: 16px;
+  font-weight: 150;
+  line-height: 1.75;
+  word-break: keep-all;
+  font-family: 'Noto Sans Korean', 'Apple SD Gothic Neo', 'Nanum Barun Gothic', 'Malgun Gothic', '\\B3CB\C634', 'Dotum', sans-serif;
+  letter-spacing: -0.5px;
+}
+
+@media (max-width: 767.98px) {
+  .sidebar {
+    top: 7rem;
+  }
+}
+
+
+.bi {
+  vertical-align: -.125em;
+  pointer-events: none;
+  fill: currentColor;
+}
