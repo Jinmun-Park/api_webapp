@@ -1,10 +1,20 @@
-#chart {
-    margin-left: 40px;
-    margin-right: 40px;
-    margin-bottom: 30px;
-    }
+/* Chart General Layout Control */
+.chart-row{
+    width: 100%;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    margin-left: 270px;
+    margin-right: 500px;
 
-.category_table {
-    margin-left: 40px;
-    margin-right: 40px;
-    }
+}
+
+/* Table Layout Control */
+.trend-category-table {
+    width: 80%;
+    margin-left: 270px;
+}
+
+#category-chart1{
+    /*width : 80%!important;
+    height: 80%!important;*/
+}

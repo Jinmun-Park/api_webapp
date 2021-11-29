@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-인기 동영상 랭킹a
+인기 동영상 랭킹
 {% endblock %}
 
 {% block content %}
@@ -66,13 +66,24 @@
 </svg>
 
 <div class="container-fluid">
-    <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+    <nav id="Trend-sidebarMenu" class="col-md-3 d-md-block bg-light sidebar collapse">
       <div class="position-sticky pt-3">
+          <ul class="three-column-side nav nav-pills">
+            <li class="nav-item">
+              <a href="/latest_trend/category" class="nav-link active" aria-current="page">Latest</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link link-dark" href="#">15 Days</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link link-dark" href="#">30 Days</a>
+            </li>
+          </ul>
         <ul class="nav nav-pills flex-column mb-auto">
           <li class="nav-item">
-            <a href="#" class="nav-link active" aria-current="page">
+            <a href="/latest_trend/category" class="nav-link active" aria-current="page">
               <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
-              Home
+              Category
             </a>
           </li>
           <li>
@@ -100,5 +111,8 @@
             </a>
           </li>
         </ul>
+      </div>
+    </nav>
+</div>
 
 {% endblock %}
