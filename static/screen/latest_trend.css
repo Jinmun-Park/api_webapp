@@ -12,6 +12,10 @@ body {
  * Sidebar
  */
 
+#Trend-sidebarMenu{
+  width: 13%;
+}
+
 .sidebar {
   position: fixed;
   top: 0;
@@ -39,9 +43,13 @@ body {
   }
 }
 
-
 .bi {
   vertical-align: -.125em;
   pointer-events: none;
   fill: currentColor;
+}
+
+.three-column-side{
+  margin-bottom: 25px;
+  right: 0;
 }

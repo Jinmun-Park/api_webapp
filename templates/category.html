@@ -5,38 +5,131 @@
 {% endblock %}
 
 {% block content %}
-<div class="ranking_title">
+
+<div class="container-fluid">
+    <nav id="Trend-sidebarMenu" class="col-md-3 d-md-block bg-light sidebar collapse">
+      <div class="position-sticky pt-3">
+          <ul class="three-column-side nav nav-pills">
+            <li class="nav-item">
+              <a href="/latest_trend/category" class="nav-link active" aria-current="page">Latest</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link link-dark" href="#">15 Days</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link link-dark" href="#">30 Days</a>
+            </li>
+          </ul>
+        <ul class="nav nav-pills flex-column mb-auto">
+          <li class="nav-item">
+            <a href="/latest_trend/category" class="nav-link active" aria-current="page">
+              <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+              Category
+            </a>
+          </li>
+          <li>
+            <a href="#" class="nav-link link-dark">
+              <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"/></svg>
+              Dashboard
+            </a>
+          </li>
+          <li>
+            <a href="#" class="nav-link link-dark">
+              <svg class="bi me-2" width="16" height="16"><use xlink:href="#table"/></svg>
+              Orders
+            </a>
+          </li>
+          <li>
+            <a href="#" class="nav-link link-dark">
+              <svg class="bi me-2" width="16" height="16"><use xlink:href="#grid"/></svg>
+              Productsa
+            </a>
+          </li>
+          <li>
+            <a href="#" class="nav-link link-dark">
+              <svg class="bi me-2" width="16" height="16"><use xlink:href="#people-circle"/></svg>
+              Customers
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+</div>
+
+<div class="chart-row row">
+    <div class="col-7 d-flex flex-column">
+        <div class="flex-grow card-body rounded-3 shadow">
+            <canvas class="my-4" id="category-chart1"></canvas>
+                <script>
+                    var chart1 = document.getElementById('category-chart1').getContext('2d');
+                    var mychart1 = new Chart(chart1, {
+                        type: 'bar',
+                        data: {
+                            labels: {{ category | safe }},
+                            datasets: [{
+                                label: '카테고리',
+                                data: {{ category_rate | safe }},
+                                borderColor: "rgb(75, 192, 192)"}]
+                        }
+                    });
+                </script>
+        </div>
+    </div>
+    <div class="col-3 d-flex flex-column">
+        <div class="row flex-grow">
+            <div class="flex-grow stretch-card rounded-3 shadow">
+            <canvas class="my-4" id="category-chart2"></canvas>
+                <script>
+                    var chart2 = document.getElementById('category-chart2').getContext('2d');
+                    var mychart1 = new Chart(chart2, {
+                        type: 'doughnut',
+                        data: {
+                            labels: {{ category | safe }},
+                            datasets: [{
+                                label: '카테고리',
+                                data: {{ category_rate | safe }},
+                                backgroundColor: [
+                                  'rgb(255, 99, 132)',
+                                  'rgb(54, 162, 235)',
+                                  'rgb(255, 205, 86)',
+                                  'rgb(60, 179, 113)',
+                                  'rgb(238, 130, 238)'
+                                ],
+                            }]
+                        }
+                    });
+                </script>
+            </div>
+            <div class="flex-grow stretch-card rounded-3 shadow">
+            <canvas class="my-4" id="category-chart2"></canvas>
+                <script>
+                    var chart2 = document.getElementById('category-chart2').getContext('2d');
+                    var mychart1 = new Chart(chart2, {
+                        type: 'doughnut',
+                        data: {
+                            labels: {{ category | safe }},
+                            datasets: [{
+                                label: '카테고리',
+                                data: {{ category_rate | safe }},
+                                backgroundColor: [
+                                  'rgb(255, 99, 132)',
+                                  'rgb(54, 162, 235)',
+                                  'rgb(255, 205, 86)',
+                                  'rgb(60, 179, 113)',
+                                  'rgb(238, 130, 238)'
+                                ],
+                            }]
+                        }
+                    });
+                </script>
+            </div>
+        </div>
+    </div>
+
 
 </div>
 
-<div class="ranking_analysis">
-<div>
-<select  class="form-select" aria-label="Default select example" onchange="location = this.value;">
-    <option selected>인기 동영상 분석</option>
-    <option value="/latest_trend/category">카테고리별 분석</option>
-    <option value="/latest_trend/channel">채널별 분석</option>
-</select>
-</div>
-</div>
-
-<div id="chart">
-<canvas id="myChart1"></canvas>
-    <script>
-        var ctx = document.getElementById('myChart1').getContext('2d');
-        var mychart1 = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: {{ category | safe }},
-                datasets: [{
-                    label: '카테고리',
-                    data: {{ category_rate | safe }},
-                    borderColor: "rgb(75, 192, 192)"}]
-            }
-        });
-    </script>
-</div>
-
-<div class="category_table">
+<div class="trend-category-table">
 <table id="table" class="table table-hover">
   <thead>
     <tr>
