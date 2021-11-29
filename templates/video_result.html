@@ -34,25 +34,28 @@
           <div class="position-sticky pt-3">
             <ul class="nav flex-column">
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">
                       <div class="search">
                       <form id="search_channel" method="get" action="/dashboard/channel_result">
                       <input name="cha_name" type="text" class="form-control" placeholder="채널을 검색하세요." aria-label="채널을 검색하세요." aria-describedby="button-addon2">
                       <input type="submit" value="검색">
                       </form>
                       </div>
-                </a>
               </li>
 
               <li class="nav-item">
-                <a class="nav-link" href="#">
+                <div class="search_list">
+                    <div class="search_title">{{ title }}</div>
+                    <div class="search_cancel" style="user-select: auto;"><a href= {{url_for('dashboard.search') }}>Clear all</a></div>
+                </div>
+              </li>
+
+              <li class="nav-item">
                       <div class="search">
                       <form id="search_keyword" method="get" action="/dashboard/filter_result">
                       <input name="find" type="text" class="form-control" placeholder="키워드를 검색하세요." aria-label="키워드를 검색하세요." aria-describedby="button-addon2">
                       <input type="submit" value="검색">
                       </form>
                       </div>
-                </a>
               </li>
             </ul>
           </div>
