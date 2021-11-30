@@ -1,11 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap');
 
 @import "screen/index.css";
-@import "screen/ranking.css";
-@import "screen/category.css";
-@import "screen/channel.css";
-@import "screen/search.css";
+@import "screen/chart.css";
+@import "screen/dashboard.css";
 @import "screen/latest_trend.css";
+@import "screen/category.css";
+@import "screen/sentiment.css";
 
 body {
     font-family: 'Noto Sans KR', sans-serif;
