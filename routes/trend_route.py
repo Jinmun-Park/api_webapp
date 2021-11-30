@@ -1,5 +1,4 @@
 import pandas as pd
-from src.utils.api import read_pickle, gcp_sql_pull
 import datetime as dt
 from routes.chart_route import flask_chart_analysis
 
