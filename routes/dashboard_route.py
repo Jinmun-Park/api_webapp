@@ -25,7 +25,7 @@ def video_result():
         vid = pickle_videos(type='sample', channel_id=channel_id)
         # vid = globals_videos(type='sample', channel_id=channel_id)
         # vid = pd.read_pickle('Pickle/video_sample_info.pkl')
-        return render_template('video_result.html', data=search, title=channel_id, vid=vid, titles=['video_id', 'video_title', 'published_at', 'view_count', 'like_count', 'favorite_count', 'comment_count', 'wiki_category'])
+        return render_template('video_result.html', title=channel_id, vid=vid, titles=['video_id', 'video_title', 'published_at', 'view_count', 'like_count', 'favorite_count', 'comment_count', 'wiki_category'])
 
 @bp.route('/filter_result', methods=["GET"])
 def video_filter():
@@ -33,13 +33,14 @@ def video_filter():
     vid_filter = pickle_videos_filter(type='sample', find=find)
     # vid_filter = globals_videos_filter(find)
     # vid_filter = pd.read_pickle('Pickle/video_info_filter.pkl')
-    return render_template('video_result.html', title=find, vid=vid_filter, titles=['video_id', 'video_title', 'published_at', 'view_count', 'like_count', 'favorite_count', 'comment_count', 'wiki_category'])
+    return render_template('keyword_result.html', title=find, vid=vid_filter, titles=['video_id', 'video_title', 'published_at', 'view_count', 'like_count', 'favorite_count', 'comment_count', 'wiki_category'])
 
-# @bp.route('/comment_result', methods=["GET"])
-# def video_comment():
-#     # vid_comments = pickle_videos_comments(type='sample', option='delete')
-#     data = pd.read_pickle('Pickle/video_comment.pkl')
-#     return render_template('video_result.html', tables=[data.to_html(classes='data')])
+@bp.route('/comment_result', methods=["GET"])
+def video_comment():
+    vid_comments = pickle_videos_comments(type='sample', option='save')
+    # data = pd.read_pickle('Pickle/video_comment.pkl')
+    return render_template('comment_result.html', data=vid_comments, titles=['comment_id', 'comment', 'author', 'like_count', 'published_at','reply_count'])
+
 
 
 

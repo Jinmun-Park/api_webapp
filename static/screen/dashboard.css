@@ -1,0 +1,60 @@
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    border-radius: 20px;
+}
+
+.search{
+    margin-top: 30px;
+    }
+
+#search_channel,
+#search_keyword{
+    display: flex;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.card-title,
+.card-content{
+    display: flex;
+    justify-content: center;
+    font-weight: 100;
+}
+
+.search_list {
+    display: flex;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 10px;
+}
+
+.search_title {
+    margin-right: 20px;
+    background-color: antiquewhite;
+    border-radius: 5px;
+}
+
+.search_title,
+.search_cancel {
+    font-size: small;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+}
+
+/* comment button */
+.comment{
+    display: flex;
+    justify-content: flex-end;
+}
+
+.sentiment{
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    }

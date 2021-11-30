@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-댓글 감성 분석
+채널 검색
 {% endblock %}
 
 {% block content %}
@@ -52,11 +52,11 @@
               </li>
 
                 <li class="nav-item">
-                      <div class="sentiment">
-                          <a href="/sentiment" class="btn btn-secondary btn-lg active" role="button" aria-pressed="true">감성분석</a>
-                      </div>
-              </li>
-
+                    <div class="search_list">
+                        <div class="search_title">{{ title }}</div>
+                        <div class="search_cancel" style="user-select: auto;"><a href= {{url_for('dashboard.search') }}>Clear all</a></div>
+                    </div>
+                </li>
             </ul>
           </div>
         </nav>
@@ -70,7 +70,8 @@
         <div class="col-lg-12 grid-margin stretch-card" style="user-select: auto;">
                       <div class="card" style="user-select: auto;">
                         <div class="card-body" style="user-select: auto;">
-                          <h5 class="card-title" style="user-select: auto;">감성분석 결과</h5>
+                          <h5 class="card-title" style="user-select: auto;">{{ title }} 검색 결과</h5>
+                            <div class="comment"><a href="/dashboard/comment_result" class="btn btn-secondary btn-lg active" role="button" aria-pressed="true">댓글 보기</a></div>
 
                           <div class="table-responsive pt-3" style="user-select: auto;">
                             <table  id="table" class="table table-bordered" style="user-select: auto;">
@@ -83,10 +84,16 @@
                               </thead>
 
                               <tbody style="user-select: auto;">
-                                    {% for i in data.index %}        <! -- for tag start -->
+                                    {% for i in vid.index %}        <! -- for tag start -->
                                     <tr style="user-select: auto;">
-                                        <td style="user-select: auto;">{{ data['emotion'][i] }}</td>
-                                        <td style="user-select: auto;">{{ data['comment'][i] }}</td>
+                                        <td style="user-select: auto;">{{ vid['video_id'][i] }}</td>
+                                        <td style="user-select: auto;">{{ vid['video_title'][i] }}</td>
+                                        <td style="user-select: auto;">{{ vid['published_at'][i] }}</td>
+                                        <td style="user-select: auto;">{{ vid['view_count'][i] }}</td>
+                                        <td style="user-select: auto;">{{ vid['like_count'][i] }}</td>
+                                        <td style="user-select: auto;">{{ vid['favorite_count'][i] }}</td>
+                                        <td style="user-select: auto;">{{ vid['comment_count'][i] }}</td>
+                                        <td style="user-select: auto;">{{ vid['wiki_category'][i] }}</td>
                                     </tr>
                                     {% endfor %}                          <! -- for tag end -->
                               </tbody>
@@ -103,14 +110,22 @@
 {% endblock %}
 
 {% block scripts %}
+
   <script>
     $(document).ready(function () {
       $('#table').dataTable({
         columns: [
-          null,
-          {orderable: false}
-          ],
+          {searchable: false, orderable: false},
+          {orderable: false},
+          {searchable: false},
+          {searchable: false},
+          {searchable: false},
+          {searchable: false},
+          {searchable: false},
+          null],
       });
     });
   </script>
+
+
 {% endblock %}

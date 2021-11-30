@@ -34,53 +34,45 @@
           <div class="position-sticky pt-3">
             <ul class="nav flex-column">
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">
                       <div class="search">
                       <form id="search_channel" method="get" action="/dashboard/channel_result">
                       <input name="cha_name" type="text" class="form-control" placeholder="채널을 검색하세요." aria-label="채널을 검색하세요." aria-describedby="button-addon2">
                       <input type="submit" value="검색">
                       </form>
                       </div>
-                </a>
               </li>
 
               <li class="nav-item">
-                <a class="nav-link" href="#">
                       <div class="search">
                       <form id="search_keyword" method="get" action="/dashboard/filter_result">
                       <input name="find" type="text" class="form-control" placeholder="키워드를 검색하세요." aria-label="키워드를 검색하세요." aria-describedby="button-addon2">
                       <input type="submit" value="검색">
                       </form>
                       </div>
-                </a>
               </li>
             </ul>
           </div>
         </nav>
 
     <!-- Dashboard Main -->
-    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Dashboard</h1>
-      </div>
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">Dashboard</h1>
+          </div>
 
-        <div class="col-lg-12 grid-margin stretch-card" style="user-select: auto;">
-                      <div class="card" style="user-select: auto;">
-                        <div class="card-body" style="user-select: auto;">
-                          <h5 class="card-title" style="user-select: auto;">Guide</h5>
-                            <h6>채널을 검색하신 뒤, 채널 아이디를 클릭하면 채널 아이디별 영상을 조회할 수 있습니다.</h6>
-                            <h6>이후 특정 키워드를 입력하시면 키워드가 포함된 영상을 조회할 수 있습니다.</h6>
-                        </div>
-                      </div>
+            <div class="col-lg-12 grid-margin stretch-card" style="user-select: auto;">
+                <div class="card" style="user-select: auto;">
+                    <div class="card-body" style="user-select: auto;">
+                        <h5 class="card-title" style="user-select: auto;">Guide</h5>
+                            <h6 class="card-content">채널을 검색하신 뒤, 채널 아이디를 클릭하면 채널 아이디별 영상을 조회할 수 있습니다.</h6>
+                            <h6 class="card-content">이후 특정 키워드를 입력하시면 키워드가 포함된 영상과 그 영상들에서 추출한 댓글을 조회할 수 있습니다.</h6>
+                            <h6 class="card-content">댓글 감성분석 서비스도 제공합니다.</h6>
                     </div>
-
-
-
-
-
-    </main>
-  </div>
-</div>
+                </div>
+            </div>
+        </main>
+        </div>
+    </div>
 {% endblock %}
 
 {% block scripts %}
