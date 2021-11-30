@@ -1,20 +1,33 @@
 /* Chart General Layout Control */
 .chart-row{
-    width: 100%;
+    width: 99%;
     margin-top: 30px;
     margin-bottom: 20px;
-    margin-left: 270px;
-    margin-right: 500px;
-
+    padding-right: 1%;
+    padding-left: 15%;
 }
+.chart-left{
+    width: 65%;
+}
+.chart-right{
+    width: 35%;
+}
+.chart-top-right{
+    margin-bottom: 5%;
+}
+
 
 /* Table Layout Control */
 .trend-category-table {
     width: 80%;
-    margin-left: 270px;
+    padding-left: 15%;
 }
 
 #category-chart1{
     /*width : 80%!important;
     height: 80%!important;*/
+}
+#category-char3{
+    width : 80%!important;
+    height: 80%!important;
 }

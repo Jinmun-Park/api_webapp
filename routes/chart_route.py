@@ -4,6 +4,7 @@ import datetime as dt
 
 
 # ====================== FUNCTION SETUP ====================== #
+
 def flask_popular_chart():
     # ====================== READ FILES ====================== #
     # Read pickle files
@@ -43,19 +44,35 @@ def flask_popular_chart():
     # Counting index
     df.index = df.index+1
 
+    return df
+
+def flask_chart_analysis():
+
+    df = flask_popular_chart()
+
     # ================== FIELD ANALYSIS ================== #
-    # Category
-    df_category = df['카테고리'].value_counts(normalize=True)
+    # Category Count
+    df_category = df['카테고리'].value_counts(normalize=True) * 100
     df_category = pd.DataFrame(df_category)
-    # Channeltitle
-    df_channeltitle = df['채널명'].value_counts(normalize=True)
+
+    # Channeltitle Count
+    df_channeltitle = df['채널명'].value_counts(normalize=True) * 100
     df_channeltitle = pd.DataFrame(df_channeltitle)
 
-    return df, df_category, df_channeltitle
+    # Category Numeric Sum
+    df_category_view = pd.DataFrame(df.groupby(['카테고리'])['조회수'].sum())
+    df_category_view_per = pd.DataFrame((df_category_view['조회수'] / df_category_view['조회수'].sum()) * 100)
+    df_category_like = pd.DataFrame(df.groupby(['카테고리'])['좋아요수'].sum())
+    df_category_like_per = pd.DataFrame((df_category_like['좋아요수'] / df_category_like['좋아요수'].sum()) * 100)
+    df_category_comment = pd.DataFrame(df.groupby(['카테고리'])['댓글수'].sum())
+    df_category_comment_per = pd.DataFrame((df_category_comment['댓글수'] / df_category_comment['댓글수'].sum()) * 100)
+
+
+    return df, df_category, df_channeltitle, df_category_view_per, df_category_like_per, df_category_comment_per
 
 # ====================== Flask ====================== #
 from flask import Blueprint, render_template
-df, df_category, df_channeltitle = flask_popular_chart()
+df = flask_popular_chart()
 bp = Blueprint('chart', __name__, url_prefix='/chart')
 
 @bp.route('/', methods=["GET"])
