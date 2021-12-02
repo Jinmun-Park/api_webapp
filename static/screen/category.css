@@ -1,10 +1,86 @@
+/* General Font */
+general-font{
+  line-height: 1.75;
+  word-break: keep-all;
+  font-family: 'Noto Sans Korean', 'Apple SD Gothic Neo', 'Nanum Barun Gothic', 'Malgun Gothic', '\\B3CB\C634', 'Dotum', sans-serif;
+  letter-spacing: -0.5px;
+}
+
+/* Dashboard font */
+.card-demographic-text {
+    color: #5a5c69 !important;
+}
+
+.card-demographic-btmtext{
+    color: #5a5c69 !important;
+    font-weight: 500 !important;
+    margin-top: 1%;
+    margin-left: 3%;
+    font-size: 0.75rem;
+    line-height: 1.25rem;
+}
+
+/* Info Chart Layout Control */
+.chart-upper-row{
+    width: 99%;
+    margin-top: 30px;
+    padding-left: 14%;
+}
+
+.card-demographic{
+    margin-right: 0;
+    margin-left: 0;
+}
+
+/* Info Chart color */
+.border-left-001{
+    border-left: .25rem solid #4e73df!important;
+}
+.card-text-001{
+    color: #4e73df;
+}
+.bi-clipboard-data{
+    color: #4e73df;
+}
+
+
+.border-left-002{
+    border-left: .25rem solid #1cc88a!important;
+}
+.card-text-002{
+    color:#1cc88a;
+}
+.bi-hand-thumbs-up{
+    color: #1cc88a;
+}
+
+
+.border-left-003{
+    border-left: .25rem solid #36b9cc!important;
+}
+.card-text-003{
+    color:#36b9cc;
+}
+.category-bi-grid-3x3-gap{ /* Class is added to avoid duplication from trend main */
+    color:#36b9cc;
+}
+
+.border-left-004{
+    border-left: .25rem solid #f6c23e!important;
+}
+.card-text-004{
+    color:#f6c23e;
+}
+.bi-keyboard{
+    color:#f6c23e;
+}
+
 /* Chart General Layout Control */
 .chart-row{
     width: 99%;
-    margin-top: 30px;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     padding-right: 1%;
-    padding-left: 15%;
+    padding-left: 14%;
 }
 .chart-left{
     width: 65%;
@@ -13,14 +89,23 @@
     width: 35%;
 }
 .chart-top-right{
-    margin-bottom: 5%;
+    margin-bottom: 3%;
 }
 
+.card-manual-line{
+    border-top: 0.02rem solid rgba(0,0,0,.05);
+    border-left: 0.02rem solid rgba(0,0,0,.05);
+}
 
 /* Table Layout Control */
 .trend-category-table {
-    width: 80%;
-    padding-left: 15%;
+    width: 97%;
+    padding-left: 14%;
+}
+
+/* Chart shadow adjustment */
+.shadow{
+    box-shadow: .1rem .2rem .3rem rgba(0,0,0,.15)!important;
 }
 
 #category-chart1{

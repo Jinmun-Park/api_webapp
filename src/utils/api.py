@@ -59,8 +59,8 @@ def keys():
     # GCP CLOUD PUBLIC IP
     public_ip = get_secrets("public_ip", project_id, client)
     # YOUTUBE API SERVICE KEY
-    #service_key = get_secrets("service_key", project_id, client)
-    service_key = 'AIzaSyAM1a_XGQnnLDyJ7oYmhJV8mBDRY7MDtxk'
+    service_key = get_secrets("service_key", project_id, client)
+    #service_key = 'AIzaSyAM1a_XGQnnLDyJ7oYmhJV8mBDRY7MDtxk'
     return connection_name, query_string, db_name, db_user, db_password, driver_name, public_ip, service_key
 
 # PICKLE SETUP
@@ -97,8 +97,12 @@ def read_pickle(file_name: str) -> pd.DataFrame:
     return pd.read_pickle('Pickle/' + file_name)
 
 # ==================== RETRIEVING DATA FROM GOOGLE CLOUD SQL =================== #
-def gcp_sql_pull():
-
+def gcp_sql_pull(command):
+    """
+    SECTION : GCP, Chart
+    DESCRIPTION : Pulling popular chart from GCP SQL database
+    USAGE : command='daily' extracts daily popular chart, whereas command='accumulated' extracts accumulated chart.
+    """
     # ======================== GOOGLE SECRET Reading ========================= #
     connection_name, query_string, db_name, db_user, db_password, driver_name, public_ip, service_key = keys()
     # ======================================================================== #
@@ -112,10 +116,15 @@ def gcp_sql_pull():
         password=db_password,
         db=db_name
     )
+    if command == 'daily':
+        com = 'SELECT * FROM youtube_daily_chart'
+    else:
+        com = 'SELECT * FROM youtube_chart'
+
     # Connect & Execute
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM youtube_daily_chart")
+        cursor.execute(com)
         result = cursor.fetchall()
         df = pd.DataFrame(result)
         df.columns = ['run_date', 'run_time', 'day', 'video_title', 'video_id', 'channel_title', 'channel_id', 'published_at',
@@ -247,6 +256,202 @@ def api_youtube_popular(name, max_result):
     print('Time taken : ' + timetaken.__str__())
 
     return youtube_popular
+
+def flask_chart(command):
+    """
+    SECTION : flask, channel, analysis
+    DESCRIPTION : Select columns from popular chart and converting popular chart into Korean.
+    USAGE : command='daily' extracts daily popular chart, whereas command='accumulated' extracts accumulated chart.
+    """
+    # ====================== READ FILES ====================== #
+    # Read pickle files
+    #df = read_pickle('youtube_popular.pkl')
+    if command == 'daily':
+        df = gcp_sql_pull(command='daily')
+    else:
+        df = gcp_sql_pull(command='accumulated')
+    #df = gcp_sql_ip_connection()
+
+    # ================== DATA PREPROCESSING ================== #
+    # Select columns
+    df = df[['video_title', 'video_id', 'channel_title', 'published_at', 'view_count', 'like_count', 'comment_count', 'wiki_category']]
+    # Rename columns (English - Korean)
+    df.rename(columns={'video_title': '동영상',
+                       'video_id': '동영상아이디',
+                       'channel_title': '채널명',
+                       'published_at': '날짜',
+                       'view_count': '조회수',
+                       'like_count': '좋아요수',
+                       'comment_count': '댓글수',
+                       'wiki_category': '카테고리'
+                       }, inplace=True)
+    # Reset index
+    df = df.reset_index(drop=True)
+    # Converting field type : Date
+    df['날짜'] = pd.to_datetime(df['날짜'], infer_datetime_format=True)
+    df['날짜'] = df['날짜'].dt.strftime("%Y-%m-%d")
+    # Converting field type : Numeric
+    df[['조회수', '좋아요수', '댓글수']] = df[['조회수', '좋아요수', '댓글수']].apply(pd.to_numeric)
+    # Converting field type : Category
+    df['카테고리'].replace('Entertainment', '엔터테인먼트', inplace=True)
+    df['카테고리'].replace(['Music','Hip_hop_music','Electronic_music'], '뮤직', inplace=True)
+    df['카테고리'].replace('Food', '푸드', inplace=True)
+    df['카테고리'].replace('Video_game_culture', '게임', inplace=True)
+    df['카테고리'].replace('Lifestyle_(sociology)', '라이프스타일', inplace=True)
+    df['카테고리'].replace(['Sport', 'Association_football'], '스포츠', inplace=True)
+    df['카테고리'].replace('Society', '사회', inplace=True)
+    df['카테고리'].replace('Health', '건강', inplace=True)
+    # Counting index
+    df.index = df.index+1
+
+    return df
+
+def flask_category(command):
+    """
+    SECTION : flask, channel, analysis
+    DESCRIPTION : Extending flask_chart() to category and converting them into Korean.
+    USAGE : command='daily' extracts daily popular chart, whereas command='accumulated' extracts accumulated chart.
+    """
+    # ====================== READ FILES ====================== #
+    if command == 'daily':
+        df = flask_chart(command='daily')
+    else:
+        df = flask_chart(command='accumulated')
+
+    # ================== FIELD ANALYSIS ================== #
+    # Category Count
+    df_category = df['카테고리'].value_counts(normalize=True) * 100
+    df_category = pd.DataFrame(df_category)
+
+    # Channeltitle Count
+    df_channeltitle = df['채널명'].value_counts(normalize=True) * 100
+    df_channeltitle = pd.DataFrame(df_channeltitle)
+
+    # Category Percentage
+    df_category_view = pd.DataFrame(df.groupby(['카테고리'])['조회수'].sum())
+    df_category_view_per = pd.DataFrame((df_category_view['조회수'] / df_category_view['조회수'].sum()) * 100)
+    df_category_like = pd.DataFrame(df.groupby(['카테고리'])['좋아요수'].sum())
+    df_category_like_per = pd.DataFrame((df_category_like['좋아요수'] / df_category_like['좋아요수'].sum()) * 100)
+    df_category_comment = pd.DataFrame(df.groupby(['카테고리'])['댓글수'].sum())
+    df_category_comment_per = pd.DataFrame((df_category_comment['댓글수'] / df_category_comment['댓글수'].sum()) * 100)
+
+    # Chart Information
+    df_top_channel = df[df['조회수'] == df['조회수'].max()] #df.채널명
+    df_top_category = df_category_view_per[df_category_view_per['조회수'] == df_category_view_per['조회수'].max()].reset_index() #index
+    df_top_comment = df[df['댓글수'] == df['댓글수'].max()] #df.댓글수
+
+    return df, df_category, df_channeltitle, \
+           df_category_view_per, df_category_like_per, df_category_comment_per, \
+           df_top_channel, df_top_category, df_top_comment
+
+def flask_channel(command):
+    """
+    SECTION : flask, channel, analysis
+    DESCRIPTION : Extract channel information for flask app using popular trend from gcp_sqp_pull()
+    USAGE 1 : Channel ID from popular chart will trigger to extract channel information
+    USAGE 2 : command='daily' extracts daily popular chart, whereas command='accumulated' extracts accumulated chart.
+    """
+    pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
+    starttime = datetime.now()
+    print(starttime)
+
+    # ======================== GOOGLE SECRET Reading ========================= #
+    connection_name, query_string, db_name, db_user, db_password, driver_name, public_ip, service_key = keys()
+    youtube = build('youtube', 'v3', developerKey=service_key)
+    # ======================================================================== #
+
+    # ======================  Retrieving API : YOUTUBE_CHANNEL_INFO  ====================== #
+    if command == 'daily':
+        chart = gcp_sql_pull(command='daily')
+    else:
+        chart = gcp_sql_pull(command='accumulate')
+        chart = chart.tail(20)
+
+    # Running loop to get Channel_ID from 'df_channel_search'
+    df_channel_info = pd.DataFrame()
+
+    for id in chart['channel_id']:
+        try:
+            # YOUTUBE_CHANNEL_INFORMATION
+            res_channel = youtube.channels().list(part=['snippet', 'statistics', 'contentDetails'],
+                                                  id=id).execute()
+            dataframe = json_normalize(res_channel['items'][0])
+            df_channel_info = df_channel_info.append(dataframe)
+            print('Channel ID API Connection : ' + id + '  has been successfully completed')
+        except:
+            print('Channel ID : ' + id + ' has failed to open API connection')
+
+    # ====================== YOUTUBE_CHANNEL_INFO : Data Mapping  ====================== #
+    # Select Columns
+    df_channel_info = df_channel_info[['id',
+                                       #'snippet.customUrl',
+                                       'snippet.publishedAt',
+                                       'statistics.viewCount',
+                                       'statistics.subscriberCount',
+                                       'statistics.videoCount']]
+
+    # Rename Columns
+    df_channel_info.rename(columns={'id': 'channel_id',
+                                    #'snippet.customUrl': 'custom_url',
+                                    'snippet.publishedAt': 'channel_published',
+                                    'statistics.viewCount': 'channel_view',
+                                    'statistics.subscriberCount': 'channel_subscribers',
+                                    'statistics.videoCount': 'channel_videos'
+                                    }, inplace=True)
+
+
+    # ====================== MERGE : df_channel_search & df_channel_info ====================== #
+    # Merge & Rename columns
+    df = pd.DataFrame()
+    df = chart.merge(df_channel_info, how='inner', on='channel_id')
+    df = df.drop_duplicates()
+    # ========================================================================================= #
+
+    # Select columns
+    df = df[['video_title', 'video_id', 'channel_title', 'published_at', 'view_count', 'like_count', 'comment_count', 'wiki_category',
+             'channel_published', 'channel_view', 'channel_subscribers', 'channel_videos']]
+    # Rename columns (English - Korean)
+    df.rename(columns={'video_title': '동영상',
+                       'video_id': '동영상아이디',
+                       'channel_title': '채널명',
+                       'published_at': '날짜',
+                       'view_count': '조회수',
+                       'like_count': '좋아요수',
+                       'comment_count': '댓글수',
+                       'wiki_category': '카테고리',
+                       'channel_published': '채널개설날짜',
+                       'channel_view': '채널총조회수',
+                       'channel_subscribers': '채널구독수',
+                       'channel_videos': '채널비디오수'
+                       }, inplace=True)
+    # Reset index
+    df = df.reset_index(drop=True)
+    # Converting field type : Date
+    df['날짜'] = pd.to_datetime(df['날짜'], infer_datetime_format=True)
+    df['날짜'] = df['날짜'].dt.strftime("%Y-%m-%d")
+    df['채널개설날짜'] = pd.to_datetime(df['채널개설날짜'], infer_datetime_format=True)
+    df['채널개설날짜'] = df['채널개설날짜'].dt.strftime("%Y-%m-%d")
+    # Converting field type : Numeric
+    df[['조회수', '좋아요수', '댓글수', '채널총조회수', '채널구독수', '채널비디오수']] = df[['조회수', '좋아요수', '댓글수', '채널총조회수', '채널구독수', '채널비디오수']].apply(pd.to_numeric)
+    # Converting field type : Category
+    df['카테고리'].replace('Entertainment', '엔터테인먼트', inplace=True)
+    df['카테고리'].replace(['Music','Hip_hop_music','Electronic_music'], '뮤직', inplace=True)
+    df['카테고리'].replace('Food', '푸드', inplace=True)
+    df['카테고리'].replace('Video_game_culture', '게임', inplace=True)
+    df['카테고리'].replace('Lifestyle_(sociology)', '라이프스타일', inplace=True)
+    df['카테고리'].replace(['Sport', 'Association_football'], '스포츠', inplace=True)
+    df['카테고리'].replace('Society', '사회', inplace=True)
+    df['카테고리'].replace('Health', '건강', inplace=True)
+    # Counting index
+    df.index = df.index+1
+
+    # end time
+    endtime = datetime.now()
+    print(endtime)
+    timetaken = endtime - starttime
+    print('Time taken : ' + timetaken.__str__())
+
+    return df
 
 def channel_search(chanel_name):
     """
