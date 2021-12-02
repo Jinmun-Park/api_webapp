@@ -1,4 +1,5 @@
-.card {
+/* Dashboard Card */
+.dashboard-card {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -8,22 +9,37 @@
     border-radius: 20px;
 }
 
-.search{
-    margin-top: 30px;
-    }
-
-#search_channel,
-#search_keyword{
-    display: flex;
-    margin-left: 20px;
-    margin-right: 20px;
-}
-
 .card-title,
 .card-content{
     display: flex;
     justify-content: center;
     font-weight: 100;
+}
+
+/* Dashboard Search */
+.search{
+    font-family: 'Noto Sans KR';
+    position: relative;
+    margin-left: 20px;
+    margin-right: 20px;
+    }
+
+.search_button {
+    position: absolute;
+    background-color: crimson;
+    border: 20px;
+    color: white;
+    left: 83%;
+    top: 4px;
+    border-radius: 3px;
+    width: 40px;
+    opacity: 80%;
+}
+
+#search_channel,
+#search_keyword{
+    display: flex;
+    margin-top: 30px;
 }
 
 .search_list {
@@ -35,7 +51,7 @@
 
 .search_title {
     margin-right: 20px;
-    background-color: antiquewhite;
+    background-color: lightgrey;
     border-radius: 5px;
 }
 
@@ -47,14 +63,46 @@
     align-items: center;
 }
 
-/* comment button */
-.comment{
-    display: flex;
-    justify-content: flex-end;
+.search_cancel {
+    font-family: 'Noto Sans KR';
 }
 
-.sentiment{
+.search_cancel_link{
+    color: indianred;
+    }
+
+/* Dashboard Channel */
+.select-channelid {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.submit_button {
+    background-color: lightgrey;
+    color: white;
+    border: 20px;
+    border-radius: 3px;
+}
+
+/* Dashboard Sentiment */
+.sentiment,
+.comment{
     margin-top: 30px;
     display: flex;
     justify-content: center;
+    font-family: 'Noto Sans KR';
     }
+
+/* Dashboard Table */
+.channel_table,
+.video_table,
+.keyword_table,
+.comment_table,
+.sentiment_table{
+    margin-top: 30px;
+    text-align: center;
+    }
+
+
+

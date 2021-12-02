@@ -1,66 +1,19 @@
-{% extends 'base.html' %}
+{% extends 'dashboard_base.html' %}
 
 {% block title %}
-채널 검색
+채널 검색 결과
 {% endblock %}
 
-{% block content %}
-
-    <!-- Bootstrap core CSS -->
-    <style>
-      .bd-placeholder-img {
-        font-size: 1.125rem;
-        text-anchor: middle;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        user-select: none;
-      }
-
-      @media (min-width: 768px) {
-        .bd-placeholder-img-lg {
-          font-size: 3.5rem;
-        }
-      }
-    </style>
-
-    <!-- Dashboard Header -->
-    <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-    </header>
-
-    <!-- Dashboard Navbar -->
-    <div class="container-fluid">
-      <div class="row">
-        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-          <div class="position-sticky pt-3">
-            <ul class="nav flex-column">
-              <li class="nav-item">
-                      <div class="search">
-                      <form id="search_channel" method="get" action="/dashboard/channel_result">
-                      <input name="cha_name" type="text" class="form-control" placeholder="채널을 검색하세요." aria-label="채널을 검색하세요." aria-describedby="button-addon2">
-                      <input type="submit" value="검색">
-                      </form>
-                      </div>
-              </li>
-
+{% block add_nav %}
               <li class="nav-item">
                 <div class="search_list">
                     <div class="search_title">{{ title }}</div>
-                    <div class="search_cancel" style="user-select: auto;"><a href= {{url_for('dashboard.search') }}>Clear all</a></div>
+                    <div class="search_cancel" style="user-select: auto;"><a class="search_cancel_link" href= {{url_for('dashboard.search') }}>Clear</a></div>
                 </div>
               </li>
+{% endblock %}
 
-              <li class="nav-item">
-                      <div class="search">
-                      <form id="search_keyword" method="get" action="/dashboard/filter_result">
-                      <input name="find" type="text" class="form-control" placeholder="키워드를 검색하세요." aria-label="키워드를 검색하세요." aria-describedby="button-addon2">
-                      <input type="submit" value="검색">
-                      </form>
-                      </div>
-              </li>
-            </ul>
-          </div>
-        </nav>
-
+{% block main_content %}
     <!-- Dashboard Main -->
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -68,11 +21,11 @@
           </div>
 
             <div class="col-lg-12 grid-margin stretch-card" style="user-select: auto;">
-              <div class="card" style="user-select: auto;">
+              <div class="dashboard-card card" style="user-select: auto;">
                 <div class="card-body" style="user-select: auto;">
                   <h5 class="card-title" style="user-select: auto;">{{ title }} 검색 결과</h5>
 
-                  <div class="table-responsive pt-3" style="user-select: auto;">
+                  <div class="channel_table" class="table-responsive pt-3" style="user-select: auto;">
                     <table class="table table-bordered" style="user-select: auto;">
                       <thead style="user-select: auto;">
                         <tr style="user-select: auto;">
@@ -85,16 +38,25 @@
                       <tbody style="user-select: auto;">
                             {% for i in data.index %}        <! -- for tag start -->
                             <tr style="user-select: auto;">
-                                <td style="user-select: auto;">
-                                    <form method="post" action="/dashboard/video_result">
+                                <td style="width: 25%;">
+                                    <form class="select-channelid" method="post" action="{{url_for('dashboard.video_result')}}">
+                                    <div>
                                     <input type="radio" id="{{ data['channel_id'][i] }}" value="{{ data['channel_id'][i] }}" name="channel_id">
                                     <label for="{{ data['channel_id'][i] }}">{{ data['channel_id'][i] }}</label>
-                                    <input type="submit" value="검색"></form></td>
-                                <td style="user-select: auto;">{{ data['published_at'][i] }}</td>
-                                <td style="user-select: auto;">{{ data['channel_title'][i] }}</td>
-                                <td style="user-select: auto;">{{ data['view_count'][i] }}</td>
-                                <td style="user-select: auto;">{{ data['subscriber_count'][i] }}</td>
-                                <td style="user-select: auto;">{{ data['video_count'][i] }}</td>
+                                    </div>
+
+                                    <button class="submit_button" type="submit" class="btn" style="user-select: auto;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16" style="user-select: auto;"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" style="user-select: auto;"></path></svg>
+                                    </button>
+
+                                    </form>
+                                </td>
+
+                                <td style="width: 20%;">{{ data['published_at'][i] }}</td>
+                                <td style="width: 15%;">{{ data['channel_title'][i] }}</td>
+                                <td style="width: 15%;">{{ data['view_count'][i] }}</td>
+                                <td style="width: 15%;">{{ data['subscriber_count'][i] }}</td>
+                                <td style="width: 10%;">{{ data['video_count'][i] }}</td>
                             </tr>
                             {% endfor %}                          <! -- for tag end -->
                       </tbody>

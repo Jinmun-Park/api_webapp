@@ -1,66 +1,19 @@
-{% extends 'base.html' %}
+{% extends 'dashboard_base.html' %}
 
 {% block title %}
-채널 검색
+키워드 검색 결과
 {% endblock %}
 
-{% block content %}
+{% block add_nav2 %}
+<li class="nav-item">
+    <div class="search_list">
+        <div class="search_title">{{ title }}</div>
+        <div class="search_cancel" style="user-select: auto;"><a class="search_cancel_link" href= {{url_for('dashboard.search') }}>Clear</a></div>
+    </div>
+</li>
+{% endblock %}
 
-<!-- Bootstrap core CSS -->
-    <style>
-      .bd-placeholder-img {
-        font-size: 1.125rem;
-        text-anchor: middle;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        user-select: none;
-      }
-
-      @media (min-width: 768px) {
-        .bd-placeholder-img-lg {
-          font-size: 3.5rem;
-        }
-      }
-    </style>
-
-    <!-- Dashboard Header -->
-    <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-    </header>
-
-    <!-- Dashboard Navbar -->
-    <div class="container-fluid">
-      <div class="row">
-        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-          <div class="position-sticky pt-3">
-            <ul class="nav flex-column">
-              <li class="nav-item">
-                      <div class="search">
-                      <form id="search_channel" method="get" action="/dashboard/channel_result">
-                      <input name="cha_name" type="text" class="form-control" placeholder="채널을 검색하세요." aria-label="채널을 검색하세요." aria-describedby="button-addon2">
-                      <input type="submit" value="검색">
-                      </form>
-                      </div>
-              </li>
-
-              <li class="nav-item">
-                      <div class="search">
-                      <form id="search_keyword" method="get" action="/dashboard/filter_result">
-                      <input name="find" type="text" class="form-control" placeholder="키워드를 검색하세요." aria-label="키워드를 검색하세요." aria-describedby="button-addon2">
-                      <input type="submit" value="검색">
-                      </form>
-                      </div>
-              </li>
-
-                <li class="nav-item">
-                    <div class="search_list">
-                        <div class="search_title">{{ title }}</div>
-                        <div class="search_cancel" style="user-select: auto;"><a href= {{url_for('dashboard.search') }}>Clear all</a></div>
-                    </div>
-                </li>
-            </ul>
-          </div>
-        </nav>
-
+{% block main_content %}
     <!-- Dashboard Main -->
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -68,12 +21,11 @@
       </div>
 
         <div class="col-lg-12 grid-margin stretch-card" style="user-select: auto;">
-                      <div class="card" style="user-select: auto;">
+                      <div class="dashboard-card card" style="user-select: auto;">
                         <div class="card-body" style="user-select: auto;">
                           <h5 class="card-title" style="user-select: auto;">{{ title }} 검색 결과</h5>
-                            <div class="comment"><a href="/dashboard/comment_result" class="btn btn-secondary btn-lg active" role="button" aria-pressed="true">댓글 보기</a></div>
 
-                          <div class="table-responsive pt-3" style="user-select: auto;">
+                          <div class="keyword_table" class="table-responsive pt-3" style="user-select: auto;">
                             <table  id="table" class="table table-bordered" style="user-select: auto;">
                               <thead style="user-select: auto;">
                                 <tr style="user-select: auto;">
@@ -86,14 +38,13 @@
                               <tbody style="user-select: auto;">
                                     {% for i in vid.index %}        <! -- for tag start -->
                                     <tr style="user-select: auto;">
-                                        <td style="user-select: auto;">{{ vid['video_id'][i] }}</td>
-                                        <td style="user-select: auto;">{{ vid['video_title'][i] }}</td>
-                                        <td style="user-select: auto;">{{ vid['published_at'][i] }}</td>
-                                        <td style="user-select: auto;">{{ vid['view_count'][i] }}</td>
-                                        <td style="user-select: auto;">{{ vid['like_count'][i] }}</td>
-                                        <td style="user-select: auto;">{{ vid['favorite_count'][i] }}</td>
-                                        <td style="user-select: auto;">{{ vid['comment_count'][i] }}</td>
-                                        <td style="user-select: auto;">{{ vid['wiki_category'][i] }}</td>
+                                        <td style="width: 10%;">{{ vid['video_id'][i] }}</td>
+                                        <td style="width: 30%;">{{ vid['video_title'][i] }}</td>
+                                        <td style="width: 10%;">{{ vid['published_at'][i] }}</td>
+                                        <td style="width: 10%;">{{ vid['view_count'][i] }}</td>
+                                        <td style="width: 7.5%;">{{ vid['like_count'][i] }}</td>
+                                        <td style="width: 7.5%;">{{ vid['comment_count'][i] }}</td>
+                                        <td style="width: 15%;">{{ vid['wiki_category'][i] }}</td>
                                     </tr>
                                     {% endfor %}                          <! -- for tag end -->
                               </tbody>
@@ -106,11 +57,9 @@
     </main>
   </div>
 </div>
-
 {% endblock %}
 
 {% block scripts %}
-
   <script>
     $(document).ready(function () {
       $('#table').dataTable({
@@ -121,11 +70,8 @@
           {searchable: false},
           {searchable: false},
           {searchable: false},
-          {searchable: false},
           null],
       });
     });
   </script>
-
-
 {% endblock %}
