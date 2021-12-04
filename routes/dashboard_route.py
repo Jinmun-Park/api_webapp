@@ -1,10 +1,9 @@
-from src.models.bert_load import run_predict
 from flask import Blueprint, render_template, request, redirect
+from src.models.bert_load import run_predict
 from src.utils.api import channel_search
 from src.utils.api import pickle_videos, pickle_videos_filter, pickle_videos_comments
 from src.utils.api import globals_videos, globals_videos_filter, globals_videos_comments
 import pandas as pd
-import pickle
 
 bp = Blueprint('dashboard', __name__, url_prefix='/dashboard')
 
@@ -38,9 +37,16 @@ def video_filter():
 @bp.route('/comment_result', methods=["GET"])
 def video_comment():
     vid_comments = pickle_videos_comments(type='sample', option='save')
-    # data = pd.read_pickle('Pickle/video_comment.pkl')
     return render_template('comment_result.html', data=vid_comments, titles=['comment_id', 'comment', 'author', 'like_count', 'published_at','reply_count'])
 
+@bp.route('/sentiment', methods=["GET"])
+def predict():
+    result = run_predict()
+    result_emotion = result['emotion'].value_counts(normalize=True)
+    result_emotion = pd.DataFrame(result_emotion)
+    emotions = [i for i in result_emotion.index]
+    emotions_rate = [i for i in result_emotion.emotion]
+    return render_template('sentiment.html', data=result, result_emotion=result_emotion, emotions=emotions, emotions_rate=emotions_rate, titles=['emotion', 'comment'])
 
 
 
