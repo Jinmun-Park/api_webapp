@@ -5,7 +5,6 @@ from src.utils.api import flask_category, flask_channel
 # ====================== Flask Blueprint ====================== #
 from flask import Blueprint, render_template
 df, df_category, df_channeltitle, df_category_view_per, df_category_like_per, df_category_comment_per, df_top_channel, df_top_category, df_top_comment = flask_category(command='daily')
-flask_channel = flask_channel(command='daily')
 bp = Blueprint('latest_trend', __name__, url_prefix='/latest_trend')
 
 # ====================== Flask Route ====================== #
@@ -62,6 +61,8 @@ def trend_category():
 
 @bp.route('/channel', methods=["GET"])
 def trend_channel():
+    global flask_channel
+    flask_channel = flask_channel(command='daily')
     # Channel names
     channel_label = [i for i in flask_channel.채널명]
     channel_view = [i for i in (flask_channel.채널총조회수)/1000]
