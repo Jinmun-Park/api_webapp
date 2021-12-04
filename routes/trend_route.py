@@ -5,6 +5,7 @@ from src.utils.api import flask_category, flask_channel
 # ====================== Flask Blueprint ====================== #
 from flask import Blueprint, render_template
 df, df_category, df_channeltitle, df_category_view_per, df_category_like_per, df_category_comment_per, df_top_channel, df_top_category, df_top_comment = flask_category(command='daily')
+flask_channel = flask_channel(command='daily')
 bp = Blueprint('latest_trend', __name__, url_prefix='/latest_trend')
 
 # ====================== Flask Route ====================== #
@@ -61,22 +62,36 @@ def trend_category():
 
 @bp.route('/channel', methods=["GET"])
 def trend_channel():
+    '''
+    from src.utils.api import flask_channel
     global flask_channel
     flask_channel = flask_channel(command='daily')
+    '''
     # Channel names
     channel_label = [i for i in flask_channel.채널명]
     channel_view = [i for i in (flask_channel.채널총조회수)/1000]
     channel_subs = [i for i in flask_channel.채널구독수]
-    # Channel basic information figures
-    top_channel = flask_channel[flask_channel['채널총조회수'] == flask_channel['채널총조회수'].max()].채널명.iloc[0]
-    top_channel_num = format(int(flask_channel[flask_channel['채널총조회수'] == flask_channel['채널총조회수'].max()].채널총조회수.iloc[0]), ",")
+    # Top channel information figures
+    top_channel_select = flask_channel[flask_channel['채널총조회수'] == flask_channel['채널총조회수'].max()]
+    top_channel = top_channel_select.채널명.iloc[0]
+    top_channel_num = format(int(top_channel_select.채널총조회수.iloc[0]), ",")
+    top_channel_url = top_channel_select.썸네일.iloc[0]
+    top_channel_videoid = top_channel_select.동영상아이디.iloc[0]
+    top_channel_channelid = top_channel_select.채널아이디.iloc[0]
+    top_channel_publish = top_channel_select.채널개설날짜.iloc[0]
+    top_channel_cateogry = top_channel_select.카테고리.iloc[0]
+    top_channel_like = format(int(top_channel_select.좋아요수.iloc[0]), ",")
+    top_channel_comment = format(int(top_channel_select.댓글수.iloc[0]), ",")
+    # Top channel subscriptions
+    top_subs_num = format(int(flask_channel[flask_channel['채널구독수'] == flask_channel['채널구독수'].max()].채널구독수.iloc[0]), ",")
     top_subs = flask_channel[flask_channel['채널구독수'] == flask_channel['채널구독수'].max()].채널명.iloc[0]
-    top_subsl_num = format(int(flask_channel[flask_channel['채널구독수'] == flask_channel['채널구독수'].max()].채널구독수.iloc[0]), ",")
     latest_channel = flask_channel.sort_values(by='채널개설날짜').tail(1).채널명.iloc[0]
     latest_channel_num = flask_channel.sort_values(by='채널개설날짜').tail(1).채널개설날짜.iloc[0]
     return render_template('channel.html',
                            channel_label=channel_label, channel_view=channel_view, channel_subs=channel_subs,
-                           top_channel=top_channel, top_channel_num=top_channel_num,
-                           top_subs=top_subs, top_subsl_num=top_subsl_num,
+                           top_channel=top_channel, top_channel_num=top_channel_num, top_channel_url=top_channel_url,
+                           top_channel_videoid=top_channel_videoid, top_channel_channelid=top_channel_channelid,
+                           top_channel_publish= top_channel_publish, top_channel_cateogry=top_channel_cateogry, top_channel_like=top_channel_like, top_channel_comment=top_channel_comment,
+                           top_subs=top_subs, top_subs_num=top_subs_num,
                            latest_channel=latest_channel, latest_channel_num=latest_channel_num
                            )

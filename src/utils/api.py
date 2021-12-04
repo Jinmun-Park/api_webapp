@@ -59,8 +59,8 @@ def keys():
     # GCP CLOUD PUBLIC IP
     public_ip = get_secrets("public_ip", project_id, client)
     # YOUTUBE API SERVICE KEY
-    service_key = get_secrets("service_key", project_id, client)
-    #service_key = 'AIzaSyAM1a_XGQnnLDyJ7oYmhJV8mBDRY7MDtxk'
+    #service_key = get_secrets("service_key", project_id, client)
+    service_key = 'AIzaSyAM1a_XGQnnLDyJ7oYmhJV8mBDRY7MDtxk'
     return connection_name, query_string, db_name, db_user, db_password, driver_name, public_ip, service_key
 
 # PICKLE SETUP
@@ -384,6 +384,7 @@ def flask_channel(command):
     # ====================== YOUTUBE_CHANNEL_INFO : Data Mapping  ====================== #
     # Select Columns
     df_channel_info = df_channel_info[['id',
+                                       'snippet.thumbnails.medium.url',
                                        #'snippet.customUrl',
                                        'snippet.publishedAt',
                                        'statistics.viewCount',
@@ -392,6 +393,7 @@ def flask_channel(command):
 
     # Rename Columns
     df_channel_info.rename(columns={'id': 'channel_id',
+                                    'snippet.thumbnails.medium.url': 'thumbnails',
                                     #'snippet.customUrl': 'custom_url',
                                     'snippet.publishedAt': 'channel_published',
                                     'statistics.viewCount': 'channel_view',
@@ -408,11 +410,13 @@ def flask_channel(command):
     # ========================================================================================= #
 
     # Select columns
-    df = df[['video_title', 'video_id', 'channel_title', 'published_at', 'view_count', 'like_count', 'comment_count', 'wiki_category',
+    df = df[['thumbnails', 'video_title', 'video_id', 'channel_id', 'channel_title', 'published_at', 'view_count', 'like_count', 'comment_count', 'wiki_category',
              'channel_published', 'channel_view', 'channel_subscribers', 'channel_videos']]
     # Rename columns (English - Korean)
-    df.rename(columns={'video_title': '동영상',
+    df.rename(columns={'thumbnails': '썸네일',
+                       'video_title': '동영상',
                        'video_id': '동영상아이디',
+                       'channel_id': '채널아이디',
                        'channel_title': '채널명',
                        'published_at': '날짜',
                        'view_count': '조회수',
@@ -431,6 +435,11 @@ def flask_channel(command):
     df['날짜'] = df['날짜'].dt.strftime("%Y-%m-%d")
     df['채널개설날짜'] = pd.to_datetime(df['채널개설날짜'], infer_datetime_format=True)
     df['채널개설날짜'] = df['채널개설날짜'].dt.strftime("%Y-%m-%d")
+    # Nan Value
+    df['좋아요수'] = df['좋아요수'].fillna(0)
+    df['댓글수'] = df['댓글수'].fillna(0)
+    df['채널총조회수'] = df['채널총조회수'].fillna(0)
+    df['채널구독수'] = df['채널구독수'].fillna(0)
     # Converting field type : Numeric
     df[['조회수', '좋아요수', '댓글수', '채널총조회수', '채널구독수', '채널비디오수']] = df[['조회수', '좋아요수', '댓글수', '채널총조회수', '채널구독수', '채널비디오수']].apply(pd.to_numeric)
     # Converting field type : Category
