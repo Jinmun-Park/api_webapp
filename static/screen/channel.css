@@ -3,3 +3,51 @@
     margin-top: 0!important;
 }
 
+/* Channel top right */
+.channel-top-right{
+    /* Right line color */
+    border: .1rem solid #1cc88a;
+    border-color: #1cc88a!important;
+    border-bottom: transparent solid 4px;
+    /* margin */
+    margin-left: 1%;
+}
+
+.channel-top-right-font{
+    /* color */
+    color: #5a5c69 !important;
+    /* font */
+    line-height: 1.75;
+    word-break: keep-all;
+    font-family: 'Noto Sans Korean', 'Apple SD Gothic Neo', 'Nanum Barun Gothic', 'Malgun Gothic', '\\B3CB\C634', 'Dotum', sans-serif;
+    letter-spacing: -0.75px;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.chart-top-right-inner-font{
+    line-height: 1.75;
+    word-break: keep-all;
+    font-family: 'Noto Sans Korean', 'Apple SD Gothic Neo', 'Nanum Barun Gothic', 'Malgun Gothic', '\\B3CB\C634', 'Dotum', sans-serif;
+    letter-spacing: -0.5px;
+    color: #73879C !important;
+}
+
+.chart-top-right-inner-icon{
+    color: #73879C !important;
+}
+
+/* Channel top right button link */
+.chart-top-right-line{
+ box-shadow:-1px 0px 0px 0px #73879C;
+}
+
+/* Channel top right button link */
+.chart-button{
+    font-size: 0.75rem;
+    line-height: 1.75;
+    word-break: keep-all;
+    font-family: 'Noto Sans Korean', 'Apple SD Gothic Neo', 'Nanum Barun Gothic', 'Malgun Gothic', '\\B3CB\C634', 'Dotum', sans-serif;
+    letter-spacing: -0.25px;
+}
+
