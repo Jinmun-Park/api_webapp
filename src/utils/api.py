@@ -22,11 +22,13 @@ import google.cloud.secretmanager as secretmanager #pip install google-cloud-sec
 from google.cloud.sql.connector import connector #pip install cloud-sql-python-connector[pymysql] #FINAL LIBRARY
 
 # Tokenization
+
 from kiwipiepy import Kiwi
 kiwi = Kiwi()
 result = kiwi.tokenize("아 진짜 짜증난다. 이거 정말 그만하고 싶다.")
 test1 = pd.DataFrame([item[0] for item in result])
 test2 = pd.DataFrame([item[1] for item in result])
+
 
 # ====================== FUNCTION SETUP ====================== #
 def secret_manager_setup():
