@@ -21,6 +21,15 @@ import calendar
 import google.cloud.secretmanager as secretmanager #pip install google-cloud-secret-manager
 from google.cloud.sql.connector import connector #pip install cloud-sql-python-connector[pymysql] #FINAL LIBRARY
 
+# Tokenization
+
+from kiwipiepy import Kiwi
+kiwi = Kiwi()
+result = kiwi.tokenize("아 진짜 짜증난다. 이거 정말 그만하고 싶다.")
+test1 = pd.DataFrame([item[0] for item in result])
+test2 = pd.DataFrame([item[1] for item in result])
+
+
 # ====================== FUNCTION SETUP ====================== #
 def secret_manager_setup():
     """
@@ -59,8 +68,8 @@ def keys():
     # GCP CLOUD PUBLIC IP
     public_ip = get_secrets("public_ip", project_id, client)
     # YOUTUBE API SERVICE KEY
-    #service_key = get_secrets("service_key", project_id, client)
-    service_key = 'AIzaSyAM1a_XGQnnLDyJ7oYmhJV8mBDRY7MDtxk'
+    service_key = get_secrets("service_key", project_id, client)
+    #service_key = 'AIzaSyAM1a_XGQnnLDyJ7oYmhJV8mBDRY7MDtxk'
     return connection_name, query_string, db_name, db_user, db_password, driver_name, public_ip, service_key
 
 # PICKLE SETUP
@@ -268,8 +277,12 @@ def flask_chart(command):
     #df = read_pickle('youtube_popular.pkl')
     if command == 'daily':
         df = gcp_sql_pull(command='daily')
+    elif command == '15days':
+        df = gcp_sql_pull(command='accumulated')
+        df = df.tail(300)
     else:
         df = gcp_sql_pull(command='accumulated')
+        df = df.tail(600)
     #df = gcp_sql_ip_connection()
 
     # ================== DATA PREPROCESSING ================== #
@@ -315,8 +328,11 @@ def flask_category(command):
     # ====================== READ FILES ====================== #
     if command == 'daily':
         df = flask_chart(command='daily')
+    elif command == '15days':
+        df = flask_chart(command='15days')
     else:
-        df = flask_chart(command='accumulated')
+        df = flask_chart(command='30days')
+
 
     # ================== FIELD ANALYSIS ================== #
     # Category Count
@@ -363,9 +379,28 @@ def flask_channel(command):
     # ======================  Retrieving API : YOUTUBE_CHANNEL_INFO  ====================== #
     if command == 'daily':
         chart = gcp_sql_pull(command='daily')
+    elif command == '15days':
+        chart = gcp_sql_pull(command='accumulate')
+        # Convert view_count into int
+        chart['view_count'] = chart['view_count'].astype(str).astype(int)
+        # Sort by view_count
+        chart = chart.tail(300).sort_values('view_count', ascending = False)
+        # Remove duplicates
+        chart = chart.drop_duplicates(subset='video_id', keep="last")
+        high = chart.head(20)
+        low = chart.tail(20)
+        chart = pd.concat([high, low], ignore_index=True)
     else:
         chart = gcp_sql_pull(command='accumulate')
-        chart = chart.tail(20)
+        # Convert view_count into int
+        chart['view_count'] = chart['view_count'].astype(str).astype(int)
+        # Sort by view_count
+        chart = chart.tail(300).sort_values('view_count', ascending = False)
+        # Remove duplicates
+        chart = chart.drop_duplicates(subset='video_id', keep="last")
+        high = chart.head(20)
+        low = chart.tail(20)
+        chart = pd.concat([high, low], ignore_index=True)
 
     # Running loop to get Channel_ID from 'df_channel_search'
     df_channel_info = pd.DataFrame()
@@ -461,6 +496,47 @@ def flask_channel(command):
     print('Time taken : ' + timetaken.__str__())
 
     return df
+
+def flask_timeframe(command):
+    """
+    SECTION : flask, channel, analysis
+    DESCRIPTION : Run analysis with gcp_sqp_pull()
+    USAGE : Channel ID from popular chart will trigger to extract channel information
+    """
+    pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
+    starttime = datetime.now()
+    print(starttime)
+
+    # ======================== GOOGLE SECRET Reading ========================= #
+    connection_name, query_string, db_name, db_user, db_password, driver_name, public_ip, service_key = keys()
+    youtube = build('youtube', 'v3', developerKey=service_key)
+    # ======================================================================== #
+
+    # ======================  Retrieving API : YOUTUBE_CHANNEL_INFO  ====================== #
+    if command == 'daily':
+        chart = gcp_sql_pull(command='daily')
+    elif command == '15days':
+        chart = gcp_sql_pull(command='accumulate')
+        # Convert view_count into int
+        chart['view_count'] = chart['view_count'].astype(str).astype(int)
+        # Sort by view_count
+        chart = chart.tail(300).sort_values('view_count', ascending = False)
+        # Remove duplicates
+        chart = chart.drop_duplicates(subset='video_id', keep="last")
+
+    else:
+        chart = gcp_sql_pull(command='accumulate')
+        # Convert view_count into int
+        chart['view_count'] = chart['view_count'].astype(str).astype(int)
+        # Sort by view_count
+        chart = chart.tail(300).sort_values('view_count', ascending = False)
+        # Remove duplicates
+        chart = chart.drop_duplicates(subset='video_id', keep="last")
+
+
+
+
+    return
 
 def channel_search(chanel_name):
     """

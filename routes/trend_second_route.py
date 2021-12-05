@@ -4,13 +4,15 @@ from src.utils.api import flask_category, flask_channel
 
 # ====================== Flask Blueprint ====================== #
 from flask import Blueprint, render_template
-df, df_category, df_channeltitle, df_category_view_per, df_category_like_per, df_category_comment_per, df_top_channel, df_top_category, df_top_comment = flask_category(command='daily')
-flask_channel = flask_channel(command='daily')
-bp = Blueprint('latest_trend', __name__, url_prefix='/latest_trend')
+df, df_category, df_channeltitle, df_category_view_per, df_category_like_per, df_category_comment_per, df_top_channel, df_top_category, df_top_comment = flask_category(command='15days')
+flask_channel = flask_channel(command='15days')
+bp = Blueprint('15day_trend', __name__, url_prefix='/15day_trend')
 
 # ======================== Flask Route ======================== #
 @bp.route('/', methods=["GET"])
-def latest_trend():
+def second_trend():
+    # Count rows
+    count_db = len(df.index)
     # Chart figures
     category = [i for i in df_category.index]
     category_rate = [i for i in df_category.카테고리]
@@ -26,7 +28,8 @@ def latest_trend():
     category_top_channel = df_top_channel.채널명.iloc[0]
     category_top_category = df_top_category.카테고리.iloc[0]
     category_top_comment = format(df_top_comment.댓글수.iloc[0], ",")
-    return render_template('latest_trend.html',
+    return render_template('second_trend.html',
+                           count_db=count_db,
                            category=category,
                            category_rate=category_rate,
                            category_channel=category_channel,
@@ -40,6 +43,8 @@ def latest_trend():
 
 @bp.route('/category', methods=["GET"])
 def trend_category():
+    # Count rows
+    count_db = len(df.index)
     # Chart figures
     category = [i for i in df_category.index]
     category_rate = [i for i in df_category.카테고리]
@@ -55,7 +60,8 @@ def trend_category():
     category_top_channel = df_top_channel.채널명.iloc[0]
     category_top_category = df_top_category.카테고리.iloc[0]
     category_top_comment = format(df_top_comment.댓글수.iloc[0], ",")
-    return render_template('category.html',
+    return render_template('second_trend_category.html',
+                           count_db=count_db,
                            category=category,
                            category_rate=category_rate,
                            category_channel=category_channel,
@@ -72,12 +78,15 @@ def trend_channel():
     '''
     from src.utils.api import flask_channel
     global flask_channel
-    flask_channel = flask_channel(command='daily')
+    flask_channel = flask_channel(command='15days')
     '''
-    # Channel names
-    channel_label = [i for i in flask_channel.채널명]
-    channel_view = [i for i in (flask_channel.채널총조회수)/1000]
-    channel_subs = [i for i in flask_channel.채널구독수]
+    # Channel Top 20 & Bottom 20 names
+    channel_top_label = [i for i in flask_channel.head(20).채널명]
+    channel_top_view = [i for i in (flask_channel.head(20).채널총조회수)/1000]
+    channel_top_subs = [i for i in flask_channel.head(20).채널구독수]
+    channel_btm_label = [i for i in flask_channel.tail(20).채널명]
+    channel_btm_view = [i for i in (flask_channel.tail(20).채널총조회수) / 1000]
+    channel_btm_subs = [i for i in flask_channel.tail(20).채널구독수]
     # Top channel information figures
     top_channel_select = flask_channel[flask_channel['채널총조회수'] == flask_channel['채널총조회수'].max()]
     top_channel = top_channel_select.채널명.iloc[0]
@@ -107,10 +116,15 @@ def trend_channel():
     latest_channel_comment = format(int(latest_channel_select.댓글수.iloc[0]), ",")
     # trend_channel_chart
     channel_table = flask_channel[['동영상', '날짜', '채널명',  '채널개설날짜', '카테고리',  '채널총조회수', '채널구독수', '채널비디오수']]
-    return render_template('channel.html',
-                           channel_label=channel_label,
-                           channel_view=channel_view,
-                           channel_subs=channel_subs,
+    return render_template('second_trend_channel.html',
+                           # top & btm 20 channel
+                           channel_top_label=channel_top_label,
+                           channel_top_view=channel_top_view,
+                           channel_top_subs=channel_top_subs,
+                           channel_btm_label=channel_btm_label,
+                           channel_btm_view=channel_btm_view,
+                           channel_btm_subs=channel_btm_subs,
+                           # top 1 channel
                            top_channel=top_channel,
                            top_channel_num=top_channel_num,
                            top_channel_url=top_channel_url,
@@ -122,6 +136,7 @@ def trend_channel():
                            top_channel_comment=top_channel_comment,
                            top_subs=top_subs,
                            top_subs_num=top_subs_num,
+                           # latest channel
                            latest_channel=latest_channel,
                            latest_channel_num=latest_channel_num,
                            latest_channel_url=latest_channel_url,
@@ -132,8 +147,3 @@ def trend_channel():
                            latest_channel_comment=latest_channel_comment,
                            channel_table=channel_table
                            )
-
-@bp.route('/timeframe', methods=["GET"])
-def trend_timeframe():
-    db = flask_channel
-    return render_template('timeframe.html', db=db)
