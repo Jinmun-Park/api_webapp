@@ -3,6 +3,11 @@
     margin-top: 0!important;
 }
 
+#channel-chart2{
+    height: 500px!important;
+    margin-top: 0!important;
+}
+
 /* Channel top right */
 .channel-top-right{
     /* Right line color */
@@ -39,7 +44,7 @@
 
 /* Channel top right button link */
 .chart-top-right-line{
- box-shadow:-1px 0px 0px 0px #73879C;
+    box-shadow:-2px 0px 0px 0px #DCDCDC;
 }
 
 /* Channel top right button link */
@@ -51,3 +56,8 @@
     letter-spacing: -0.25px;
 }
 
+/* ----------------------- second trend css ----------------------- */
+
+.second-trend-channel-left-chart{
+    position: absolute;
+}

@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}
+차트 시간별 분석
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <nav id="Trend-sidebarMenu" class="col-md-3 d-md-block bg-light sidebar collapse">
+      <div class="position-sticky pt-3">
+          <ul class="three-column-side nav nav-pills">
+            <li class="nav-item">
+              <a href="/latest_trend/category" class="nav-link active" aria-current="page">Latest</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link link-dark" href="#">15 Days</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link link-dark" href="#">30 Days</a>
+            </li>
+          </ul>
+        <ul class="nav nav-pills flex-column mb-auto">
+          <li class="nav-item">
+            <a href="/latest_trend/category" class="nav-link link-dark">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi me-2 bi-grid-3x3-gap" viewBox="0 0 16 16">
+                    <path d="M4 2v2H2V2h2zm1 12v-2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1zm0-5V7a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1zm0-5V2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1zm5 10v-2a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1zm0-5V7a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1zm0-5V2a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1zM9 2v2H7V2h2zm5 0v2h-2V2h2zM4 7v2H2V7h2zm5 0v2H7V7h2zm5 0h-2v2h2V7zM4 12v2H2v-2h2zm5 0v2H7v-2h2zm5 0v2h-2v-2h2zM12 1a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1h-2zm-1 6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V7zm1 4a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1h-2z"/>
+                </svg>
+                Category
+            </a>
+          </li>
+          <li>
+            <a href="/latest_trend/channel" class="nav-link link-dark">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi me-2 bi-collection-play" viewBox="0 0 16 16">
+                  <path d="M2 3a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 0-1h-11A.5.5 0 0 0 2 3zm2-2a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7A.5.5 0 0 0 4 1zm2.765 5.576A.5.5 0 0 0 6 7v5a.5.5 0 0 0 .765.424l4-2.5a.5.5 0 0 0 0-.848l-4-2.5z"/>
+                  <path d="M1.5 14.5A1.5 1.5 0 0 1 0 13V6a1.5 1.5 0 0 1 1.5-1.5h13A1.5 1.5 0 0 1 16 6v7a1.5 1.5 0 0 1-1.5 1.5h-13zm13-1a.5.5 0 0 0 .5-.5V6a.5.5 0 0 0-.5-.5h-13A.5.5 0 0 0 1 6v7a.5.5 0 0 0 .5.5h13z"/>
+                </svg>
+                Channel
+            </a>
+          </li>
+          <li>
+            <a href="/latest_trend/timeframe" class="nav-link active" aria-current="page">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi me-2 bi-bar-chart" viewBox="0 0 16 16">
+                    <path d="M4 11H2v3h2v-3zm5-4H7v7h2V7zm5-5v12h-2V2h2zm-2-1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1h-2zM6 7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zm-5 4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3z"/>
+                </svg>
+                TimeFrame
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+</div>
+
+<!-- Trend Channel Basic Information -->
+<div class="time-frame-font latest-trend-timeframe row">
+    <div class="latest-trend-timeframe-set1 row">
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="currentColor" class="bi bi-clock" viewBox="0 0 16 16">
+          <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
+          <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/>
+        </svg>
+    </div>
+    <div class="latest-trend-timeframe-set2 text-center row">
+        <h3><strong>Latest Trend</strong> does not support this page</h3>
+        <p class="lead text-muted">Latest trend has limited time period to show you something entertaining. <br>
+            Please click the link to get data analysis in the time basis! </p>
+        <div class="time-frame-font gap-2 d-md-flex justify-content-center">
+            <p><a href="#" class="time-frame-font btn btn-primary my-2"> 15days </a></p>
+            <p><a href="#" class="time-frame-font btn btn-primary my-2"> 30days </a></p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

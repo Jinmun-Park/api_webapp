@@ -1,0 +1,26 @@
+/* Time frame general font */
+.time-frame-font{
+    line-height: 1.75;
+    word-break: keep-all;
+    font-family: 'Noto Sans Korean', 'Apple SD Gothic Neo', 'Nanum Barun Gothic', 'Malgun Gothic', '\\B3CB\C634', 'Dotum', sans-serif !important;
+    letter-spacing: -0.5px;
+}
+
+/* latest trend pop up message */
+.latest-trend-timeframe{
+    /* layout */
+    margin-top: 10%;
+    width: 100%;
+    /* color */
+    color: #73879C !important;
+}
+
+.latest-trend-timeframe-set1{
+    margin-left: 6%;
+}
+
+.latest-trend-timeframe-set2{
+    margin-top: 1%;
+    margin-left: 30%;
+    width: 50%;
+}
