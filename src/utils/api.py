@@ -22,13 +22,13 @@ import google.cloud.secretmanager as secretmanager #pip install google-cloud-sec
 from google.cloud.sql.connector import connector #pip install cloud-sql-python-connector[pymysql] #FINAL LIBRARY
 
 # Tokenization
-
 from kiwipiepy import Kiwi
-kiwi = Kiwi()
-result = kiwi.tokenize("아 진짜 짜증난다. 이거 정말 그만하고 싶다.")
-test1 = pd.DataFrame([item[0] for item in result])
-test2 = pd.DataFrame([item[1] for item in result])
-
+from wordcloud import WordCloud
+from collections import Counter
+import re
+import string
+from matplotlib import rc
+rc('font', family='NanumBarunGothic')
 
 # ====================== FUNCTION SETUP ====================== #
 def secret_manager_setup():
@@ -497,6 +497,23 @@ def flask_channel(command):
 
     return df
 
+def remove_cleantext(text):
+    '''Make text lowercase, remove text in square brackets,remove links,remove punctuation
+    and remove words containing numbers.'''
+    text = str(text).lower() # Lower
+    text = re.sub('\[.*?\]', '', text) # SquareBracket
+    text = re.sub('https?://\S+|www\.\S+', '', text) # URL
+    text = re.sub('<.*?>+', '', text) # Bracket
+    text = re.sub('[%s]' % re.escape(string.punctuation), '', text) # Punctuation
+    text = re.sub('\n', ' ', text) #
+    text = re.sub('(?<=#)\w+', '', text) # Hash
+    text = re.sub('[\w\.-]+@[\w\.-]+', '', text) # Email
+    text = re.sub('[0-9]+', '', text) # Number
+    text = text.strip()
+    #text = text.strip() # Remove Space
+    #text = text.split() # Remove Space
+    return text
+
 def flask_timeframe(command):
     """
     SECTION : flask, channel, analysis
@@ -533,8 +550,39 @@ def flask_timeframe(command):
         # Remove duplicates
         chart = chart.drop_duplicates(subset='video_id', keep="last")
 
+    # ======================  KIWI Tokeanization & Wordcloud  ====================== #
+    # Kiwi Tokenization
+    kiwi = Kiwi()
+    text = " ".join(chart['video_title'])
+    text_list = kiwi.tokenize(text)
+    # Form & Tag split
+    split_form = pd.DataFrame([item[0] for item in text_list])
+    split_form.rename(columns = {0 : 'form'}, inplace = True)
+    split_tag = pd.DataFrame([item[1] for item in text_list])
+    split_tag.rename(columns={0: 'tag'}, inplace=True)
+    text_token = pd.concat([split_form, split_tag], axis=1)
 
+    # Remove tags
+    tag = ['NNG', 'NNP', 'NNB', 'NR', 'NP']
+    text_token = text_token[text_token['tag'].isin(tag)]
+    # Remove manual token
+    removal_manual = ['ᆷ', 'ᆼ', 'ᆫ', 'ᆸ니다', '에', '는', '의', '이', '를', '하', '을', '한', '가', '과', '다', '지', '고', '로', '은']
+    text_token = text_token[~text_token['form'].isin(removal_manual)]
+    # Clean text
+    text_token["form"] = text_token["form"].apply(
+        lambda x: remove_cleantext(x)
+    )
+    # Choose nouns > 1
+    text_token = text_token[
+        text_token['form'].apply(lambda x: len(x) > 1)
+    ]
 
+    # Most common words
+    counts = Counter(text_token['form'])
+    tags = counts.most_common(50)
+    # Wordcloud
+    wordcloud = WordCloud(max_font_size=50, max_words=100, background_color="white", font_path="static/gulim.ttc").generate_from_frequencies(dict(tags))
+    wordcloud.to_file("static/images/wc_01.png")
 
     return
 
