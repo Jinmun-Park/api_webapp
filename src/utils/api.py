@@ -68,8 +68,8 @@ def keys():
     # GCP CLOUD PUBLIC IP
     public_ip = get_secrets("public_ip", project_id, client)
     # YOUTUBE API SERVICE KEY
-    service_key = get_secrets("service_key", project_id, client)
-    #service_key = 'AIzaSyAM1a_XGQnnLDyJ7oYmhJV8mBDRY7MDtxk'
+    #service_key = get_secrets("service_key", project_id, client)
+    service_key = 'AIzaSyAM1a_XGQnnLDyJ7oYmhJV8mBDRY7MDtxk'
     return connection_name, query_string, db_name, db_user, db_password, driver_name, public_ip, service_key
 
 # PICKLE SETUP
@@ -333,7 +333,6 @@ def flask_category(command):
     else:
         df = flask_chart(command='30days')
 
-
     # ================== FIELD ANALYSIS ================== #
     # Category Count
     df_category = df['카테고리'].value_counts(normalize=True) * 100
@@ -514,6 +513,48 @@ def remove_cleantext(text):
     #text = text.split() # Remove Space
     return text
 
+def tf_conversion(data):
+    # ================== DATA PREPROCESSING ================== #
+    # Select columns
+    select = data[['run_date', 'video_title', 'video_id', 'channel_title', 'channel_id', 'published_at', 'view_count', 'like_count', 'comment_count', 'wiki_category']]
+    # To avoid warning
+    df = select.copy()
+    # Rename columns (English - Korean)
+    df.rename(columns={
+        'run_date':'차트일자',
+        'video_title':'동영상',
+        'video_id':'동영상아이디',
+        'channel_title':'채널명',
+        'channel_id':'채널아이디',
+        'published_at':'날짜',
+        'view_count':'조회수',
+        'like_count':'좋아요수',
+        'comment_count':'댓글수',
+        'wiki_category':'카테고리'
+        }, inplace=True)
+    # Reset index
+    df = df.reset_index(drop=True)
+    # Converting field type : Date
+    df['차트일자'] = pd.to_datetime(df['차트일자'], infer_datetime_format=True)
+    df['차트일자'] = df['차트일자'].dt.strftime("%Y-%m-%d")
+    df['날짜'] = pd.to_datetime(df['날짜'], infer_datetime_format=True)
+    df['날짜'] = df['날짜'].dt.strftime("%Y-%m-%d")
+    # Converting field type : Numeric
+    df[['조회수', '좋아요수', '댓글수']] = df[['조회수', '좋아요수', '댓글수']].apply(pd.to_numeric)
+    # Converting field type : Category
+    df['카테고리'].replace('Entertainment', '엔터테인먼트', inplace=True)
+    df['카테고리'].replace(['Music','Hip_hop_music','Electronic_music'], '뮤직', inplace=True)
+    df['카테고리'].replace('Food', '푸드', inplace=True)
+    df['카테고리'].replace('Video_game_culture', '게임', inplace=True)
+    df['카테고리'].replace('Lifestyle_(sociology)', '라이프스타일', inplace=True)
+    df['카테고리'].replace(['Sport', 'Association_football'], '스포츠', inplace=True)
+    df['카테고리'].replace('Society', '사회', inplace=True)
+    df['카테고리'].replace('Health', '건강', inplace=True)
+    # Counting index
+    df.index = df.index+1
+
+    return df
+
 def flask_timeframe(command):
     """
     SECTION : flask, channel, analysis
@@ -533,22 +574,28 @@ def flask_timeframe(command):
     if command == 'daily':
         chart = gcp_sql_pull(command='daily')
     elif command == '15days':
-        chart = gcp_sql_pull(command='accumulate')
+        chart = gcp_sql_pull(command='accumulated')
         # Convert view_count into int
         chart['view_count'] = chart['view_count'].astype(str).astype(int)
         # Sort by view_count
         chart = chart.tail(300).sort_values('view_count', ascending = False)
-        # Remove duplicates
+        chart = tf_conversion(data=chart)
+        # With duplicated video ids & without (removed) duplicated video ids
+        chart_repeat = chart
         chart = chart.drop_duplicates(subset='video_id', keep="last")
 
     else:
-        chart = gcp_sql_pull(command='accumulate')
+        chart = gcp_sql_pull(command='accumulated')
         # Convert view_count into int
         chart['view_count'] = chart['view_count'].astype(str).astype(int)
         # Sort by view_count
-        chart = chart.tail(300).sort_values('view_count', ascending = False)
-        # Remove duplicates
+        chart = chart.tail(600).sort_values('view_count', ascending = False)
+        chart = tf_conversion(chart)
+        # With duplicated video ids & without (removed) duplicated video ids
+        chart_repeat = chart
         chart = chart.drop_duplicates(subset='video_id', keep="last")
+
+
 
     # ======================  KIWI Tokeanization & Wordcloud  ====================== #
     # Kiwi Tokenization
@@ -584,7 +631,11 @@ def flask_timeframe(command):
     wordcloud = WordCloud(max_font_size=50, max_words=100, background_color="white", font_path="static/gulim.ttc").generate_from_frequencies(dict(tags))
     wordcloud.to_file("static/images/wc_01.png")
 
-    return
+    # ======================  With duplicated video ids   ====================== #
+    tf_avg = chart_repeat.groupby(['run_date'])['view_count', 'like_count', 'comment_count'].mean().sort_values('view_count', ascending=False).reset_index()
+    tf_category = chart_repeat.groupby(['run_date', 'wiki_category'])['view_count'].mean().sort_values('view_count',ascending=False).reset_index()
+
+    return chart
 
 def channel_search(chanel_name):
     """
