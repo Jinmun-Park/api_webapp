@@ -16,6 +16,10 @@
                         <div class="card-body" style="user-select: auto;">
                           <h5 class="card-title" style="user-select: auto;">댓글 결과</h5>
 
+                            <div class="keyword_analysis" class="flex-grow stretch-card rounded-3 shadow">
+                                <img class="keyword_img" src="/static/images/wc_01.png">
+                                </div>
+
                           <div class="comment_table" class="table-responsive pt-3" style="user-select: auto;">
                             <table  id="table" class="table table-bordered" style="user-select: auto;">
                               <thead style="user-select: auto;">
@@ -26,11 +30,11 @@
                                 </tr>
                               </thead>
 
-                              <tbody style="user-select: auto;">
+                              <tbody class="comment_table_body" style="user-select: auto;">
                                     {% for i in data.index %}        <! -- for tag start -->
-                                    <tr style="user-select: auto;">
-                                        <td style="width: 10%;">{{ data['comment_id'][i] }}</td>
-                                        <td style="width: 50%;">{{ data['comment'][i] }}</td>
+                                    <tr>
+                                        <td style="width: 15%;">{{ data['comment_id'][i] }}</td>
+                                        <td style="width: 45%;">{{ data['comment'][i] }}</td>
                                         <td style="width: 15%;">{{ data['author'][i] }}</td>
                                         <td style="width: 7.5%;">{{ data['like_count'][i] }}</td>
                                         <td style="width: 10%;">{{ data['published_at'][i] }}</td>
