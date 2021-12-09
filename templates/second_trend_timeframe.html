@@ -1,0 +1,497 @@
+{% extends 'base.html' %}
+
+{% block title %}
+차트 시간별 분석
+{% endblock %}
+
+{% block content %}
+
+<!-- Headline -->
+<div class="container-fluid">
+    <nav id="Trend-sidebarMenu" class="col-md-3 d-md-block bg-light sidebar collapse">
+      <div class="position-sticky pt-3">
+          <ul class="three-column-side nav nav-pills">
+            <li class="nav-item">
+              <a class="nav-link link-dark" href="/latest_trend/category">Latest</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="/15day_trend/category" aria-current="page">15 Days</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link link-dark" href="#">30 Days</a>
+            </li>
+          </ul>
+        <ul class="nav nav-pills flex-column mb-auto">
+          <li class="nav-item">
+            <a href="/15day_trend/category" class="nav-link link-dark">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi me-2 bi-grid-3x3-gap" viewBox="0 0 16 16">
+                    <path d="M4 2v2H2V2h2zm1 12v-2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1zm0-5V7a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1zm0-5V2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1zm5 10v-2a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1zm0-5V7a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1zm0-5V2a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1zM9 2v2H7V2h2zm5 0v2h-2V2h2zM4 7v2H2V7h2zm5 0v2H7V7h2zm5 0h-2v2h2V7zM4 12v2H2v-2h2zm5 0v2H7v-2h2zm5 0v2h-2v-2h2zM12 1a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1h-2zm-1 6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V7zm1 4a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1h-2z"/>
+                </svg>
+                Category
+            </a>
+          </li>
+          <li>
+            <a href="/15day_trend/channel" class="nav-link link-dark">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi me-2 bi-collection-play" viewBox="0 0 16 16">
+                  <path d="M2 3a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 0-1h-11A.5.5 0 0 0 2 3zm2-2a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7A.5.5 0 0 0 4 1zm2.765 5.576A.5.5 0 0 0 6 7v5a.5.5 0 0 0 .765.424l4-2.5a.5.5 0 0 0 0-.848l-4-2.5z"/>
+                  <path d="M1.5 14.5A1.5 1.5 0 0 1 0 13V6a1.5 1.5 0 0 1 1.5-1.5h13A1.5 1.5 0 0 1 16 6v7a1.5 1.5 0 0 1-1.5 1.5h-13zm13-1a.5.5 0 0 0 .5-.5V6a.5.5 0 0 0-.5-.5h-13A.5.5 0 0 0 1 6v7a.5.5 0 0 0 .5.5h13z"/>
+                </svg>
+                Channel
+            </a>
+          </li>
+          <li>
+            <a href="/15day_trend/timeframe" class="nav-link active" aria-current="page">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi me-2 bi-bar-chart" viewBox="0 0 16 16">
+                    <path d="M4 11H2v3h2v-3zm5-4H7v7h2V7zm5-5v12h-2V2h2zm-2-1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1h-2zM6 7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zm-5 4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3z"/>
+                </svg>
+                TimeFrame
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+</div>
+
+<!-- Headline -->
+<div class="chart-upper-row row">
+    <div class="row d-sm-flex alight-items-center justify-content-between mb-4">
+        <h1 class="general-font h3 mb-1">TimeFrame Dashboard</h1>
+        <div class="general-font ms-1 text-muted">인기차트<15일> 일자별분석</div>
+    </div>
+</div>
+
+<!-- Left Chart : 인기차트 일자별 평균지표표 -->
+<div class="chart-row row">
+    <!-- Trend Channel Left Bar Chart -->
+    <div class="chart-left col-7 d-flex flex-column">
+        <div class="card-manual-line flex-grow card-body rounded-3 border-3 shadow">
+            <!-- Nav tabs inside chart -->
+            <ul class="second-trend-channel-left-chart nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="top-20-tab" data-bs-toggle="tab" data-bs-target="#top-20" type="button" role="tab" aria-controls="top-20" aria-selected="true">AVERAGE</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                <button class="nav-link" id="bottom-20-tab" data-bs-toggle="tab" data-bs-target="#bottom-20" type="button" role="tab" aria-controls="bottom-20" aria-selected="false">SUM</button>
+                </li>
+            </ul>
+            <!-- Charts inside Nav tabs -->
+            <div class="tab-content" id="myTabContent">
+                <!-- Chart 1 : Top 20 -->
+                <div class="tab-pane fade show active" id="top-20" role="tabpanel" aria-labelledby="top-20-tab">
+                    <canvas class="my-4" id="channel-chart1"></canvas>
+                        <script>
+                            var ctx = document.getElementById("channel-chart1");
+                            var myChart = new Chart(ctx, {
+                              type: 'line',
+                              data: {
+                                datasets: [{
+                                    label: '조회수(백명)',
+                                    data: {{ tf_avg_view | safe }},
+                                    fill: false,
+                                    backgroundColor: "rgb(241, 148, 138)",
+                                    borderColor: "rgb(241, 148, 138)",
+                                    borderWidth: 2
+                                },
+                                {
+                                    label: '좋아요수(십명)',
+                                    data: {{ tf_avg_like | safe }},
+                                    fill: false,
+                                    backgroundColor: 'rgb(133, 193, 233)',
+                                    borderColor: 'rgb(133, 193, 233)',
+                                    borderWidth: 2,
+                                },
+                                {
+                                    label: '댓글수(명)',
+                                    data: {{ tf_avg_comm | safe }},
+                                    fill: false,
+                                    backgroundColor: 'rgb(248, 196, 113)',
+                                    borderColor: 'rgb(248, 196, 113)',
+                                    borderWidth: 2,
+                                }],
+                                labels: {{ tf_avg_date | safe }}
+                                },
+                                options: {
+                                    responsive: true,
+                                    title: {
+                                        display: true,
+                                        text: '인기차트 일자별 평균지표',
+                                        fontSize: 15
+                                    },
+                                    xAxes: [{
+                                        type: 'time',
+                                        time: {
+                                          unit: 'day',
+                                          tooltipFormat: 'MMM DD'
+                                        }
+                                    }]
+                                }
+                            });
+                        </script>
+                </div>
+                <div class="tab-pane fade" id="bottom-20" role="tabpanel" aria-labelledby="bottom-20-tab">
+                    <canvas class="my-4" id="channel-chart2"></canvas>
+                        <script>
+                            var ctx = document.getElementById("channel-chart2");
+                            var myChart = new Chart(ctx, {
+                                type: 'line',
+                                data: {
+                                datasets: [{
+                                    label: '조회수(백명)',
+                                    data: {{ tf_sum_view | safe }},
+                                    fill: false,
+                                    backgroundColor: "rgb(241, 148, 138)",
+                                    borderColor: "rgb(241, 148, 138)",
+                                    borderWidth: 2
+                                },
+                                {
+                                    label: '좋아요수(십명)',
+                                    data: {{ tf_sum_like | safe }},
+                                    fill: false,
+                                    backgroundColor: 'rgb(133, 193, 233)',
+                                    borderColor: 'rgb(133, 193, 233)',
+                                    borderWidth: 2,
+                                },
+                                {
+                                    label: '댓글수(명)',
+                                    data: {{ tf_sum_comm | safe }},
+                                    fill: false,
+                                    backgroundColor: 'rgb(248, 196, 113)',
+                                    borderColor: 'rgb(248, 196, 113)',
+                                    borderWidth: 2,
+                                }],
+                                labels: {{ tf_sum_date | safe }}
+                                },
+                                options: {
+                                    responsive: true,
+                                    title: {
+                                        display: true,
+                                        text: '인기차트 일자별 합계지표',
+                                        fontSize: 15
+                                    },
+                                    xAxes: [{
+                                        type: 'time',
+                                        time: {
+                                          unit: 'day',
+                                          tooltipFormat: 'MMM DD'
+                                        }
+                                    }]
+                                }
+                                });
+                        </script>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Trend Channel Right Chart -->
+    <div class="chart-right col-4 d-flex flex-column">
+        <!-- Upper Chart 1 -->
+        <div class="row flex-grow mb-2">
+            <div class="card-manual-line flex-grow stretch-card ms-2 rounded-3 shadow">
+                <div class="row mt-3 mb-3 alight-items-center text-center justify-content-center">
+                    <div class="channel-top-right-font h5 mb-3 font-weight-bold alight-items-center text-center">
+                        동영상 제목 워드클라우드
+                    </div>
+                    <img src="../static/images/wc_01.png" width="40" height="250" alt="...">
+
+                    </div>
+            </div>
+        </div>
+        <!-- Upper Chart 2 -->
+        <div class="row flex-grow mt-3">
+            <div class="card-manual-line flex-grow stretch-card ms-2 rounded-3 shadow">
+                <div class="row mt-3 mb-3 alight-items-center text-center justify-content-center">
+                    <div class="channel-top-right-font h5 mb-3 font-weight-bold alight-items-center text-center">
+                        <15일> 최대 조회수 채널
+                    </div>
+                    <div class="col-4">
+                        <div class="gap-2 d-md-flex justify-content-center">
+                                <p><a class="chart-button btn btn-sm btn-outline-success" href="https://www.youtube.com/watch?v={{ tf_top_videoid }}">Videos  &raquo;</a></p>
+                                <p><a class="chart-button btn btn-sm btn-outline-success" href="https://www.youtube.com/channel/{{ tf_top_channelid }}">Channel &raquo;</a></p>
+                        </div>
+                        <img src={{ tf_top_url | safe }} width="130" height="130" alt="...">
+                    </div>
+                   <div class="chart-top-right-line col-8 general-font mt-1">
+                        <div class="gap-2 mt-2 d-md-flex justify-content-center">
+                            <div class="col-6 ms-1">
+                                <div class="gap-1 d-md-flex justify-content-left">
+                                    <div class="col">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" fill="currentColor" class="chart-top-right-inner-icon bi bi-camera-reels" viewBox="0 0 16 16">
+                                          <path d="M6 3a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM1 3a2 2 0 1 0 4 0 2 2 0 0 0-4 0z"/>
+                                          <path d="M9 6h.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 7.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 16H2a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h7zm6 8.73V7.27l-3.5 1.555v4.35l3.5 1.556zM1 8v6a1 1 0 0 0 1 1h7.5a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1z"/>
+                                          <path d="M9 6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM7 3a2 2 0 1 1 4 0 2 2 0 0 1-4 0z"/>
+                                        </svg>
+                                        <div class="chart-top-right-inner-font mb-2">
+                                        채널개설날짜
+                                        </div>
+                                    </div>
+                                    <div class="chart-top-right-inner-icon col d-md-flex mt-3 align-baseline justify-content-left">
+                                        {{ tf_top_publish }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 ms-1">
+                                <div class="gap-1 d-md-flex justify-content-left">
+                                    <div class="col">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" fill="currentColor" class="chart-top-right-inner-icon bi bi-cart" viewBox="0 0 16 16">
+                                          <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                                        </svg>
+                                        <div class="chart-top-right-inner-font mb-2">
+                                        카테고리
+                                        </div>
+                                    </div>
+                                    <div class="chart-top-right-inner-icon col d-md-flex mt-3 align-baseline justify-content-left">
+                                        {{ tf_top_cateogry }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="gap-2 mt-2 d-md-flex justify-content-center">
+                            <div class="col-6 ms-1">
+                                <div class="gap-1 d-md-flex justify-content-left">
+                                    <div class="col">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" fill="currentColor" class="chart-top-right-inner-icon bi bi-hand-thumbs-up" viewBox="0 0 16 16">
+                                          <path d="M8.864.046C7.908-.193 7.02.53 6.956 1.466c-.072 1.051-.23 2.016-.428 2.59-.125.36-.479 1.013-1.04 1.639-.557.623-1.282 1.178-2.131 1.41C2.685 7.288 2 7.87 2 8.72v4.001c0 .845.682 1.464 1.448 1.545 1.07.114 1.564.415 2.068.723l.048.03c.272.165.578.348.97.484.397.136.861.217 1.466.217h3.5c.937 0 1.599-.477 1.934-1.064a1.86 1.86 0 0 0 .254-.912c0-.152-.023-.312-.077-.464.201-.263.38-.578.488-.901.11-.33.172-.762.004-1.149.069-.13.12-.269.159-.403.077-.27.113-.568.113-.857 0-.288-.036-.585-.113-.856a2.144 2.144 0 0 0-.138-.362 1.9 1.9 0 0 0 .234-1.734c-.206-.592-.682-1.1-1.2-1.272-.847-.282-1.803-.276-2.516-.211a9.84 9.84 0 0 0-.443.05 9.365 9.365 0 0 0-.062-4.509A1.38 1.38 0 0 0 9.125.111L8.864.046zM11.5 14.721H8c-.51 0-.863-.069-1.14-.164-.281-.097-.506-.228-.776-.393l-.04-.024c-.555-.339-1.198-.731-2.49-.868-.333-.036-.554-.29-.554-.55V8.72c0-.254.226-.543.62-.65 1.095-.3 1.977-.996 2.614-1.708.635-.71 1.064-1.475 1.238-1.978.243-.7.407-1.768.482-2.85.025-.362.36-.594.667-.518l.262.066c.16.04.258.143.288.255a8.34 8.34 0 0 1-.145 4.725.5.5 0 0 0 .595.644l.003-.001.014-.003.058-.014a8.908 8.908 0 0 1 1.036-.157c.663-.06 1.457-.054 2.11.164.175.058.45.3.57.65.107.308.087.67-.266 1.022l-.353.353.353.354c.043.043.105.141.154.315.048.167.075.37.075.581 0 .212-.027.414-.075.582-.05.174-.111.272-.154.315l-.353.353.353.354c.047.047.109.177.005.488a2.224 2.224 0 0 1-.505.805l-.353.353.353.354c.006.005.041.05.041.17a.866.866 0 0 1-.121.416c-.165.288-.503.56-1.066.56z"/>
+                                        </svg>
+                                        <div class="chart-top-right-inner-font mb-2">
+                                        비디오 좋아요
+                                        </div>
+                                    </div>
+                                    <div class="chart-top-right-inner-icon col d-md-flex mt-3 align-baseline justify-content-left">
+                                        {{ tf_top_like }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 ms-1">
+                                <div class="gap-1 d-md-flex justify-content-left">
+                                    <div class="col">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" fill="currentColor" class="chart-top-right-inner-icon bi bi-chat-square-text" viewBox="0 0 16 16">
+                                          <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-2.5a2 2 0 0 0-1.6.8L8 14.333 6.1 11.8a2 2 0 0 0-1.6-.8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2.5a1 1 0 0 1 .8.4l1.9 2.533a1 1 0 0 0 1.6 0l1.9-2.533a1 1 0 0 1 .8-.4H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                                          <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
+                                        </svg>
+                                        <div class="chart-top-right-inner-font mb-2">
+                                        비디오 댓글
+                                        </div>
+                                    </div>
+                                    <div class="chart-top-right-inner-icon col d-md-flex mt-3 align-baseline justify-content-left">
+                                        {{ tf_top_comment }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                   </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Left Chart : 인기차트 일자별 평균지표표 -->
+<div class="chart-row row">
+    <!-- Trend Channel Left Bar Chart -->
+    <div class="chart-right col-5 d-flex flex-column">
+        <div class="card-manual-line flex-grow card-body rounded-3 border-3 shadow">
+            <canvas class="my-4" id="channel-chart4" height="300"></canvas>
+                <script>
+                    var ctx = document.getElementById("channel-chart4");
+                    var myChart = new Chart(ctx, {
+                        type: 'radar',
+                        data: {
+                        datasets: [{
+                            label: '조회수(백명)',
+                            data: {{ tf_radar_view | safe }},
+                            backgroundColor: "rgb(241, 148, 138)",
+                            borderColor: "rgb(241, 148, 138)",
+                            borderWidth: 2
+                        },
+                        {
+                            label: '좋아요수(십명)',
+                            data: {{ tf_radar_like | safe }},
+                            backgroundColor: 'rgb(133, 193, 233)',
+                            borderColor: 'rgb(133, 193, 233)',
+                            borderWidth: 2,
+                        },
+                        {
+                            label: '댓글수(명)',
+                            data: {{ tf_radar_comm | safe }},
+                            backgroundColor: 'rgb(248, 196, 113)',
+                            borderColor: 'rgb(248, 196, 113)',
+                            borderWidth: 2,
+                        }],
+                        labels: {{ tf_radar_cate | safe }}
+                        },
+                        options: {
+                            responsive: true,
+                            title: {
+                                display: true,
+                                text: '인기차트<15일> 합계지표',
+                                fontSize: 15
+                            },
+                        }
+                        });
+                </script>
+        </div>
+    </div>
+    <!-- Trend Channel Right Chart -->
+    <div class="chart-left col-5 d-flex flex-column">
+        <table id="table" class="table table-bordered table-hover align-middle">
+            <thead class="table-light">
+            <tr>
+                <th scope="col"></th>
+                {% for col in tf_list_channel.columns %}
+                    <th scope="col" style="text-align:center">{{col}}</th>
+                {% endfor %}
+            </tr>
+            </thead>
+
+            <tbody>
+                {% for i in tf_list_channel.index %}        <! -- for tag start -->
+                <tr>
+                    <th style="width:1%; text-align:center">{{ i }}</th>
+                    <td style="width: 10%; text-align:center">{{ tf_list_channel['차트일자'][i] }}</td>
+                    <td style="width: 25%; text-align:center">{{ tf_list_channel['동영상'][i] }}</td>
+                    <td style="width: 10%; text-align:center">{{ tf_list_channel['채널명'][i] }}</td>
+                    <td style="width: 25%; text-align:center"><img src={{ tf_list_channel['썸네일'][i] }} width="100" height="100" alt="..."></td>
+                    <td style="width: 7%; text-align:center">{{ tf_list_channel['조회수'][i] }}</td>
+                    <td style="width: 7%; text-align:center">{{ tf_list_channel['좋아요수'][i] }}</td>
+                    <td style="width: 7%; text-align:center">{{ tf_list_channel['댓글수'][i] }}</td>
+                    <td style="width: 7%; text-align:center">{{ tf_list_channel['카테고리'][i] }}</td>
+                </tr>
+                {% endfor %}                          <! -- for tag end -->
+            </tbody>
+        </table>
+        {% endblock %}
+
+        {% block scripts %}
+          <script>
+            $(document).ready(function () {
+                $('#table').DataTable({
+                    "lengthMenu": [ 5, 15, 25, 50, 100 ],
+                    columns: [
+                      {searchable: false},
+                      {orderable: false},
+                      {searchable: false},
+                      {searchable: false},
+                      {searchable: false},
+                      {searchable: false},
+                      {searchable: false},
+                      {searchable: false},
+                      {searchable: false}]
+                });
+            });
+          </script>
+    </div>
+</div>
+
+<!-- Headline -->
+<div class="chart-upper-row row">
+    <div class="row d-sm-flex alight-items-center justify-content-between mb-4">
+        <h1 class="general-font h3 mb-1">Category Bar</h1>
+        <div class="general-font ms-1 text-muted">인기차트<15일> 카테고리분석</div>
+    </div>
+</div>
+
+<!-- Middle Chart : 인기차트 카테고리별 총조회수수 -->
+<div class="chart-tf-row row">
+    <div class="d-flex flex-column">
+        <div class="card-manual-line flex-grow card-body rounded-3 border-3 shadow">
+            <canvas class="my-4" id="channel-chart3" height="120px"></canvas>
+                <script>
+                    var ctx = document.getElementById("channel-chart3");
+                    var myChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                        datasets: [{
+                            label: '엔터테인먼트',
+                            data: {{ tf_cate_001 | safe }},
+                            fill: false,
+                            backgroundColor: "rgb(241, 148, 138)",
+                            borderColor: "rgb(241, 148, 138)",
+                            borderWidth: 2
+                        },
+                        {
+                            label: '뮤직',
+                            data: {{ tf_cate_002 | safe }},
+                            fill: false,
+                            backgroundColor: 'rgb(133, 193, 233)',
+                            borderColor: 'rgb(133, 193, 233)',
+                            borderWidth: 2,
+                        },
+                        {
+                            label: '푸드',
+                            data: {{ tf_cate_003 | safe }},
+                            fill: false,
+                            backgroundColor: 'rgb(248, 196, 113)',
+                            borderColor: 'rgb(248, 196, 113)',
+                            borderWidth: 2,
+                        },
+                        {
+                            label: '게임',
+                            data: {{ tf_cate_004 | safe }},
+                            fill: false,
+                            backgroundColor: 'rgb(187, 143, 206)',
+                            borderColor: 'rgb(187, 143, 206)',
+                            borderWidth: 2,
+                        },
+                        {
+                            label: '라이프스타일',
+                            data: {{ tf_cate_005 | safe }},
+                            fill: false,
+                            backgroundColor: 'rgb(118, 215, 196)',
+                            borderColor: 'rgb(118, 215, 196)',
+                            borderWidth: 2,
+                        },
+                        {
+                            label: '스포츠',
+                            data: {{ tf_cate_006 | safe }},
+                            fill: false,
+                            backgroundColor: 'rgb(128, 139, 150)',
+                            borderColor: 'rgb(128, 139, 150)',
+                            borderWidth: 2,
+                        },
+                        {
+                            label: '사회',
+                            data: {{ tf_cate_007 | safe }},
+                            fill: false,
+                            backgroundColor: 'rgb(90, 90, 90)',
+                            borderColor: 'rgb(90, 90, 90)',
+                            borderWidth: 2,
+                        },
+                        {
+                            label: '건강',
+                            data: {{ tf_cate_008 | safe }},
+                            fill: false,
+                            backgroundColor: 'rgb(180, 180, 180)',
+                            borderColor: 'rgb(180, 180, 180)',
+                            borderWidth: 2,
+                        }],
+                        labels: {{ tf_cate_date | safe }}
+                        },
+                        options: {
+                            responsive: true,
+                            title: {
+                                display: true,
+                                text: '인기차트 카테고리별 총조회수',
+                                fontSize: 15
+                            },
+                            scales: {
+                                  yAxes: [{
+                                    stacked: true,
+                                    ticks: {
+                                      beginAtZero: true
+                                    }
+                                  }],
+                                  xAxes: [{
+                                    stacked: true,
+                                    ticks: {
+                                      beginAtZero: true
+                                    }
+                                  }]
+                            }
+                        }
+                    });
+                </script>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

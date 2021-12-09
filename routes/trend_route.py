@@ -77,7 +77,7 @@ def trend_channel():
     # Channel names
     channel_label = [i for i in flask_channel.채널명]
     channel_view = [i for i in (flask_channel.채널총조회수)/1000]
-    channel_subs = [i for i in flask_channel.채널구독수]
+    channel_subs = [i for i in (flask_channel.채널구독수)]
     # Top channel information figures
     top_channel_select = flask_channel[flask_channel['채널총조회수'] == flask_channel['채널총조회수'].max()]
     top_channel = top_channel_select.채널명.iloc[0]

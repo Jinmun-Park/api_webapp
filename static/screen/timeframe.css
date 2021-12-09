@@ -24,3 +24,14 @@
     margin-left: 30%;
     width: 50%;
 }
+
+/* 15 & 30 days bottom graph */
+.chart-tf-row{
+    width: 99%;
+    margin-bottom: 30px;
+    padding-left: 14%;
+}
+
+.chart-half{
+    width: 50%;
+}
