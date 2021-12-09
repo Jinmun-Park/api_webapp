@@ -561,14 +561,11 @@ def flask_timeframe(command):
     DESCRIPTION : Run analysis with gcp_sqp_pull()
     USAGE : Channel ID from popular chart will trigger to extract channel information
     """
-    pd.options.mode.chained_assignment = None  # Off warning messages, default='warn'
-    starttime = datetime.now()
-    print(starttime)
 
-    # ======================== GOOGLE SECRET Reading ========================= #
+    # =============================== GOOGLE SECRET Reading =============================== #
     connection_name, query_string, db_name, db_user, db_password, driver_name, public_ip, service_key = keys()
     youtube = build('youtube', 'v3', developerKey=service_key)
-    # ======================================================================== #
+    # ===================================================================================== #
 
     # ======================  Retrieving API : YOUTUBE_CHANNEL_INFO  ====================== #
     if command == 'daily':
@@ -582,7 +579,7 @@ def flask_timeframe(command):
         chart = tf_conversion(data=chart)
         # With duplicated video ids & without (removed) duplicated video ids
         chart_repeat = chart
-        chart = chart.drop_duplicates(subset='video_id', keep="last")
+        chart = chart.drop_duplicates(subset='동영상아이디', keep="last")
 
     else:
         chart = gcp_sql_pull(command='accumulated')
@@ -593,14 +590,12 @@ def flask_timeframe(command):
         chart = tf_conversion(chart)
         # With duplicated video ids & without (removed) duplicated video ids
         chart_repeat = chart
-        chart = chart.drop_duplicates(subset='video_id', keep="last")
-
-
+        chart = chart.drop_duplicates(subset='동영상아이디', keep="last")
 
     # ======================  KIWI Tokeanization & Wordcloud  ====================== #
     # Kiwi Tokenization
     kiwi = Kiwi()
-    text = " ".join(chart['video_title'])
+    text = " ".join(chart['동영상'])
     text_list = kiwi.tokenize(text)
     # Form & Tag split
     split_form = pd.DataFrame([item[0] for item in text_list])
@@ -631,11 +626,100 @@ def flask_timeframe(command):
     wordcloud = WordCloud(max_font_size=50, max_words=100, background_color="white", font_path="static/gulim.ttc").generate_from_frequencies(dict(tags))
     wordcloud.to_file("static/images/wc_01.png")
 
-    # ======================  With duplicated video ids   ====================== #
-    tf_avg = chart_repeat.groupby(['run_date'])['view_count', 'like_count', 'comment_count'].mean().sort_values('view_count', ascending=False).reset_index()
-    tf_category = chart_repeat.groupby(['run_date', 'wiki_category'])['view_count'].mean().sort_values('view_count',ascending=False).reset_index()
+    # ==========================  With duplicated video ids   ========================== #
+    # 1. Best Channel - Connects to Youtube API for Channel information
+    top_channel = chart_repeat[chart_repeat['조회수'] == chart_repeat['조회수'].max()]
 
-    return chart
+    # 2. Calculate average view counts
+    tf_sum = chart_repeat.groupby(['차트일자'])[['조회수', '좋아요수', '댓글수']].sum().sort_values('차트일자', ascending=True).reset_index()
+    tf_avg = chart_repeat.groupby(['차트일자'])[['조회수', '좋아요수', '댓글수']].mean().sort_values('차트일자', ascending=True).reset_index()
+    tf_sum_category = chart_repeat.groupby(['차트일자', '카테고리'])[['조회수', '좋아요수', '댓글수']].sum().sort_values('차트일자', ascending=True).reset_index()
+
+    # 3. Best Channel in Time Period - Connects to Youtube API for Channel information
+    top_cate_channel = chart_repeat[chart_repeat['조회수'] == chart_repeat.groupby('차트일자')['조회수'].transform('max')].sort_values('차트일자', ascending=True).reset_index()
+    del top_cate_channel["index"]
+
+    # ====================== YOUTUBE_CHANNEL_INFO : Top Channel  ====================== #
+    # Running loop to get Channel_ID from 'df_channel_search'
+    df_channel_info = pd.DataFrame()
+
+    for id in top_channel['채널아이디']:
+        try:
+            # YOUTUBE_CHANNEL_INFORMATION
+            res_channel = youtube.channels().list(part=['snippet', 'statistics', 'contentDetails'],
+                                                  id=id).execute()
+            dataframe = json_normalize(res_channel['items'][0])
+            df_channel_info = df_channel_info.append(dataframe)
+        except:
+            print('Channel ID : ' + id + ' has failed to open API connection')
+
+    # Select Columns
+    df_channel_info = df_channel_info[['id',
+                                       'snippet.thumbnails.medium.url',
+                                       #'snippet.customUrl',
+                                       'snippet.publishedAt',
+                                       'statistics.viewCount',
+                                       'statistics.subscriberCount',
+                                       'statistics.videoCount']]
+
+    # Rename Columns
+    df_channel_info.rename(columns={'id': '채널아이디',
+                                    'snippet.thumbnails.medium.url': '썸네일',
+                                    #'snippet.customUrl': 'custom_url',
+                                    'snippet.publishedAt': '채널개설날짜',
+                                    'statistics.viewCount': '채널총조회수',
+                                    'statistics.subscriberCount': '채널구독수',
+                                    'statistics.videoCount': '채널비디오수'
+                                    }, inplace=True)
+    df_channel_info['채널개설날짜'] = pd.to_datetime(df_channel_info['채널개설날짜'], infer_datetime_format=True)
+    df_channel_info['채널개설날짜'] = df_channel_info['채널개설날짜'].dt.strftime("%Y-%m-%d")
+
+    # Merge with video information
+    tf_channel = pd.DataFrame()
+    tf_channel = top_channel.merge(df_channel_info, how='inner', on='채널아이디')
+
+    # ====================== YOUTUBE_CHANNEL_INFO : Top Channel in time period  ====================== #
+    # Running loop to get Channel_ID from 'df_channel_search'
+    df_channel_info = pd.DataFrame()
+
+    for id in top_cate_channel['채널아이디']:
+        try:
+            # YOUTUBE_CHANNEL_INFORMATION
+            res_channel = youtube.channels().list(part=['snippet', 'statistics', 'contentDetails'],
+                                                  id=id).execute()
+            dataframe = json_normalize(res_channel['items'][0])
+            df_channel_info = df_channel_info.append(dataframe)
+        except:
+            print('Channel ID : ' + id + ' has failed to open API connection')
+
+    # Select Columns
+    df_channel_info = df_channel_info[['id',
+                                       'snippet.thumbnails.medium.url',
+                                       #'snippet.customUrl',
+                                       'snippet.publishedAt',
+                                       'statistics.viewCount',
+                                       'statistics.subscriberCount',
+                                       'statistics.videoCount']]
+
+    # Rename Columns
+    df_channel_info.rename(columns={'id': '채널아이디',
+                                    'snippet.thumbnails.medium.url': '썸네일',
+                                    #'snippet.customUrl': 'custom_url',
+                                    'snippet.publishedAt': '채널개설날짜',
+                                    'statistics.viewCount': '채널총조회수',
+                                    'statistics.subscriberCount': '채널구독수',
+                                    'statistics.videoCount': '채널비디오수'
+                                    }, inplace=True)
+    df_channel_info['채널개설날짜'] = pd.to_datetime(df_channel_info['채널개설날짜'], infer_datetime_format=True)
+    df_channel_info['채널개설날짜'] = df_channel_info['채널개설날짜'].dt.strftime("%Y-%m-%d")
+
+    # Merge with video information
+    tf_list_channel = pd.DataFrame()
+    tf_list_channel = top_cate_channel.merge(df_channel_info, how='inner', on='채널아이디').drop_duplicates().reset_index()
+    tf_list_channel = tf_list_channel[['차트일자', '동영상', '채널명', '썸네일', '조회수', '좋아요수', '댓글수', '카테고리']]
+    tf_list_channel.index = tf_list_channel.index+1
+
+    return tf_list_channel, tf_channel, tf_sum, tf_avg, tf_sum_category
 
 def channel_search(chanel_name):
     """

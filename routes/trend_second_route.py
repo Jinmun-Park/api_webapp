@@ -1,11 +1,12 @@
 import pandas as pd
 import datetime as dt
-from src.utils.api import flask_category, flask_channel
+from src.utils.api import flask_category, flask_channel, flask_timeframe
 
 # ====================== Flask Blueprint ====================== #
 from flask import Blueprint, render_template
 df, df_category, df_channeltitle, df_category_view_per, df_category_like_per, df_category_comment_per, df_top_channel, df_top_category, df_top_comment = flask_category(command='15days')
 flask_channel = flask_channel(command='15days')
+tf_list_channel, tf_channel, tf_sum, tf_avg, tf_sum_category = flask_timeframe(command='15days')
 bp = Blueprint('15day_trend', __name__, url_prefix='/15day_trend')
 
 # ======================== Flask Route ======================== #
@@ -83,10 +84,10 @@ def trend_channel():
     # Channel Top 20 & Bottom 20 names
     channel_top_label = [i for i in flask_channel.head(20).채널명]
     channel_top_view = [i for i in (flask_channel.head(20).채널총조회수)/1000]
-    channel_top_subs = [i for i in flask_channel.head(20).채널구독수]
+    channel_top_subs = [i for i in (flask_channel.head(20).채널구독수)]
     channel_btm_label = [i for i in flask_channel.tail(20).채널명]
-    channel_btm_view = [i for i in (flask_channel.tail(20).채널총조회수) / 1000]
-    channel_btm_subs = [i for i in flask_channel.tail(20).채널구독수]
+    channel_btm_view = [i for i in (flask_channel.tail(20).채널총조회수)/1000]
+    channel_btm_subs = [i for i in (flask_channel.tail(20).채널구독수)]
     # Top channel information figures
     top_channel_select = flask_channel[flask_channel['채널총조회수'] == flask_channel['채널총조회수'].max()]
     top_channel = top_channel_select.채널명.iloc[0]
@@ -146,4 +147,78 @@ def trend_channel():
                            latest_channel_like=latest_channel_like,
                            latest_channel_comment=latest_channel_comment,
                            channel_table=channel_table
+                           )
+
+@bp.route('/timeframe', methods=["GET"])
+def trend_timeframe():
+    tf_top_url = tf_channel.썸네일.iloc[0]
+    tf_top_videoid = tf_channel.동영상아이디.iloc[0]
+    tf_top_channelid = tf_channel.채널아이디.iloc[0]
+    tf_top_publish = tf_channel.채널개설날짜.iloc[0]
+    tf_top_cateogry = tf_channel.카테고리.iloc[0]
+    tf_top_like = format(int(tf_channel.좋아요수.iloc[0]), ",")
+    tf_top_comment = format(int(tf_channel.댓글수.iloc[0]), ",")
+    # Timeframe sum figures
+    tf_sum_date = [i for i in tf_sum.차트일자]
+    tf_sum_view = [i for i in (tf_sum.조회수)/100]
+    tf_sum_like = [i for i in (tf_sum.좋아요수)/10]
+    tf_sum_comm = [i for i in (tf_sum.댓글수)]
+    # Timeframe average figures
+    tf_avg_date = [i for i in tf_avg.차트일자]
+    tf_avg_view = [i for i in (tf_avg.조회수)/100]
+    tf_avg_like = [i for i in (tf_avg.좋아요수)/10]
+    tf_avg_comm = [i for i in (tf_avg.댓글수)]
+    # Timeframe category group sum figures
+    tf_cate_date = [i for i in tf_sum_category.차트일자.unique()]
+    tf_cate_001 = [i for i in tf_sum_category[tf_sum_category['카테고리'] == '엔터테인먼트'].조회수]
+    tf_cate_002 = [i for i in tf_sum_category[tf_sum_category['카테고리'] == '뮤직'].조회수]
+    tf_cate_003 = [i for i in tf_sum_category[tf_sum_category['카테고리'] == '푸드'].조회수]
+    tf_cate_004 = [i for i in tf_sum_category[tf_sum_category['카테고리'] == '게임'].조회수]
+    tf_cate_005 = [i for i in tf_sum_category[tf_sum_category['카테고리'] == '라이프스타일'].조회수]
+    tf_cate_006 = [i for i in tf_sum_category[tf_sum_category['카테고리'] == '스포츠'].조회수]
+    tf_cate_007 = [i for i in tf_sum_category[tf_sum_category['카테고리'] == '사회'].조회수]
+    tf_cate_008 = [i for i in tf_sum_category[tf_sum_category['카테고리'] == '건강'].조회수]
+    # Table
+    tf_list_channel
+    # Category Radar
+    tf_radar = tf_sum_category.groupby(['카테고리'])[['조회수', '좋아요수', '댓글수']].sum().reset_index()
+    tf_radar_cate = [i for i in tf_radar.카테고리]
+    tf_radar_view = [i for i in tf_radar.조회수/100]
+    tf_radar_like = [i for i in tf_radar.좋아요수/10]
+    tf_radar_comm = [i for i in tf_radar.댓글수]
+    return render_template('second_trend_timeframe.html',
+                           tf_top_url=tf_top_url,
+                           tf_top_videoid=tf_top_videoid,
+                           tf_top_channelid=tf_top_channelid,
+                           tf_top_publish=tf_top_publish,
+                           tf_top_cateogry=tf_top_cateogry,
+                           tf_top_like=tf_top_like,
+                           tf_top_comment=tf_top_comment,
+                           # sum figures
+                           tf_sum_date=tf_sum_date,
+                           tf_sum_view=tf_sum_view,
+                           tf_sum_like=tf_sum_like,
+                           tf_sum_comm=tf_sum_comm,
+                           # average figures
+                           tf_avg_date=tf_avg_date,
+                           tf_avg_view=tf_avg_view,
+                           tf_avg_like=tf_avg_like,
+                           tf_avg_comm=tf_avg_comm,
+                           # sum figures
+                           tf_cate_date=tf_cate_date,
+                           tf_cate_001=tf_cate_001,
+                           tf_cate_002=tf_cate_002,
+                           tf_cate_003=tf_cate_003,
+                           tf_cate_004=tf_cate_004,
+                           tf_cate_005=tf_cate_005,
+                           tf_cate_006=tf_cate_006,
+                           tf_cate_007=tf_cate_007,
+                           tf_cate_008=tf_cate_008,
+                           # table
+                           tf_list_channel=tf_list_channel,
+                           # radar
+                           tf_radar_cate=tf_radar_cate,
+                           tf_radar_view=tf_radar_view,
+                           tf_radar_like=tf_radar_like,
+                           tf_radar_comm=tf_radar_comm
                            )
