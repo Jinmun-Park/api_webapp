@@ -689,6 +689,7 @@ def flask_timeframe(command):
                                                   id=id).execute()
             dataframe = json_normalize(res_channel['items'][0])
             df_channel_info = df_channel_info.append(dataframe)
+            print('Channel ID API Connection : ' + id + '  has been successfully completed')
         except:
             print('Channel ID : ' + id + ' has failed to open API connection')
 

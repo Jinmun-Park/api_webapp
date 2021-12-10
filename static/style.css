@@ -63,3 +63,20 @@ body {
 .dropdown-toggle {
   outline: 0;
 }
+
+/* ------------------------------------------------------- PROFILE CSS SETUP -------------------------------------------------------*/
+.info-card{
+    height: 50vh!important;
+}
+
+.profile-top-margin{
+    margin-top: 5rem;
+}
+
+.profile-border-left-green{
+    border-left: .25rem solid #198754!important;
+}
+
+.profile-border-left-blue{
+    border-left: .25rem solid #0d6efd!important;
+}

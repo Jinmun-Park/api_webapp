@@ -4,12 +4,14 @@ from src.utils.api import flask_category
 
 # ====================== Flask Blueprint ====================== #
 from flask import Blueprint, render_template
-df, df_category, df_channeltitle, df_category_view_per, df_category_like_per, df_category_comment_per, df_top_channel, df_top_category, df_top_comment = flask_category(command='daily')
-bp = Blueprint('latest_trend', __name__, url_prefix='/latest_trend')
+df, df_category, df_channeltitle, df_category_view_per, df_category_like_per, df_category_comment_per, df_top_channel, df_top_category, df_top_comment = flask_category(command='30days')
+bp = Blueprint('30day_trend', __name__, url_prefix='/30day_trend')
 
 # ======================== Flask Route ======================== #
 @bp.route('/', methods=["GET"])
 def trend():
+    # Count rows
+    count_db = len(df.index)
     # Chart figures
     category = [i for i in df_category.index]
     category_rate = [i for i in df_category.카테고리]
@@ -25,7 +27,8 @@ def trend():
     category_top_channel = df_top_channel.채널명.iloc[0]
     category_top_category = df_top_category.카테고리.iloc[0]
     category_top_comment = format(df_top_comment.댓글수.iloc[0], ",")
-    return render_template('latest_trend.html',
+    return render_template('third_trend.html',
+                           count_db=count_db,
                            category=category,
                            category_rate=category_rate,
                            category_channel=category_channel,
@@ -39,6 +42,8 @@ def trend():
 
 @bp.route('/category', methods=["GET"])
 def trend_category():
+    # Count rows
+    count_db = len(df.index)
     # Chart figures
     category = [i for i in df_category.index]
     category_rate = [i for i in df_category.카테고리]
@@ -54,7 +59,8 @@ def trend_category():
     category_top_channel = df_top_channel.채널명.iloc[0]
     category_top_category = df_top_category.카테고리.iloc[0]
     category_top_comment = format(df_top_comment.댓글수.iloc[0], ",")
-    return render_template('category.html',
+    return render_template('third_trend_category.html',
+                           count_db=count_db,
                            category=category,
                            category_rate=category_rate,
                            category_channel=category_channel,
@@ -74,11 +80,14 @@ def trend_channel():
     else:
         from src.utils.api import flask_channel
         global flask_channel
-        flask_channel = flask_channel(command='daily')
-    # Channel names
-    channel_label = [i for i in flask_channel.채널명]
-    channel_view = [i for i in (flask_channel.채널총조회수)/1000]
-    channel_subs = [i for i in (flask_channel.채널구독수)]
+        flask_channel = flask_channel(command='30days')
+    # Channel Top 20 & Bottom 20 names
+    channel_top_label = [i for i in flask_channel.head(20).채널명]
+    channel_top_view = [i for i in (flask_channel.head(20).채널총조회수)/1000]
+    channel_top_subs = [i for i in (flask_channel.head(20).채널구독수)]
+    channel_btm_label = [i for i in flask_channel.tail(20).채널명]
+    channel_btm_view = [i for i in (flask_channel.tail(20).채널총조회수)/1000]
+    channel_btm_subs = [i for i in (flask_channel.tail(20).채널구독수)]
     # Top channel information figures
     top_channel_select = flask_channel[flask_channel['채널총조회수'] == flask_channel['채널총조회수'].max()]
     top_channel = top_channel_select.채널명.iloc[0]
@@ -108,10 +117,15 @@ def trend_channel():
     latest_channel_comment = format(int(latest_channel_select.댓글수.iloc[0]), ",")
     # trend_channel_chart
     channel_table = flask_channel[['동영상', '날짜', '채널명',  '채널개설날짜', '카테고리',  '채널총조회수', '채널구독수', '채널비디오수']]
-    return render_template('channel.html',
-                           channel_label=channel_label,
-                           channel_view=channel_view,
-                           channel_subs=channel_subs,
+    return render_template('third_trend_channel.html',
+                           # top & btm 20 channel
+                           channel_top_label=channel_top_label,
+                           channel_top_view=channel_top_view,
+                           channel_top_subs=channel_top_subs,
+                           channel_btm_label=channel_btm_label,
+                           channel_btm_view=channel_btm_view,
+                           channel_btm_subs=channel_btm_subs,
+                           # top 1 channel
                            top_channel=top_channel,
                            top_channel_num=top_channel_num,
                            top_channel_url=top_channel_url,
@@ -123,6 +137,7 @@ def trend_channel():
                            top_channel_comment=top_channel_comment,
                            top_subs=top_subs,
                            top_subs_num=top_subs_num,
+                           # latest channel
                            latest_channel=latest_channel,
                            latest_channel_num=latest_channel_num,
                            latest_channel_url=latest_channel_url,
@@ -136,5 +151,82 @@ def trend_channel():
 
 @bp.route('/timeframe', methods=["GET"])
 def trend_timeframe():
-    db = flask_channel
-    return render_template('timeframe.html', db=db)
+    # Importing function
+    if 'tf_list_channel' in globals():
+        pass
+    else:
+        from src.utils.api import flask_timeframe
+        global tf_list_channel, tf_channel, tf_sum, tf_avg, tf_sum_category
+        tf_list_channel, tf_channel, tf_sum, tf_avg, tf_sum_category = flask_timeframe(command='30days')
+    # Timeframe top information
+    tf_top_url = tf_channel.썸네일.iloc[0]
+    tf_top_videoid = tf_channel.동영상아이디.iloc[0]
+    tf_top_channelid = tf_channel.채널아이디.iloc[0]
+    tf_top_publish = tf_channel.채널개설날짜.iloc[0]
+    tf_top_cateogry = tf_channel.카테고리.iloc[0]
+    tf_top_like = format(int(tf_channel.좋아요수.iloc[0]), ",")
+    tf_top_comment = format(int(tf_channel.댓글수.iloc[0]), ",")
+    # Timeframe sum figures
+    tf_sum_date = [i for i in tf_sum.차트일자]
+    tf_sum_view = [i for i in (tf_sum.조회수)/100]
+    tf_sum_like = [i for i in (tf_sum.좋아요수)/10]
+    tf_sum_comm = [i for i in (tf_sum.댓글수)]
+    # Timeframe average figures
+    tf_avg_date = [i for i in tf_avg.차트일자]
+    tf_avg_view = [i for i in (tf_avg.조회수)/100]
+    tf_avg_like = [i for i in (tf_avg.좋아요수)/10]
+    tf_avg_comm = [i for i in (tf_avg.댓글수)]
+    # Timeframe category group sum figures
+    tf_cate_date = [i for i in tf_sum_category.차트일자.unique()]
+    tf_cate_001 = [i for i in tf_sum_category[tf_sum_category['카테고리'] == '엔터테인먼트'].조회수]
+    tf_cate_002 = [i for i in tf_sum_category[tf_sum_category['카테고리'] == '뮤직'].조회수]
+    tf_cate_003 = [i for i in tf_sum_category[tf_sum_category['카테고리'] == '푸드'].조회수]
+    tf_cate_004 = [i for i in tf_sum_category[tf_sum_category['카테고리'] == '게임'].조회수]
+    tf_cate_005 = [i for i in tf_sum_category[tf_sum_category['카테고리'] == '라이프스타일'].조회수]
+    tf_cate_006 = [i for i in tf_sum_category[tf_sum_category['카테고리'] == '스포츠'].조회수]
+    tf_cate_007 = [i for i in tf_sum_category[tf_sum_category['카테고리'] == '사회'].조회수]
+    tf_cate_008 = [i for i in tf_sum_category[tf_sum_category['카테고리'] == '건강'].조회수]
+    # Table
+    tf_list_channel
+    # Category Radar
+    tf_radar = tf_sum_category.groupby(['카테고리'])[['조회수', '좋아요수', '댓글수']].sum().reset_index()
+    tf_radar_cate = [i for i in tf_radar.카테고리]
+    tf_radar_view = [i for i in tf_radar.조회수/100]
+    tf_radar_like = [i for i in tf_radar.좋아요수/10]
+    tf_radar_comm = [i for i in tf_radar.댓글수]
+    return render_template('third_trend_timeframe.html',
+                           tf_top_url=tf_top_url,
+                           tf_top_videoid=tf_top_videoid,
+                           tf_top_channelid=tf_top_channelid,
+                           tf_top_publish=tf_top_publish,
+                           tf_top_cateogry=tf_top_cateogry,
+                           tf_top_like=tf_top_like,
+                           tf_top_comment=tf_top_comment,
+                           # sum figures
+                           tf_sum_date=tf_sum_date,
+                           tf_sum_view=tf_sum_view,
+                           tf_sum_like=tf_sum_like,
+                           tf_sum_comm=tf_sum_comm,
+                           # average figures
+                           tf_avg_date=tf_avg_date,
+                           tf_avg_view=tf_avg_view,
+                           tf_avg_like=tf_avg_like,
+                           tf_avg_comm=tf_avg_comm,
+                           # sum figures
+                           tf_cate_date=tf_cate_date,
+                           tf_cate_001=tf_cate_001,
+                           tf_cate_002=tf_cate_002,
+                           tf_cate_003=tf_cate_003,
+                           tf_cate_004=tf_cate_004,
+                           tf_cate_005=tf_cate_005,
+                           tf_cate_006=tf_cate_006,
+                           tf_cate_007=tf_cate_007,
+                           tf_cate_008=tf_cate_008,
+                           # table
+                           tf_list_channel=tf_list_channel,
+                           # radar
+                           tf_radar_cate=tf_radar_cate,
+                           tf_radar_view=tf_radar_view,
+                           tf_radar_like=tf_radar_like,
+                           tf_radar_comm=tf_radar_comm
+                           )
