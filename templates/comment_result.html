@@ -16,13 +16,15 @@
                         <div class="card-body" style="user-select: auto;">
                           <h5 class="card-title" style="user-select: auto;">댓글 결과</h5>
 
-                            <div class="keyword_analysis" class="flex-grow stretch-card rounded-3 shadow">
+                        <div class="keyword_analysis d-flex justify-content-center">
+                            <div class="keyword_content">
                                 <img class="keyword_img" src="/static/images/wc_01.png">
-                                </div>
+                            </div>
+                        </div>
 
                           <div class="comment_table" class="table-responsive pt-3" style="user-select: auto;">
                             <table  id="table" class="table table-bordered" style="user-select: auto;">
-                              <thead style="user-select: auto;">
+                              <thead style="background-color:#EBECF0;">
                                 <tr style="user-select: auto;">
                                     {% for t in titles %}
                                         <th scope="col">{{ t }}</th>

@@ -9,8 +9,8 @@
 <!-- search -->
 <div id="main_page">
   <div id="container_search" class="container">
-    <form class="d-flex">
-      <input class="form-control form-control-lg" type="search" placeholder="채널을 검색하세요" aria-label="Search">
+    <form class="d-flex" method="get" action="/dashboard/channel_result">
+      <input name="cha_name" class="form-control form-control-lg" type="text" placeholder="채널을 검색하세요" aria-label="Search">
       <button class="btn btn-outline-danger btn-lg" type="submit">Search</button>
     </form>
   </div>
@@ -31,8 +31,8 @@
         <!-- caption button 001 -->
          <div class="container">
           <div id="carousel-01" class="carousel-caption text-start">
-            <h2>어느 채널을 알아볼까요?</h2>
-            <p style="font-size:110%;"> 원하시는 채널을 분석해보세요</p>
+            <h2>어느 채널을 알아볼까?</h2>
+            <p style="font-size:110%;"> 원하시는 채널을 분석해 보세요</p>
             <p><a class="btn btn-lg btn-danger" href="/dashboard">DASHBOARD</a></p>
           </div>
         </div>
@@ -44,8 +44,8 @@
         <!-- caption button 002 -->
         <div class="container">
           <div id="carousel-02" class="carousel-caption text-center">
-            <h2>최근 트렌드가 뭔지 볼까?</h2>
-            <p style="font-size:110%;">기간별로 트렌드를 확인하세요</p>
+            <h2>최근 트렌드를 확인해 볼까?</h2>
+            <p style="font-size:110%;">기간별로 트렌드를 확인해 보세요</p>
             <p><a class="btn btn-lg btn-warning" href="/latest_trend">LATEST TREND</a></p>
           </div>
         </div>
@@ -57,8 +57,8 @@
         <!-- caption button 003 -->
         <div class="container">
           <div id="carousel-03" class="carousel-caption text-end">
-            <h2>오늘의 차트1위 비디오는?</h2>
-            <p style="font-size:110%;">지금 YOUTUBE 차트순위를 확인해보세요</p>
+            <h2>실시간 차트 1위 동영상은?</h2>
+            <p style="font-size:110%;">지금 YOUTUBE 동영상 차트를 확인해 보세요</p>
             <p><a class="btn btn-lg btn-primary" href="/chart">CHART</a></p>
           </div>
         </div>
@@ -79,8 +79,8 @@
 <!-- middle page start -->
 <div id="main_background" class="carousel-inner bg-light">
  <div class="main-head">
-     <h3 style="font-weight: bold">YOUTUBE 데이터를 분석해보세요</h3>
-     <h5 style="color:#5F6562">BERT를 활용한 감정분석과 다양한 데이터 시각화를 즐겨보세요</h5>
+     <h3 style="font-weight: bold">YOUTUBE 데이터를 확인해 보세요</h3>
+     <h5 style="color:#5F6562">BERT를 활용한 감성 분석과 다양한 데이터 시각화를 즐겨보세요</h5>
  </div>
  <div id="middle_page" class="container marketing">
    <!-- Three columns of text below the carousel -->
@@ -89,19 +89,19 @@
      <div class="col-lg-4">
        <img src="../static/images/middle_page_01.png" class="bd-placeholder-img rounded-circle" width="140" height="140" alt="...">
        <h3 style="color:#155E39">인기차트</h3>
-       <p style="font-size:110%;">매일 국내 YOUTUBE 인기차트를 제공합니다. 오늘의 인기 비디오는 무엇인지 확인해보세요</p>
+       <p style="font-size:110%;">매일 국내 YOUTUBE 인기차트를 제공합니다. <br> 오늘의 인기 동영상을 확인할 수 있습니다.</p>
      </div>
      <!-- middle image 002 -->
      <div class="col-lg-4">
        <img src="../static/images/middle_page_02.png" class="bd-placeholder-img rounded-circle" width="140" height="140" alt="...">
        <h3 style="color:#155E39">대시보드</h3>
-       <p style="font-size:110%;">원하는 채널을 집중적으로 분석해보세요. 선택하신 채널의 댓글을 BERT를 사용하여 감정분석을 해보세요</p>
+       <p style="font-size:110%;">원하는 채널을 집중적으로 분석해 보세요. <br> 채널의 댓글을 BERT 모델을 활용해 감성 분석할 수 있습니다.</p>
      </div>
      <!-- middle image 003 -->
      <div class="col-lg-4">
        <img src="../static/images/middle_page_03.png" class="bd-placeholder-img rounded-circle" width="140" height="140" alt="...">
        <h3 style="color:#155E39">트렌드</h3>
-       <p style="font-size:110%;">국내 YOUTUBE 비디오의 최신 트렌드가 궁금하지 않으세요? 기간별로 트렌드를 확인해보세요</p>
+       <p style="font-size:110%;">국내 YOUTUBE 동영상의 최신 트렌드를 제공합니다. <br> 기간별로 트렌드를 확인할 수 있습니다.</p>
      </div>
    </div>
  </div>
@@ -118,8 +118,8 @@
       <div class="col-md-7">
         <div class="bottom-text">
           <h1><span style="color:#B00401">YOUTUBE</span> 교육을 제공합니다.</h1>
-          <p style="font-size:120%;">API, 머신러닝, 구글 클라우드 등 다양한 교육 컨텐츠를 계획중입니다. <br>
-          우리의 유투브 채널을 구독해주세요. <br>
+          <p style="font-size:120%;">API, 머신러닝, 구글 클라우드 등 다양한 교육 콘텐츠를 계획 중입니다.<br>
+           유튜브 채널을 구독해 다양한 콘텐츠를 즐겨보세요. <br>
           </p>
           <p><a class="btn btn-lg btn-outline-danger" href="https://www.youtube.com/channel/UCEmtHKDwXAX-iinsax0sy9Q">YOUTUBE &raquo;</a></p>
         </div>
@@ -134,9 +134,9 @@
       <div class="col-md-7 order-md-2">
         <div class="bottom-text">
           <h1><span style="color:#79797D">DATA SCIENTIST</span> 기술을 반영했습니다.</h1>
-          <p style="font-size:120%;">데이터 시각화, BERT를 이용한 감정분석을 적용했습니다. <br>
-          더욱 많은 머신러닝과 시계열분석 서비스를 계획중입니다. <br>
-          우리의 코드를 확인해보세요.
+          <p style="font-size:120%;">데이터 시각화, BERT를 활용한 감성 분석 모델을 적용했습니다. <br>
+          다양한 머신러닝 모델과 시계열 분석 모델을 적용할 계획입니다. <br>
+          코드를 확인해 보세요.
           </p>
           <p><a class="btn btn-lg btn-outline-secondary" href="https://github.com/Jinmun-Park/api_webapp">GITHUB &raquo;</a></p>
         </div>
@@ -151,9 +151,9 @@
       <div class="col-md-7">
         <div class="bottom-text">
           <h1><span style="color:#3A41FF">BLOG</span> 에 우리의 과정을 담았습니다.</h1>
-          <p style="font-size:120%;">데이터분석, 클라우드 셋업과 웹 개발과정에 발생한 문제에 해결방법을 작성하였습니다.<br>
-          우리의 모든 프로젝트 기획과정과 커리어 계획등 모든 고민을 블로그에 담았습니다. <br>
-          우리의 블로그를 구독해주세요.
+          <p style="font-size:120%;">데이터 분석, 클라우드 셋업 등 웹 개발 과정에서 발생한 문제와 이에 대한 해결 방법을 작성했습니다.<br>
+          프로젝트 기획 과정과 커리어 계획 등 모든 고민을 블로그에 담았습니다. <br>
+          블로그를 구독해 저희의 스토리를 확인해 보세요.
           </p>
           <p><a class="btn btn-lg btn-outline-primary" href="https://velog.io/@data_park">VELOG &raquo;</a></p>
         </div>
@@ -170,7 +170,7 @@
   <footer class="row row-cols-5 py-5">
     <div class="col">
       <a href="/" class="d-flex align-items-center mb-3 link-dark text-decoration-none text-large text-dark">
-        YOUTUBE ANALYTIC
+        YOUTUBE ANALYTICS
       </a>
       <p class="text-muted">서울시 서대문구 충정로 53 <br>
       유원골든타워</p>
