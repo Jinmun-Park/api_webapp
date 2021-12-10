@@ -25,30 +25,30 @@
                         <div class="card-body" style="user-select: auto;">
                           <h5 class="card-title" style="user-select: auto;">{{ title }} 검색 결과</h5>
 
-                            <div class="dashboard_analysis">
-                            <div class="dashboard_card col-xl-3 col-md-6 mb-4">
-                                <div class="card border-left-001 shadow h-100 py-2">
-                                    <div class="card-body">
-                                        <div class="card-demographic row align-items-center">
-                                            <div class="col mr-2">
-                                                <div class="card-text-001 text_xs font-weight-bold mb-1">
-                                                    VIDEO COUNTS
-                                                </div>
-                                                <div class="card-demographic-text h6 mb-0 font-weight-bold">
-                                                    50
-                                                </div>
-                                            </div>
-                                            <div class="col-auto">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-clipboard-data" viewBox="0 0 16 16">
-                                                  <path d="M4 11a1 1 0 1 1 2 0v1a1 1 0 1 1-2 0v-1zm6-4a1 1 0 1 1 2 0v5a1 1 0 1 1-2 0V7zM7 9a1 1 0 0 1 2 0v3a1 1 0 1 1-2 0V9z"/>
-                                                  <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
-                                                  <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
-                                                </svg>
-                                            </div>
+                    <div class="dashboard_analysis">
+                    <div class="dashboard_card col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-001 shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="card-demographic row align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="card-text-001 text_xs font-weight-bold mb-1">
+                                            VIDEO COUNTS
                                         </div>
+                                        <div class="card-demographic-text h6 mb-0 font-weight-bold">
+                                            50
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-clipboard-data" viewBox="0 0 16 16">
+                                          <path d="M4 11a1 1 0 1 1 2 0v1a1 1 0 1 1-2 0v-1zm6-4a1 1 0 1 1 2 0v5a1 1 0 1 1-2 0V7zM7 9a1 1 0 0 1 2 0v3a1 1 0 1 1-2 0V9z"/>
+                                          <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                                          <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+                                        </svg>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
 
                     <div class="dashboard_card col-xl-3 col-md-6 mb-4">
                             <div class="card border-left-002 shadow h-100 py-2">
@@ -122,7 +122,7 @@
 
                           <div class="video_table" class="table-responsive pt-3" style="user-select: auto;">
                             <table  id="table" class="table table-bordered" style="user-select: auto;">
-                              <thead style="user-select: auto;">
+                              <thead style="background-color:#EBECF0;">
                                 <tr style="user-select: auto;">
                                     {% for t in titles %}
                                         <th scope="col">{{ t }}</th>

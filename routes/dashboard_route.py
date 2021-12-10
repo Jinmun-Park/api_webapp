@@ -79,9 +79,9 @@ def video_result():
         top_category_vid = vid_category['index'].iloc[0]
         vid_comment = vid.sort_values(by="comment_count", ascending=False)
         top_comment_vid = vid_comment['video_title'].iloc[0]
-
         # vid = globals_videos(type='sample', channel_id=channel_id)
         # vid = pd.read_pickle('Pickle/video_sample_info.pkl')
+
         return render_template('video_result.html',
                                title=channel_id,
                                vid=vid,
@@ -103,9 +103,9 @@ def video_filter():
     top_category_vid = vid_category['index'].iloc[0]
     vid_comment = vid_filter.sort_values(by="comment_count", ascending=False)
     top_comment_vid = vid_comment['video_title'].iloc[0]
-
     # vid_filter = globals_videos_filter(find)
     # vid_filter = pd.read_pickle('Pickle/video_info_filter.pkl')
+
     return render_template('keyword_result.html',
                            title=find,
                            vid=vid_filter,
@@ -120,7 +120,16 @@ def video_filter():
 def video_comment():
     vid_comments = pickle_videos_comments(type='sample', option='save')
     wordcloud(vid_comments['comment'])
-    return render_template('comment_result.html', data=vid_comments, titles=['comment_id', 'comment', 'author', 'like_count', 'published_at','reply_count'])
+    top_like = vid_comments.sort_values(by="like_count", ascending=False)
+    top_like_comment = top_like['comment'].iloc[0]
+    top_reply = vid_comments.sort_values(by="reply_count", ascending=False)
+    top_reply_comment = top_reply['comment'].iloc[0]
+
+    return render_template('comment_result.html',
+                           data=vid_comments,
+                           titles=['comment_id', 'comment', 'author', 'like_count', 'published_at','reply_count'],
+                           top_like_comment=top_like_comment,
+                           top_reply_comment=top_reply_comment)
 
 @bp.route('/sentiment', methods=["GET"])
 def predict():

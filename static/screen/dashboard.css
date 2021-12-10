@@ -114,12 +114,15 @@
 
 .keyword_analysis{
     margin-top: 30px;
-    display: flex;
-    justify-content: center;
+}
+
+.keyword_content{
+    box-shadow: 1px 1px 3px 1px #dadce0;
 }
 
 .keyword_img{
-    width: 50%;
+    height: 320px;
+    width: 580px;
 }
 
 /* Dashboard Table */
