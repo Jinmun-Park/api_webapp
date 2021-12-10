@@ -1,17 +1,15 @@
 import pandas as pd
 import datetime as dt
-from src.utils.api import flask_category, flask_channel, flask_timeframe
+from src.utils.api import flask_category
 
 # ====================== Flask Blueprint ====================== #
 from flask import Blueprint, render_template
 df, df_category, df_channeltitle, df_category_view_per, df_category_like_per, df_category_comment_per, df_top_channel, df_top_category, df_top_comment = flask_category(command='15days')
-flask_channel = flask_channel(command='15days')
-tf_list_channel, tf_channel, tf_sum, tf_avg, tf_sum_category = flask_timeframe(command='15days')
 bp = Blueprint('15day_trend', __name__, url_prefix='/15day_trend')
 
 # ======================== Flask Route ======================== #
 @bp.route('/', methods=["GET"])
-def second_trend():
+def trend():
     # Count rows
     count_db = len(df.index)
     # Chart figures
@@ -76,11 +74,13 @@ def trend_category():
 
 @bp.route('/channel', methods=["GET"])
 def trend_channel():
-    '''
-    from src.utils.api import flask_channel
-    global flask_channel
-    flask_channel = flask_channel(command='15days')
-    '''
+    # Importing function
+    if 'flask_channel' in globals():
+        pass
+    else:
+        from src.utils.api import flask_channel
+        global flask_channel
+        flask_channel = flask_channel(command='15days')
     # Channel Top 20 & Bottom 20 names
     channel_top_label = [i for i in flask_channel.head(20).채널명]
     channel_top_view = [i for i in (flask_channel.head(20).채널총조회수)/1000]
@@ -151,6 +151,14 @@ def trend_channel():
 
 @bp.route('/timeframe', methods=["GET"])
 def trend_timeframe():
+    # Importing function
+    if 'tf_list_channel' in globals():
+        pass
+    else:
+        from src.utils.api import flask_timeframe
+        global tf_list_channel, tf_channel, tf_sum, tf_avg, tf_sum_category
+        tf_list_channel, tf_channel, tf_sum, tf_avg, tf_sum_category = flask_timeframe(command='15days')
+    # Timeframe top information
     tf_top_url = tf_channel.썸네일.iloc[0]
     tf_top_videoid = tf_channel.동영상아이디.iloc[0]
     tf_top_channelid = tf_channel.채널아이디.iloc[0]

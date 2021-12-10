@@ -15,10 +15,15 @@ def create_app():
     from routes.dashboard_route import bp as dashboard_bp
     from routes.trend_route import bp as trend_bp
     from routes.trend_second_route import bp as second_trend_bp
+    from routes.trend_third_route import bp as third_trend_bp
+    from routes.about import bp as about
+
     app.register_blueprint(chart_bp)
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(trend_bp)
     app.register_blueprint(second_trend_bp)
+    app.register_blueprint(third_trend_bp)
+    app.register_blueprint(about)
 
     @app.route('/')
     def home_page():
