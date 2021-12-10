@@ -4,7 +4,7 @@ env: flex
 resources:
  cpu: 4
  memory_gb: 5
- disk_size_gb: 15
+ disk_size_gb: 18
  #disk_size_gb: 20
 
 readiness_check:
@@ -12,4 +12,4 @@ readiness_check:
 
 automatic_scaling:
   min_num_instances: 1
-  max_num_instances: 1
+  max_num_instances: 5

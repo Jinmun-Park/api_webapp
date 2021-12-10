@@ -7,6 +7,7 @@
 #/src/models
 /src/models/bert_save.py
 /src/models/covid_eda.py
+/src/models/youtube_eda.py
 /src/utils/sent_function.py
 
 
