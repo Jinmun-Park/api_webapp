@@ -36,9 +36,7 @@ This project is licensed under the terms of the GNU General Public License v3.0
 | PLAN &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| DATE &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| STATUS &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| DESCRIPTION &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; |
 | --- | --- | --- | --- |
 | G ENGINE | 16'NOV'2021 | COMPLETED | Deployment |
-| FLASK | - | IN PROGRESS | App Design |
-
-
+| FLASK | 11'DEC'2021 | COMPLETED | App Design |
 
 ### SUPPORT
 | Source | URL | Description |
@@ -47,12 +45,7 @@ This project is licensed under the terms of the GNU General Public License v3.0
 | Google | https://support.google.com/youtube/contact/yt_api_form | API Extension |
 | Kobert | https://github.com/SKTBrain/KoBERT | Korean Bert |
 
-## PROJECT NOTE
-### Requirements.txt
-pip freeze > requirements.txt <br/>
-pip install -r requirements.txt 
-  
-## WEB
+## WEB IMAGES
   http://ourdatapark.com/
     
     Main page
@@ -68,3 +61,9 @@ pip install -r requirements.txt
   <img src = "https://user-images.githubusercontent.com/76864400/145665597-5eda761c-f256-4562-8a96-432cff593787.png" width="80%" height="80%">
   <img src = "https://user-images.githubusercontent.com/76864400/145665657-a5c59641-38c2-41f3-b530-a27570f064d5.png" width="80%" height="80%">
 
+## PROJECT NOTE
+### Requirements.txt
+pip freeze > requirements.txt <br/>
+pip install -r requirements.txt 
+  
+ 
