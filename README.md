@@ -9,7 +9,7 @@ This project is licensed under the terms of the GNU General Public License v3.0
 | Source | URL | Description |
 | --- | --- | --- |
 | GoogleAPI | https://developers.google.com/youtube/v3 | Youtube Comments |
-| 공공데이터 | https://www.data.go.kr/index.do | Covid 19 | 
+| 공공데이터(future) | https://www.data.go.kr/index.do | Covid 19 |
 
 ### FIRST STAGE (15'SEPT'2021 ~ 20'OCT'2021) :
 
@@ -20,7 +20,7 @@ This project is licensed under the terms of the GNU General Public License v3.0
 | POSTGRESSQL | 8'OCT'2021 | COMPLETED | Postgresql DB |
 | HEROKU   | OCT | COMPLETED | Autopush |
 
-### SECOND STAGE (20'OCT'2021 ~ 11'OCT'2021) :
+### SECOND STAGE (20'OCT'2021 ~ 11'NOV'2021) :
 * Replace Heroku with GCP (MySQL, Cloud Function, Cloud Engine)
 * Replace Kobert with <bert-base-multilingual-cased> due to library dependencies issue
 
@@ -31,7 +31,7 @@ This project is licensed under the terms of the GNU General Public License v3.0
 | BERT | 25'OCT'2021 | COMPLETED | Replace KOBERT |
 | G FUNCTION | 9'NOV'2021 | COMPLETED | Replace Heroku |
 
-### THIRD STAGE (11'OCT'2021 ~ ) :
+### THIRD STAGE (11'NOV'2021 ~ 11'DEC'2021) :
 
 | PLAN &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| DATE &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| STATUS &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| DESCRIPTION &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; |
 | --- | --- | --- | --- |
@@ -51,3 +51,20 @@ This project is licensed under the terms of the GNU General Public License v3.0
 ### Requirements.txt
 pip freeze > requirements.txt <br/>
 pip install -r requirements.txt 
+  
+## WEB
+  http://ourdatapark.com/
+    
+    Main page
+  <img src = "https://user-images.githubusercontent.com/76864400/145665028-824b9274-2012-4d17-93aa-abca3695d077.png" width="80%" height="80%">
+  
+    Chart page: Provide Youtube Video Popular Chart Table
+  <img src = "https://user-images.githubusercontent.com/76864400/145665180-01b4e46f-3b36-4d4c-a978-1f413e681f45.png" width="80%" height="80%">
+ 
+    Dashboard page: Provide Video Comments Keyword Analysis & Sentiment Analysis
+  <img src = "https://user-images.githubusercontent.com/76864400/145665279-638788cb-4aa9-413a-aee7-e8d4946dce04.png" width="80%" height="80%">
+
+    Trend page: Provide latest, 15days, 30days Trend Chart
+  <img src = "https://user-images.githubusercontent.com/76864400/145665597-5eda761c-f256-4562-8a96-432cff593787.png" width="80%" height="80%">
+  <img src = "https://user-images.githubusercontent.com/76864400/145665657-a5c59641-38c2-41f3-b530-a27570f064d5.png" width="80%" height="80%">
+
