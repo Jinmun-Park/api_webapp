@@ -38,6 +38,11 @@ This project is licensed under the terms of the GNU General Public License v3.0
 | G ENGINE | 16'NOV'2021 | COMPLETED | Deployment |
 | FLASK | 11'DEC'2021 | COMPLETED | App Design |
 
+### FUTURE PLAN :
+ 1. Replace BERT into KoBERT in Google Vertex AI 
+ 2. Replace Dashboard design
+ 3. Add Channel Insight as the main service
+  
 ### SUPPORT
 | Source | URL | Description |
 | --- | --- | --- |
